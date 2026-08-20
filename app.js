@@ -407,6 +407,8 @@ function initCartDrawer() {
   document.getElementById("cart-close").addEventListener("click", closeCart);
   document.getElementById("cart-overlay").addEventListener("click", closeCart);
   document.getElementById("cart-checkout-btn").addEventListener("click", () => { closeCart(); openCheckout(); });
+  // Single delegated listener for all cart item controls — set up once, never re-bound
+  document.getElementById("cart-items").addEventListener("click", handleCartControls);
 }
 
 function openCart() {
@@ -504,8 +506,6 @@ function updateCartUI() {
   itemsEl.innerHTML = "";
   itemsEl.appendChild(fragment);
   if (window.lucide) lucide.createIcons();
-
-  itemsEl.addEventListener("click", handleCartControls);
 
   const subtotal = cart.reduce((s, i) => s + (i.price || 0) * i.qty, 0);
   document.getElementById("cart-subtotal").textContent = subtotal > 0 ? subtotal + " EGP" : "TBD";
@@ -656,11 +656,12 @@ async function placeOrder() {
   btn.innerHTML = `<i data-lucide="loader-2" style="width:16px;height:16px;animation:spin 1s linear infinite"></i> placing order...`;
   if (window.lucide) lucide.createIcons();
 
+  // Map to the field names the expense-system frontend expects: name, qty, price
   const items = cart.map(i => ({
+    name: i.name,
+    qty: i.qty,
+    price: i.price || 0,
     sku: i.sku || "",
-    itemName: i.name,
-    quantity: i.qty,
-    unitPrice: i.price || 0,
   }));
 
   const payload = {
