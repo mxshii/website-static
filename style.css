@@ -1020,6 +1020,9 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--beige-400) transparent;
   position: relative;
   transform: translateY(20px) scale(.97);
   transition: transform var(--transition-spring);
@@ -1289,19 +1292,37 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 }
 .ci-remove:hover { color: #c0392b; }
 
+/* ── CUSTOM SLEEK SCROLLBARS ── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--beige-400);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--coffee-400);
+}
+
 /* ══════════════════════════════
    CHECKOUT MODAL
    ══════════════════════════════ */
 .checkout-box {
-  max-width: 620px !important;
-  padding: 40px !important;
+  max-width: 580px !important;
+  padding: 32px !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--beige-400) transparent;
 }
 .checkout-steps {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 32px;
+  margin-bottom: 22px;
 }
 .step {
   display: flex;
@@ -1326,30 +1347,26 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 .step.done .step-num { background: var(--coffee-400); color: var(--beige-100); }
 .step-line { width: 24px; height: 1.5px; background: var(--beige-300); }
 
-.checkout-step h2 { font-size: 1.8rem; margin-bottom: 6px; }
-.checkout-sub { font-size: 0.9rem; color: var(--coffee-500); margin-bottom: 24px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.checkout-step h2 { font-size: 1.65rem; margin-bottom: 4px; }
+.checkout-sub { font-size: 0.88rem; color: var(--coffee-500); margin-bottom: 18px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
+  gap: 5px;
+  margin-bottom: 12px;
 }
 .form-group label {
   font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: lowercase;
   color: var(--coffee-700);
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
-.label-icon { opacity: 0.7; }
 .form-group input,
 .form-group textarea,
 .form-group select {
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
   border: 1.5px solid var(--beige-300);
   background: var(--beige-100);

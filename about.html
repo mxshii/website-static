@@ -8,7 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="lucide.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>window.lucide || document.write('<script src="lucide.min.js"><\/script>')</script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -187,6 +188,14 @@
           <span class="logo-text">STATIC</span>
         </a>
         <p>we draw it, you stick it.</p>
+        <div class="footer-social">
+          <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          </a>
+          <a href="https://tiktok.com" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.78 1.53V7.04a4.85 4.85 0 01-1.01-.35z"/></svg>
+          </a>
+        </div>
       </div>
       <div class="footer-cols">
         <div class="footer-col">
@@ -257,24 +266,24 @@
         <form id="checkout-form" novalidate>
           <div class="form-row">
             <div class="form-group">
-              <label for="co-name"><i data-lucide="user" class="icon-xs label-icon"></i> full name *</label>
+              <label for="co-name">full name *</label>
               <input type="text" id="co-name" placeholder="Your Name" required/>
             </div>
             <div class="form-group">
-              <label for="co-phone"><i data-lucide="phone" class="icon-xs label-icon"></i> phone number *</label>
+              <label for="co-phone">phone number *</label>
               <input type="tel" id="co-phone" placeholder="01X XXXX XXXX" required/>
             </div>
           </div>
           <div class="form-group">
-            <label for="co-email"><i data-lucide="mail" class="icon-xs label-icon"></i> email (optional)</label>
+            <label for="co-email">email address (optional)</label>
             <input type="email" id="co-email" placeholder="you@email.com"/>
           </div>
           <div class="form-group">
-            <label for="co-address"><i data-lucide="map-pin" class="icon-xs label-icon"></i> delivery address *</label>
-            <textarea id="co-address" placeholder="Street, area, city..." rows="3" required></textarea>
+            <label for="co-address">delivery address *</label>
+            <textarea id="co-address" placeholder="Street, area, city..." rows="2" required></textarea>
           </div>
           <div class="form-group">
-            <label for="co-note"><i data-lucide="message-square" class="icon-xs label-icon"></i> order note (optional)</label>
+            <label for="co-note">order note (optional)</label>
             <textarea id="co-note" placeholder="Any special requests or instructions?" rows="2"></textarea>
           </div>
           <button type="button" class="btn btn-primary full-width" id="checkout-next-btn">
@@ -370,11 +379,11 @@
         </div>
         <form id="login-form">
           <div class="form-group">
-            <label for="login-email"><i data-lucide="mail" class="icon-xs label-icon"></i> email</label>
+            <label for="login-email">email address</label>
             <input type="email" id="login-email" placeholder="you@email.com" required/>
           </div>
           <div class="form-group">
-            <label for="login-password"><i data-lucide="lock" class="icon-xs label-icon"></i> password</label>
+            <label for="login-password">password</label>
             <input type="password" id="login-password" placeholder="••••••••" required/>
           </div>
           <p class="form-error" id="login-error"></p>
@@ -394,20 +403,20 @@
         <form id="register-form">
           <div class="form-row">
             <div class="form-group">
-              <label for="reg-name"><i data-lucide="user" class="icon-xs label-icon"></i> full name</label>
+              <label for="reg-name">full name</label>
               <input type="text" id="reg-name" placeholder="Your Name" required/>
             </div>
             <div class="form-group">
-              <label for="reg-phone"><i data-lucide="phone" class="icon-xs label-icon"></i> phone</label>
+              <label for="reg-phone">phone number (optional)</label>
               <input type="tel" id="reg-phone" placeholder="01X XXXX XXXX"/>
             </div>
           </div>
           <div class="form-group">
-            <label for="reg-email"><i data-lucide="mail" class="icon-xs label-icon"></i> email</label>
+            <label for="reg-email">email address</label>
             <input type="email" id="reg-email" placeholder="you@email.com" required/>
           </div>
           <div class="form-group">
-            <label for="reg-password"><i data-lucide="lock" class="icon-xs label-icon"></i> password</label>
+            <label for="reg-password">password (min. 6 characters)</label>
             <input type="password" id="reg-password" placeholder="min. 6 characters" required/>
           </div>
           <p class="form-error" id="register-error"></p>
