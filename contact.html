@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="lucide.min.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -57,17 +57,17 @@
       </a>
 
       <nav class="nav-links right">
-        <button class="account-nav-btn" id="account-btn" title="Sign in">
+        <button type="button" class="account-nav-btn" id="account-btn" title="Sign in">
           <i data-lucide="user" class="icon-sm"></i>
           <span id="account-btn-label">sign in</span>
         </button>
-        <button class="cart-btn" id="cart-btn" aria-label="Open cart">
+        <button type="button" class="cart-btn" id="cart-btn" aria-label="Open cart">
           <i data-lucide="shopping-bag" class="icon-md"></i>
           <span class="cart-count" id="cart-count">0</span>
         </button>
       </nav>
 
-      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
+      <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
         <i data-lucide="menu" class="icon-md"></i>
       </button>
     </div>
@@ -205,7 +205,7 @@
   <aside class="cart-drawer" id="cart-drawer" role="complementary">
     <div class="cart-head">
       <h3>your cart</h3>
-      <button class="modal-close" id="cart-close"><i data-lucide="x" class="icon-sm"></i></button>
+      <button type="button" class="modal-close" id="cart-close"><i data-lucide="x" class="icon-sm"></i></button>
     </div>
     <div class="cart-items" id="cart-items">
       <div class="cart-empty" id="cart-empty">
@@ -213,6 +213,7 @@
         <p>your cart is empty</p>
         <a href="shop.html" class="btn btn-outline" onclick="closeCart()">start shopping</a>
       </div>
+      <div class="cart-list" id="cart-list"></div>
     </div>
     <div class="cart-footer" id="cart-footer" style="display:none">
       <div class="cart-total-row">
@@ -220,7 +221,7 @@
         <span id="cart-subtotal">0 EGP</span>
       </div>
       <p class="cart-note"><i data-lucide="info" class="icon-xs"></i> Shipping calculated on checkout</p>
-      <button class="btn btn-primary cart-checkout-btn" id="cart-checkout-btn">
+      <button type="button" class="btn btn-primary cart-checkout-btn" id="cart-checkout-btn">
         proceed to checkout <i data-lucide="arrow-right" class="icon-sm"></i>
       </button>
     </div>
@@ -229,7 +230,7 @@
   <!-- CHECKOUT MODAL -->
   <div class="modal-overlay" id="checkout-modal">
     <div class="modal-box checkout-box">
-      <button class="modal-close" id="checkout-close"><i data-lucide="x" class="icon-sm"></i></button>
+      <button type="button" class="modal-close" id="checkout-close"><i data-lucide="x" class="icon-sm"></i></button>
       <div class="checkout-steps">
         <div class="step active" id="step-ind-1"><span class="step-num">1</span><span>details</span></div>
         <div class="step-line"></div>
@@ -316,8 +317,8 @@
         </div>
 
         <div class="checkout-actions" style="margin-top:28px">
-          <button class="btn btn-outline" id="payment-back-btn"><i data-lucide="arrow-left" class="icon-sm"></i> back</button>
-          <button class="btn btn-primary" id="payment-next-btn">review order <i data-lucide="arrow-right" class="icon-sm"></i></button>
+          <button type="button" class="btn btn-outline" id="payment-back-btn"><i data-lucide="arrow-left" class="icon-sm"></i> back</button>
+          <button type="button" class="btn btn-primary" id="payment-next-btn">review order <i data-lucide="arrow-right" class="icon-sm"></i></button>
         </div>
       </div>
 
@@ -327,8 +328,8 @@
         <div class="review-totals" id="review-totals"></div>
         <div class="review-customer" id="review-customer"></div>
         <div class="checkout-actions">
-          <button class="btn btn-outline" id="checkout-back-btn"><i data-lucide="arrow-left" class="icon-sm"></i> back</button>
-          <button class="btn btn-primary" id="checkout-place-btn">place order <i data-lucide="check" class="icon-sm"></i></button>
+          <button type="button" class="btn btn-outline" id="checkout-back-btn"><i data-lucide="arrow-left" class="icon-sm"></i> back</button>
+          <button type="button" class="btn btn-primary" id="checkout-place-btn">place order <i data-lucide="check" class="icon-sm"></i></button>
         </div>
       </div>
 
@@ -339,7 +340,7 @@
           <p class="confirm-msg" id="confirm-msg"></p>
           <p class="confirm-order-id" id="confirm-order-id"></p>
           <div id="confirm-payment-note"></div>
-          <button class="btn btn-primary" id="confirm-done-btn">keep shopping <i data-lucide="arrow-right" class="icon-sm"></i></button>
+          <button type="button" class="btn btn-primary" id="confirm-done-btn">keep shopping <i data-lucide="arrow-right" class="icon-sm"></i></button>
         </div>
       </div>
     </div>
@@ -348,7 +349,7 @@
   <!-- ACCOUNT MODAL -->
   <div class="modal-overlay" id="account-modal">
     <div class="modal-box account-box">
-      <button class="modal-close" id="account-modal-close"><i data-lucide="x" class="icon-sm"></i></button>
+      <button type="button" class="modal-close" id="account-modal-close"><i data-lucide="x" class="icon-sm"></i></button>
       <div id="login-pane">
         <div class="account-header">
           <div class="account-cat-icon">
@@ -369,7 +370,7 @@
           <p class="form-error" id="login-error"></p>
           <button type="submit" class="btn btn-primary full-width" id="login-submit">sign in</button>
         </form>
-        <p class="account-switch">Don't have an account? <button class="link-btn" id="switch-to-register">create one</button></p>
+        <p class="account-switch">Don't have an account? <button type="button" class="link-btn" id="switch-to-register">create one</button></p>
       </div>
 
       <div id="register-pane" class="hidden">
@@ -402,7 +403,7 @@
           <p class="form-error" id="register-error"></p>
           <button type="submit" class="btn btn-primary full-width" id="register-submit">create account</button>
         </form>
-        <p class="account-switch">Already have an account? <button class="link-btn" id="switch-to-login">sign in</button></p>
+        <p class="account-switch">Already have an account? <button type="button" class="link-btn" id="switch-to-login">sign in</button></p>
       </div>
 
       <div id="profile-pane" class="hidden">
@@ -415,13 +416,12 @@
         </div>
         <h4 style="font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--coffee-500);margin-bottom:12px">My Orders</h4>
         <div id="profile-orders"></div>
-        <button class="btn btn-outline full-width" id="account-logout-btn" style="margin-top:20px"><i data-lucide="log-out" class="icon-sm"></i> sign out</button>
-        <button class="btn full-width" id="account-delete-btn" style="margin-top:8px;border-color:#c0392b;color:#c0392b;font-size:0.8rem"><i data-lucide="trash-2" class="icon-xs"></i> delete account</button>
+        <button type="button" class="btn btn-outline full-width" id="account-logout-btn" style="margin-top:20px"><i data-lucide="log-out" class="icon-sm"></i> sign out</button>
+        <button type="button" class="btn full-width" id="account-delete-btn" style="margin-top:8px;border-color:#c0392b;color:#c0392b;font-size:0.8rem"><i data-lucide="trash-2" class="icon-xs"></i> delete account</button>
       </div>
     </div>
   </div>
 
   <script src="app.js"></script>
-  <script>lucide.createIcons();</script>
 </body>
 </html>

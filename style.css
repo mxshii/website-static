@@ -56,13 +56,29 @@ a { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 input, textarea, select { font-family: inherit; }
 
-/* ── LUCIDE ICON SIZES ── */
-.icon-xs { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
-.icon-sm { width: 16px; height: 16px; stroke-width: 2; flex-shrink: 0; }
-.icon-md { width: 20px; height: 20px; stroke-width: 2; flex-shrink: 0; }
-.icon-lg { width: 24px; height: 24px; stroke-width: 1.75; flex-shrink: 0; }
+/* ── LUCIDE ICON SIZES & RENDERING ── */
+svg.lucide, i[data-lucide] {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  width: 1.15em;
+  height: 1.15em;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.icon-xs, svg.lucide.icon-xs { width: 14px !important; height: 14px !important; stroke-width: 2; }
+.icon-sm, svg.lucide.icon-sm { width: 16px !important; height: 16px !important; stroke-width: 2; }
+.icon-md, svg.lucide.icon-md { width: 20px !important; height: 20px !important; stroke-width: 2; }
+.icon-lg, svg.lucide.icon-lg { width: 24px !important; height: 24px !important; stroke-width: 1.75; }
 .icon-inline { display: inline-block; vertical-align: middle; width: 1em; height: 1em; }
-.icon-heart { fill: currentColor; }
+.icon-heart, svg.lucide.icon-heart { fill: currentColor; }
+.perk-icon, svg.lucide.perk-icon { width: 24px !important; height: 24px !important; color: var(--beige-200); stroke-width: 1.75; }
+.empty-bag-icon, svg.lucide.empty-bag-icon { width: 48px !important; height: 48px !important; opacity: 0.35; color: var(--coffee-600); stroke-width: 1.5; }
+.confirm-icon-lucide, svg.lucide.confirm-icon-lucide { width: 40px !important; height: 40px !important; color: var(--coffee-700); stroke-width: 1.75; }
+.star-icon, svg.lucide.star-icon { width: 16px !important; height: 16px !important; stroke-width: 1.5; color: var(--coffee-500); }
+.star-icon.filled, svg.lucide.star-icon.filled { fill: var(--coffee-400); color: var(--coffee-400); }
 
 /* ── TYPOGRAPHY ── */
 h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; }
