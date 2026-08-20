@@ -8,7 +8,7 @@
 // Set this to your deployed expense-system URL.
 // The expense-system needs a public POST /api/orders/storefront endpoint
 // (see the expense-system README for setup instructions).
-const EXPENSE_API = "https://expense-sys-ten.vercel.app/";
+const EXPENSE_API = "https://expense-sys-ten.vercel.app";
 
 // ── PRODUCTS ──────────────────────────────────────────
 const PRODUCTS = [
