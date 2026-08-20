@@ -53,6 +53,18 @@ function initMobileMenu() {
   menu.querySelectorAll("a").forEach(a => {
     a.addEventListener("click", () => menu.classList.remove("open"));
   });
+  const mobAccount = document.getElementById("mob-account");
+  if (mobAccount) {
+    mobAccount.addEventListener("click", (e) => {
+      e.preventDefault();
+      menu.classList.remove("open");
+      if (currentUser) {
+        openMyAccount();
+      } else {
+        openAccountModal("login");
+      }
+    });
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -112,13 +124,15 @@ async function deleteMyAccount() {
 function updateAccountNavUI() {
   const btn = document.getElementById("account-btn");
   const label = document.getElementById("account-btn-label");
-  if (!btn || !label) return;
+  const mobAccount = document.getElementById("mob-account");
   if (currentUser) {
-    label.textContent = currentUser.name.split(" ")[0];
-    btn.title = "My account";
+    if (label) label.textContent = currentUser.name.split(" ")[0];
+    if (btn) btn.title = "My account";
+    if (mobAccount) mobAccount.textContent = `my account (${currentUser.name.split(" ")[0]})`;
   } else {
-    label.textContent = "sign in";
-    btn.title = "Sign in or create account";
+    if (label) label.textContent = "sign in";
+    if (btn) btn.title = "Sign in or create account";
+    if (mobAccount) mobAccount.textContent = "sign in";
   }
 }
 
@@ -602,6 +616,10 @@ function openCheckout() {
 }
 
 function closeCheckout() {
+  if (checkoutStep === 4) {
+    cart = [];
+    updateCartUI();
+  }
   document.getElementById("checkout-modal").classList.remove("open");
   document.body.style.overflow = "";
 }
