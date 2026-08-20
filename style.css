@@ -1254,3 +1254,238 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   .products-grid { grid-template-columns: 1fr; }
   .perks-inner { grid-template-columns: 1fr; }
 }
+
+/* ══════════════════════════════
+   ACCOUNT NAV BUTTON
+   ══════════════════════════════ */
+.account-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1.5px solid var(--beige-300);
+  border-radius: var(--radius-full);
+  padding: 6px 14px 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--coffee-700);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.account-nav-btn:hover {
+  background: var(--beige-100);
+  border-color: var(--coffee-300);
+}
+
+/* ══════════════════════════════
+   PRODUCT LOADING / SOLD OUT
+   ══════════════════════════════ */
+.products-loading {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 0;
+  color: var(--coffee-400);
+}
+.loading-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--beige-300);
+  border-top-color: var(--coffee-600);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.products-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 0;
+  color: var(--coffee-400);
+}
+
+.product-card.sold-out { opacity: 0.6; }
+.card-badge.badge-sold {
+  background: var(--coffee-600) !important;
+  color: var(--beige-100) !important;
+}
+.card-add-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ══════════════════════════════
+   PAYMENT OPTIONS (checkout step 2)
+   ══════════════════════════════ */
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 24px 0 0;
+}
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 2px solid var(--beige-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  position: relative;
+}
+.payment-option:hover { border-color: var(--coffee-300); background: var(--beige-100); }
+.payment-option.selected {
+  border-color: var(--coffee-700);
+  background: var(--coffee-100);
+}
+.payment-option-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.vodafone-icon { background: #e8003d14; color: #e8003d; }
+.card-icon { background: var(--beige-300); color: var(--coffee-700); }
+.payment-option-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.payment-option-text strong { font-size: 0.95rem; color: var(--coffee-800); }
+.payment-option-text span { font-size: 0.8rem; color: var(--coffee-500); }
+.vcash-preview { font-weight: 700; color: #e8003d; }
+.payment-option-check {
+  color: var(--coffee-300);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.payment-option.selected .payment-option-check { opacity: 1; color: var(--coffee-700); }
+
+.payment-panel {
+  margin-top: 16px;
+  padding: 16px 20px;
+  background: var(--beige-100);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--beige-300);
+}
+.vodafone-instructions, .card-instructions {
+  display: flex;
+  gap: 12px;
+  font-size: 0.875rem;
+  color: var(--coffee-700);
+}
+.vodafone-instructions ol { margin: 8px 0 0 16px; display: flex; flex-direction: column; gap: 6px; }
+.vcash-num { color: #e8003d; font-size: 1rem; }
+
+/* ══════════════════════════════
+   CONFIRMATION PAYMENT BOX
+   ══════════════════════════════ */
+.confirm-payment-box {
+  width: 100%;
+  max-width: 380px;
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+.vodafone-box {
+  background: #fff0f3;
+  border: 1.5px solid #ffc0cb;
+  color: #7a1030;
+}
+.vodafone-box .vcash-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #e8003d;
+}
+.card-box {
+  background: var(--beige-100);
+  border: 1.5px solid var(--beige-300);
+  color: var(--coffee-700);
+}
+
+/* ══════════════════════════════
+   ACCOUNT MODAL
+   ══════════════════════════════ */
+.account-box {
+  max-width: 440px !important;
+  padding: 40px !important;
+}
+.account-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.account-cat-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--coffee-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--coffee-700);
+  margin-bottom: 8px;
+}
+.account-header h2 { font-size: 1.8rem; }
+.account-header p { color: var(--coffee-500); font-size: 0.875rem; }
+.account-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.85rem;
+  color: var(--coffee-500);
+}
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--coffee-700);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: inherit;
+  font-size: inherit;
+}
+.form-error {
+  color: #c0392b;
+  font-size: 0.8rem;
+  min-height: 1.2em;
+  margin: 4px 0;
+}
+
+/* Profile orders */
+.profile-orders { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; }
+.profile-order-card {
+  padding: 12px 16px;
+  border: 1px solid var(--beige-300);
+  border-radius: var(--radius-sm);
+  background: var(--beige-100);
+}
+.profile-order-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.profile-order-id { font-weight: 700; font-size: 0.9rem; color: var(--coffee-800); }
+.profile-order-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--beige-300);
+  color: var(--coffee-600);
+}
+.profile-order-status.paid { background: #d4edda; color: #155724; }
+.profile-order-status.unpaid { background: #fff3cd; color: #856404; }
+.profile-order-items { font-size: 0.82rem; color: var(--coffee-600); margin-bottom: 4px; }
+.profile-order-date { font-size: 0.75rem; color: var(--coffee-400); }
+
+/* ══════════════════════════════
+   SPIN (loader)
+   ══════════════════════════════ */
+@keyframes spin { to { transform: rotate(360deg); } }

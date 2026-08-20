@@ -8,13 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ── ANNOUNCEMENT BAR ── -->
+  <!-- ANNOUNCEMENT BAR -->
   <div class="announcement-bar" id="announcement-bar">
     <div class="announcement-inner">
       <span>✦ free shipping on orders over 200 EGP</span>
@@ -32,7 +31,7 @@
     </div>
   </div>
 
-  <!-- ── NAVBAR ── -->
+  <!-- NAVBAR -->
   <header class="navbar" id="navbar">
     <div class="nav-inner">
       <nav class="nav-links left">
@@ -56,7 +55,10 @@
       </a>
 
       <nav class="nav-links right">
-        <a href="#about" id="nav-faq">faq</a>
+        <button class="account-nav-btn" id="account-btn" title="Sign in">
+          <i data-lucide="user" class="icon-sm"></i>
+          <span id="account-btn-label">sign in</span>
+        </button>
         <button class="cart-btn" id="cart-btn" aria-label="Open cart">
           <i data-lucide="shopping-bag" class="icon-md"></i>
           <span class="cart-count" id="cart-count">0</span>
@@ -69,13 +71,13 @@
     </div>
 
     <div class="mobile-menu" id="mobile-menu">
-      <a href="#shop" id="mob-shop">shop</a>
-      <a href="#about" id="mob-about">our story</a>
-      <a href="#about" id="mob-faq">faq</a>
+      <a href="#shop">shop</a>
+      <a href="#about">our story</a>
+      <a href="#" id="mob-account">sign in</a>
     </div>
   </header>
 
-  <!-- ── HERO ── -->
+  <!-- HERO -->
   <section class="hero" id="hero">
     <div class="hero-content">
       <p class="hero-eyebrow">
@@ -103,7 +105,7 @@
     </div>
   </section>
 
-  <!-- ── PERKS ── -->
+  <!-- PERKS -->
   <section class="perks" id="perks">
     <div class="perks-inner">
       <div class="perk">
@@ -129,7 +131,7 @@
     </div>
   </section>
 
-  <!-- ── SHOP ── -->
+  <!-- SHOP -->
   <section class="shop" id="shop">
     <div class="shop-header">
       <h2 class="section-title">the collection</h2>
@@ -138,7 +140,7 @@
     <div class="products-grid" id="products-grid"></div>
   </section>
 
-  <!-- ── ABOUT / STORY ── -->
+  <!-- ABOUT -->
   <section class="about" id="about">
     <div class="about-inner">
       <div class="about-text">
@@ -152,7 +154,7 @@
         <div class="about-tagline">"we draw it, you stick it."</div>
       </div>
       <div class="about-logo-wrap">
-        <svg class="about-cat-logo" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Static logo cat">
+        <svg class="about-cat-logo" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M50 160 C50 85 100 45 150 45 C200 45 255 80 265 145 C275 195 248 215 195 215 C140 215 50 215 50 160Z" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/>
           <path d="M90 45 L70 10 L108 35" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M185 42 L195 8 L215 40" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -168,18 +170,14 @@
     </div>
   </section>
 
-  <!-- ── TESTIMONIALS ── -->
+  <!-- TESTIMONIALS -->
   <section class="testimonials" id="testimonials">
-    <div class="test-header">
-      <h2 class="section-title">stick fans</h2>
-    </div>
+    <div class="test-header"><h2 class="section-title">stick fans</h2></div>
     <div class="test-grid">
       <div class="testimonial">
         <div class="stars">
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
+          <i data-lucide="star" class="star-icon filled"></i><i data-lucide="star" class="star-icon filled"></i>
+          <i data-lucide="star" class="star-icon filled"></i><i data-lucide="star" class="star-icon filled"></i>
           <i data-lucide="star" class="star-icon filled"></i>
         </div>
         <p>"Covered my entire laptop in these. Zero regrets. The cats pack is 10/10."</p>
@@ -187,10 +185,8 @@
       </div>
       <div class="testimonial">
         <div class="stars">
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
+          <i data-lucide="star" class="star-icon filled"></i><i data-lucide="star" class="star-icon filled"></i>
+          <i data-lucide="star" class="star-icon filled"></i><i data-lucide="star" class="star-icon filled"></i>
           <i data-lucide="star" class="star-icon filled"></i>
         </div>
         <p>"Actually waterproof! My water bottle finally has personality. Love the celestial pack."</p>
@@ -198,10 +194,8 @@
       </div>
       <div class="testimonial">
         <div class="stars">
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
-          <i data-lucide="star" class="star-icon filled"></i>
+          <i data-lucide="star" class="star-icon filled"></i><i data-lucide="star" class="star-icon filled"></i>
+          <i data-lucide="star" class="star-icon filled"></i><i data-lucide="star" class="star-icon filled"></i>
           <i data-lucide="star" class="star-icon filled"></i>
         </div>
         <p>"The packaging was so cute I didn't want to open it. Then I did. Even cuter inside."</p>
@@ -210,11 +204,11 @@
     </div>
   </section>
 
-  <!-- ── NEWSLETTER ── -->
+  <!-- NEWSLETTER -->
   <section class="newsletter" id="newsletter">
     <div class="newsletter-inner">
       <div class="newsletter-cat">
-        <svg viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg" width="80">
+        <svg viewBox="0 0 80 60" fill="none" width="80">
           <path d="M15 40 C15 22 28 12 40 12 C52 12 68 20 70 38 C72 52 62 56 46 56 C28 56 15 52 15 40Z" stroke="currentColor" stroke-width="2.5" fill="none"/>
           <path d="M24 12 L19 3 L30 10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M54 11 L58 2 L65 11" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -229,8 +223,7 @@
         <form class="newsletter-form" id="newsletter-form" onsubmit="handleNewsletter(event)">
           <input type="email" id="newsletter-email" placeholder="your@email.com" required autocomplete="email" />
           <button type="submit" class="btn btn-dark" id="newsletter-submit">
-            notify me
-            <i data-lucide="send" class="icon-sm"></i>
+            notify me <i data-lucide="send" class="icon-sm"></i>
           </button>
         </form>
         <p class="newsletter-fine">No spam. We're too busy drawing.</p>
@@ -238,27 +231,24 @@
     </div>
   </section>
 
-  <!-- ── FOOTER ── -->
+  <!-- FOOTER -->
   <footer class="footer" id="footer">
     <div class="footer-inner">
       <div class="footer-brand">
         <a href="#" class="logo footer-logo" aria-label="Static">
-          <svg class="logo-cat" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="logo-cat" viewBox="0 0 120 80" fill="none">
             <path d="M20 55 C20 30 35 18 55 18 C75 18 95 28 100 50 C105 65 95 72 75 72 C55 72 20 72 20 55Z" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
             <path d="M35 18 L28 6 L42 14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M68 18 L72 5 L80 15" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
             <ellipse cx="44" cy="48" rx="5" ry="3.5" stroke="currentColor" stroke-width="2"/>
             <ellipse cx="66" cy="48" rx="5" ry="3.5" stroke="currentColor" stroke-width="2"/>
-            <path d="M55 54 L52 57 L55 57 L58 57 L55 54Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
             <path d="M90 65 C95 62 102 60 105 65 C108 70 104 75 98 73" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
           </svg>
           <span class="logo-text">STATIC</span>
         </a>
         <p>we draw it, you stick it.</p>
         <div class="footer-social">
-          <a href="#" id="footer-instagram" aria-label="Instagram">
-            <i data-lucide="instagram" class="icon-sm"></i>
-          </a>
+          <a href="#" id="footer-instagram" aria-label="Instagram"><i data-lucide="instagram" class="icon-sm"></i></a>
           <a href="#" id="footer-tiktok" aria-label="TikTok">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.78 1.53V7.04a4.85 4.85 0 01-1.01-.35z"/></svg>
           </a>
@@ -267,17 +257,17 @@
       <div class="footer-cols">
         <div class="footer-col">
           <h4>shop</h4>
-          <a href="#shop" id="footer-all">all packs</a>
-          <a href="#shop" id="footer-cats">cat packs</a>
-          <a href="#shop" id="footer-celestial">celestial</a>
-          <a href="#shop" id="footer-food">food</a>
+          <a href="#shop">all packs</a>
+          <a href="#shop">cat packs</a>
+          <a href="#shop">celestial</a>
+          <a href="#shop">food</a>
         </div>
         <div class="footer-col">
           <h4>support</h4>
-          <a href="#about" id="footer-contact">contact us</a>
-          <a href="#about" id="footer-shipping-info">shipping info</a>
-          <a href="#about" id="footer-returns">returns</a>
-          <a href="#about" id="footer-faq-link">faq</a>
+          <a href="#about">contact us</a>
+          <a href="#about">shipping info</a>
+          <a href="#about">returns</a>
+          <a href="#about">faq</a>
         </div>
       </div>
     </div>
@@ -286,18 +276,16 @@
     </div>
   </footer>
 
-  <!-- ── PRODUCT MODAL ── -->
+  <!-- PRODUCT MODAL -->
   <div class="modal-overlay" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-product-name">
     <div class="modal-box" id="modal-box">
-      <button class="modal-close" id="modal-close" aria-label="Close">
-        <i data-lucide="x" class="icon-sm"></i>
-      </button>
+      <button class="modal-close" id="modal-close" aria-label="Close"><i data-lucide="x" class="icon-sm"></i></button>
       <div class="modal-grid">
         <div class="modal-images">
           <img class="modal-main-img" id="modal-main-img" src="" alt="" />
         </div>
         <div class="modal-info">
-          <p class="modal-badge" id="modal-badge">sticker pack</p>
+          <p class="modal-badge">sticker pack</p>
           <h2 class="modal-product-name" id="modal-product-name"></h2>
           <p class="modal-desc" id="modal-desc"></p>
           <div class="modal-price-row">
@@ -307,18 +295,13 @@
           <div class="modal-qty-row">
             <label for="modal-qty">qty</label>
             <div class="qty-ctrl">
-              <button class="qty-btn" id="modal-qty-minus" aria-label="Decrease">
-                <i data-lucide="minus" class="icon-xs"></i>
-              </button>
+              <button class="qty-btn" id="modal-qty-minus"><i data-lucide="minus" class="icon-xs"></i></button>
               <input type="number" id="modal-qty" value="1" min="1" max="10" />
-              <button class="qty-btn" id="modal-qty-plus" aria-label="Increase">
-                <i data-lucide="plus" class="icon-xs"></i>
-              </button>
+              <button class="qty-btn" id="modal-qty-plus"><i data-lucide="plus" class="icon-xs"></i></button>
             </div>
           </div>
           <button class="btn btn-primary modal-add-btn" id="modal-add-btn">
-            <i data-lucide="shopping-bag" class="icon-sm"></i>
-            add to cart
+            <i data-lucide="shopping-bag" class="icon-sm"></i> add to cart
           </button>
           <ul class="modal-features">
             <li><i data-lucide="droplets" class="icon-xs feature-icon"></i> Waterproof vinyl</li>
@@ -331,20 +314,18 @@
     </div>
   </div>
 
-  <!-- ── CART DRAWER ── -->
+  <!-- CART DRAWER -->
   <div class="cart-overlay" id="cart-overlay"></div>
   <aside class="cart-drawer" id="cart-drawer" role="complementary" aria-label="Shopping cart">
     <div class="cart-head">
       <h3>your cart</h3>
-      <button class="modal-close" id="cart-close" aria-label="Close cart">
-        <i data-lucide="x" class="icon-sm"></i>
-      </button>
+      <button class="modal-close" id="cart-close" aria-label="Close cart"><i data-lucide="x" class="icon-sm"></i></button>
     </div>
     <div class="cart-items" id="cart-items">
       <div class="cart-empty" id="cart-empty">
         <i data-lucide="shopping-bag" class="empty-bag-icon"></i>
         <p>your cart is empty</p>
-        <a href="#shop" class="btn btn-outline" id="cart-shop-link" onclick="closeCart()">start shopping</a>
+        <a href="#shop" class="btn btn-outline" onclick="closeCart()">start shopping</a>
       </div>
     </div>
     <div class="cart-footer" id="cart-footer" style="display:none">
@@ -352,123 +333,234 @@
         <span>subtotal</span>
         <span id="cart-subtotal">0 EGP</span>
       </div>
-      <p class="cart-note">
-        <i data-lucide="info" class="icon-xs"></i>
-        Shipping calculated at checkout
-      </p>
+      <p class="cart-note"><i data-lucide="info" class="icon-xs"></i> Shipping calculated at checkout</p>
       <button class="btn btn-primary cart-checkout-btn" id="cart-checkout-btn">
-        proceed to checkout
-        <i data-lucide="arrow-right" class="icon-sm"></i>
+        proceed to checkout <i data-lucide="arrow-right" class="icon-sm"></i>
       </button>
     </div>
   </aside>
 
-  <!-- ── CHECKOUT MODAL ── -->
+  <!-- CHECKOUT MODAL -->
   <div class="modal-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
     <div class="modal-box checkout-box" id="checkout-box">
-      <button class="modal-close" id="checkout-close" aria-label="Close checkout">
-        <i data-lucide="x" class="icon-sm"></i>
-      </button>
+      <button class="modal-close" id="checkout-close"><i data-lucide="x" class="icon-sm"></i></button>
 
-      <!-- Step indicator -->
       <div class="checkout-steps">
-        <div class="step active" id="step-ind-1">
-          <span class="step-num">1</span>
-          <span>details</span>
-        </div>
+        <div class="step active" id="step-ind-1"><span class="step-num">1</span><span>details</span></div>
         <div class="step-line"></div>
-        <div class="step" id="step-ind-2">
-          <span class="step-num">2</span>
-          <span>review</span>
-        </div>
+        <div class="step" id="step-ind-2"><span class="step-num">2</span><span>payment</span></div>
         <div class="step-line"></div>
-        <div class="step" id="step-ind-3">
-          <span class="step-num">3</span>
-          <span>done</span>
-        </div>
+        <div class="step" id="step-ind-3"><span class="step-num">3</span><span>review</span></div>
+        <div class="step-line"></div>
+        <div class="step" id="step-ind-4"><span class="step-num">4</span><span>done</span></div>
       </div>
 
-      <!-- Step 1: Customer Info -->
+      <!-- Step 1: Details -->
       <div class="checkout-step" id="checkout-step-1">
         <h2 id="checkout-title">almost there!</h2>
         <p class="checkout-sub">Fill in your details and we'll get your stickers ready</p>
         <form id="checkout-form" novalidate>
           <div class="form-row">
             <div class="form-group">
-              <label for="co-name">
-                <i data-lucide="user" class="icon-xs label-icon"></i>
-                full name *
-              </label>
+              <label for="co-name"><i data-lucide="user" class="icon-xs label-icon"></i> full name *</label>
               <input type="text" id="co-name" placeholder="Your Name" required autocomplete="name"/>
             </div>
             <div class="form-group">
-              <label for="co-phone">
-                <i data-lucide="phone" class="icon-xs label-icon"></i>
-                phone number *
-              </label>
+              <label for="co-phone"><i data-lucide="phone" class="icon-xs label-icon"></i> phone number *</label>
               <input type="tel" id="co-phone" placeholder="01X XXXX XXXX" required autocomplete="tel"/>
             </div>
           </div>
           <div class="form-group">
-            <label for="co-email">
-              <i data-lucide="mail" class="icon-xs label-icon"></i>
-              email (optional)
-            </label>
+            <label for="co-email"><i data-lucide="mail" class="icon-xs label-icon"></i> email (optional)</label>
             <input type="email" id="co-email" placeholder="you@email.com" autocomplete="email"/>
           </div>
           <div class="form-group">
-            <label for="co-address">
-              <i data-lucide="map-pin" class="icon-xs label-icon"></i>
-              delivery address *
-            </label>
+            <label for="co-address"><i data-lucide="map-pin" class="icon-xs label-icon"></i> delivery address *</label>
             <textarea id="co-address" placeholder="Street, area, city..." rows="3" required autocomplete="street-address"></textarea>
           </div>
           <div class="form-group">
-            <label for="co-note">
-              <i data-lucide="message-square" class="icon-xs label-icon"></i>
-              order note (optional)
-            </label>
+            <label for="co-note"><i data-lucide="message-square" class="icon-xs label-icon"></i> order note (optional)</label>
             <textarea id="co-note" placeholder="Any special requests?" rows="2"></textarea>
           </div>
           <button type="button" class="btn btn-primary full-width" id="checkout-next-btn">
-            review order
-            <i data-lucide="arrow-right" class="icon-sm"></i>
+            next: payment <i data-lucide="arrow-right" class="icon-sm"></i>
           </button>
         </form>
       </div>
 
-      <!-- Step 2: Review -->
+      <!-- Step 2: Payment Method -->
       <div class="checkout-step hidden" id="checkout-step-2">
+        <h2>choose payment</h2>
+        <p class="checkout-sub">How would you like to pay?</p>
+
+        <div class="payment-options">
+          <div class="payment-option" data-method="vodafone" id="pay-vodafone">
+            <div class="payment-option-icon vodafone-icon">
+              <i data-lucide="smartphone" class="icon-lg"></i>
+            </div>
+            <div class="payment-option-text">
+              <strong>Vodafone Cash</strong>
+              <span>Send to: <span class="vcash-preview">01005792211</span></span>
+            </div>
+            <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
+          </div>
+
+          <div class="payment-option" data-method="card" id="pay-card">
+            <div class="payment-option-icon card-icon">
+              <i data-lucide="credit-card" class="icon-lg"></i>
+            </div>
+            <div class="payment-option-text">
+              <strong>Card Payment</strong>
+              <span>We'll contact you with details</span>
+            </div>
+            <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
+          </div>
+        </div>
+
+        <!-- Vodafone Cash instructions -->
+        <div class="payment-panel hidden" id="vodafone-panel">
+          <div class="vodafone-instructions">
+            <i data-lucide="info" class="icon-sm"></i>
+            <div>
+              <strong>How to pay with Vodafone Cash:</strong>
+              <ol>
+                <li>Open your Vodafone Cash app or dial *9#</li>
+                <li>Send payment to: <strong class="vcash-num">01005792211</strong></li>
+                <li>Place your order — we'll confirm once payment is received</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card instructions -->
+        <div class="payment-panel hidden" id="card-panel">
+          <div class="card-instructions">
+            <i data-lucide="info" class="icon-sm"></i>
+            <p>After you place your order, our team will contact you to process your card payment securely.</p>
+          </div>
+        </div>
+
+        <div class="checkout-actions" style="margin-top:28px">
+          <button class="btn btn-outline" id="payment-back-btn">
+            <i data-lucide="arrow-left" class="icon-sm"></i> back
+          </button>
+          <button class="btn btn-primary" id="payment-next-btn">
+            review order <i data-lucide="arrow-right" class="icon-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Review -->
+      <div class="checkout-step hidden" id="checkout-step-3">
         <h2>review your order</h2>
         <div class="review-items" id="review-items"></div>
         <div class="review-totals" id="review-totals"></div>
         <div class="review-customer" id="review-customer"></div>
         <div class="checkout-actions">
           <button class="btn btn-outline" id="checkout-back-btn">
-            <i data-lucide="arrow-left" class="icon-sm"></i>
-            back
+            <i data-lucide="arrow-left" class="icon-sm"></i> back
           </button>
           <button class="btn btn-primary" id="checkout-place-btn">
-            place order
-            <i data-lucide="check" class="icon-sm"></i>
+            place order <i data-lucide="check" class="icon-sm"></i>
           </button>
         </div>
       </div>
 
-      <!-- Step 3: Confirmation -->
-      <div class="checkout-step hidden" id="checkout-step-3">
+      <!-- Step 4: Confirmation -->
+      <div class="checkout-step hidden" id="checkout-step-4">
         <div class="confirm-wrap">
           <div class="confirm-icon-wrap">
             <i data-lucide="package-check" class="confirm-icon-lucide"></i>
           </div>
           <h2>order placed!</h2>
-          <p class="confirm-msg" id="confirm-msg">Your order has been received. We'll reach out soon to confirm delivery details!</p>
+          <p class="confirm-msg" id="confirm-msg"></p>
           <p class="confirm-order-id" id="confirm-order-id"></p>
+          <div id="confirm-payment-note"></div>
           <button class="btn btn-primary" id="confirm-done-btn">
-            keep shopping
-            <i data-lucide="arrow-right" class="icon-sm"></i>
+            keep shopping <i data-lucide="arrow-right" class="icon-sm"></i>
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT MODAL -->
+  <div class="modal-overlay" id="account-modal" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
+    <div class="modal-box account-box">
+      <button class="modal-close" id="account-modal-close"><i data-lucide="x" class="icon-sm"></i></button>
+
+      <!-- Login Pane -->
+      <div id="login-pane">
+        <div class="account-header">
+          <div class="account-cat-icon">
+            <svg viewBox="0 0 60 40" fill="none" width="48"><path d="M8 28 C8 14 16 6 30 6 C44 6 52 14 52 28 C52 36 44 38 30 38 C16 38 8 36 8 28Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M16 6 L12 0 L20 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M40 6 L44 0 L48 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="24" cy="25" rx="4" ry="3" stroke="currentColor" stroke-width="1.5"/><ellipse cx="36" cy="25" rx="4" ry="3" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h2 id="account-modal-title">welcome back</h2>
+          <p>Sign in to track your orders</p>
+        </div>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email"><i data-lucide="mail" class="icon-xs label-icon"></i> email</label>
+            <input type="email" id="login-email" placeholder="you@email.com" required autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label for="login-password"><i data-lucide="lock" class="icon-xs label-icon"></i> password</label>
+            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password"/>
+          </div>
+          <p class="form-error" id="login-error"></p>
+          <button type="submit" class="btn btn-primary full-width" id="login-submit">sign in</button>
+        </form>
+        <p class="account-switch">Don't have an account? <button class="link-btn" id="switch-to-register">create one</button></p>
+      </div>
+
+      <!-- Register Pane -->
+      <div id="register-pane" class="hidden">
+        <div class="account-header">
+          <div class="account-cat-icon">
+            <svg viewBox="0 0 60 40" fill="none" width="48"><path d="M8 28 C8 14 16 6 30 6 C44 6 52 14 52 28 C52 36 44 38 30 38 C16 38 8 36 8 28Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M16 6 L12 0 L20 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M40 6 L44 0 L48 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="24" cy="25" rx="4" ry="3" stroke="currentColor" stroke-width="1.5"/><ellipse cx="36" cy="25" rx="4" ry="3" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h2>join the pack</h2>
+          <p>Create an account to track your orders</p>
+        </div>
+        <form id="register-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="reg-name"><i data-lucide="user" class="icon-xs label-icon"></i> full name</label>
+              <input type="text" id="reg-name" placeholder="Your Name" required autocomplete="name"/>
+            </div>
+            <div class="form-group">
+              <label for="reg-phone"><i data-lucide="phone" class="icon-xs label-icon"></i> phone</label>
+              <input type="tel" id="reg-phone" placeholder="01X XXXX XXXX" autocomplete="tel"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reg-email"><i data-lucide="mail" class="icon-xs label-icon"></i> email</label>
+            <input type="email" id="reg-email" placeholder="you@email.com" required autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-password"><i data-lucide="lock" class="icon-xs label-icon"></i> password</label>
+            <input type="password" id="reg-password" placeholder="min. 6 characters" required autocomplete="new-password"/>
+          </div>
+          <p class="form-error" id="register-error"></p>
+          <button type="submit" class="btn btn-primary full-width" id="register-submit">create account</button>
+        </form>
+        <p class="account-switch">Already have an account? <button class="link-btn" id="switch-to-login">sign in</button></p>
+      </div>
+
+      <!-- Profile Pane -->
+      <div id="profile-pane" class="hidden">
+        <div class="account-header">
+          <div class="account-cat-icon">
+            <svg viewBox="0 0 60 40" fill="none" width="48"><path d="M8 28 C8 14 16 6 30 6 C44 6 52 14 52 28 C52 36 44 38 30 38 C16 38 8 36 8 28Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M16 6 L12 0 L20 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M40 6 L44 0 L48 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="24" cy="25" rx="4" ry="3" stroke="currentColor" stroke-width="1.5"/><ellipse cx="36" cy="25" rx="4" ry="3" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h2 id="profile-name"></h2>
+          <p id="profile-email" style="font-size:.85rem;color:var(--coffee-400)"></p>
+        </div>
+        <h4 style="font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--coffee-500);margin-bottom:12px">My Orders</h4>
+        <div id="profile-orders"></div>
+        <button class="btn btn-outline full-width" id="account-logout-btn" style="margin-top:20px">
+          <i data-lucide="log-out" class="icon-sm"></i> sign out
+        </button>
       </div>
     </div>
   </div>
