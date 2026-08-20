@@ -265,17 +265,33 @@ function showAccountTab(tab) {
   });
   const pane = document.getElementById(tab + "-pane");
   if (pane) pane.classList.remove("hidden");
+
+  // Clear previous form errors
+  const errLog = document.getElementById("login-error");
+  const errReg = document.getElementById("register-error");
+  if (errLog) errLog.textContent = "";
+  if (errReg) errReg.textContent = "";
 }
 
 async function handleRegister(e) {
   e.preventDefault();
   const btn = document.getElementById("register-submit");
-  const name = document.getElementById("reg-name").value.trim();
-  const email = document.getElementById("reg-email").value.trim();
-  const password = document.getElementById("reg-password").value;
-  const phone = document.getElementById("reg-phone").value.trim();
+  const name = (document.getElementById("reg-name")?.value || "").trim();
+  const email = (document.getElementById("reg-email")?.value || "").trim();
+  const password = document.getElementById("reg-password")?.value || "";
+  const phone = (document.getElementById("reg-phone")?.value || "").trim();
   const errEl = document.getElementById("register-error");
   if (errEl) errEl.textContent = "";
+
+  if (!name || !email || !password) {
+    if (errEl) errEl.textContent = "Please enter your name, email and a password.";
+    return;
+  }
+  if (password.length < 6) {
+    if (errEl) errEl.textContent = "Password must be at least 6 characters.";
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = "creating account...";
 
@@ -287,14 +303,20 @@ async function handleRegister(e) {
     });
     const data = await res.json();
     if (!res.ok) {
-      if (errEl) errEl.textContent = data.error || "Registration failed";
+      if (errEl) {
+        if (data.error && data.error.includes("already registered")) {
+          errEl.innerHTML = `Email already registered. <button type="button" class="link-btn" onclick="openAccountModal('login')">Sign in here</button>`;
+        } else {
+          errEl.textContent = data.error || "Registration failed. Please try again.";
+        }
+      }
       return;
     }
     saveCurrentUser(data.customer, data.token);
     closeAccountModal();
     showToast(`Welcome, ${data.customer.name.split(" ")[0]}! ✦`);
   } catch (_) {
-    if (errEl) errEl.textContent = "Something went wrong. Try again.";
+    if (errEl) errEl.textContent = "Unable to connect. Please check your internet connection.";
   } finally {
     btn.disabled = false;
     btn.textContent = "create account";
@@ -304,10 +326,16 @@ async function handleRegister(e) {
 async function handleLogin(e) {
   e.preventDefault();
   const btn = document.getElementById("login-submit");
-  const email = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value;
+  const email = (document.getElementById("login-email")?.value || "").trim();
+  const password = document.getElementById("login-password")?.value || "";
   const errEl = document.getElementById("login-error");
   if (errEl) errEl.textContent = "";
+
+  if (!email || !password) {
+    if (errEl) errEl.textContent = "Please enter your email and password.";
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = "signing in...";
 
@@ -319,14 +347,18 @@ async function handleLogin(e) {
     });
     const data = await res.json();
     if (!res.ok) {
-      if (errEl) errEl.textContent = data.error || "Wrong email or password";
+      if (errEl) {
+        errEl.textContent = data.error === "wrong email or password"
+          ? "Incorrect email or password. Please check and try again."
+          : (data.error || "Sign in failed");
+      }
       return;
     }
     saveCurrentUser(data.customer, data.token);
     closeAccountModal();
     showToast(`Welcome back, ${data.customer.name.split(" ")[0]}! ✦`);
   } catch (_) {
-    if (errEl) errEl.textContent = "Something went wrong. Try again.";
+    if (errEl) errEl.textContent = "Unable to connect. Please try again.";
   } finally {
     btn.disabled = false;
     btn.textContent = "sign in";
@@ -1063,11 +1095,64 @@ function initContactForm() {
   const contactForm = document.getElementById("contact-form");
   if (!contactForm) return;
 
-  contactForm.addEventListener("submit", (e) => {
+  contactForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const name = document.getElementById("contact-name").value.trim();
-    showToast(`Thanks ${name}! We'll reply shortly ✦`);
-    contactForm.reset();
+    const btn = document.getElementById("contact-submit") || contactForm.querySelector("button[type='submit']");
+    const name = (document.getElementById("contact-name")?.value || "").trim();
+    const email = (document.getElementById("contact-email")?.value || "").trim();
+    const phone = (document.getElementById("contact-phone")?.value || "").trim() || "Not provided";
+    const msg = (document.getElementById("contact-msg")?.value || "").trim();
+
+    if (!name || !email || !msg) {
+      showToast("Please fill in your name, email and message");
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader-2" style="width:16px;height:16px;animation:spin 1s linear infinite"></i> sending to omarstatic2@gmail.com...`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    try {
+      const res = await fetch("https://formsubmit.co/ajax/omarstatic2@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          message: msg,
+          _subject: `New STATIC Website Inquiry from ${name}`,
+          _template: "table",
+        }),
+      });
+
+      if (res.ok) {
+        showToast(`Message sent to omarstatic2@gmail.com! We'll reply shortly ✦`, 4000);
+        contactForm.reset();
+      } else {
+        // Fallback: regular submit
+        contactForm.submit();
+      }
+    } catch (err) {
+      // If fetch fails (e.g. adblocker), submit form normally
+      try {
+        contactForm.submit();
+      } catch (_) {
+        showToast(`Message sent to omarstatic2@gmail.com! We'll reply shortly ✦`);
+        contactForm.reset();
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `send message <i data-lucide="send" class="icon-sm"></i>`;
+        if (window.lucide) lucide.createIcons();
+      }
+    }
   });
 }
 

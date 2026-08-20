@@ -111,6 +111,15 @@
       </div>
 
       <div class="contact-card">
+        <div class="contact-card-icon"><i data-lucide="mail" class="icon-md"></i></div>
+        <div class="contact-card-info">
+          <h3>Email Support</h3>
+          <p>Send direct inquiries or order details:</p>
+          <a href="mailto:omarstatic2@gmail.com" style="display:block;margin-top:4px;font-weight:700;color:var(--coffee-800);text-decoration:underline;">omarstatic2@gmail.com</a>
+        </div>
+      </div>
+
+      <div class="contact-card">
         <div class="contact-card-icon"><i data-lucide="instagram" class="icon-md"></i></div>
         <div class="contact-card-info">
           <h3>Instagram &amp; Socials</h3>
@@ -123,27 +132,29 @@
     <!-- Contact Form -->
     <div class="contact-form-card">
       <h2>send a message</h2>
-      <p>Have an inquiry or order question? Drop us a note.</p>
-      <form id="contact-form">
+      <p>Send a message directly to <strong>omarstatic2@gmail.com</strong>.</p>
+      <form id="contact-form" action="https://formsubmit.co/omarstatic2@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="New Inquiry from STATIC Website" />
+        <input type="hidden" name="_captcha" value="false" />
         <div class="form-row">
           <div class="form-group">
             <label for="contact-name"><i data-lucide="user" class="icon-xs label-icon"></i> your name *</label>
-            <input type="text" id="contact-name" placeholder="Name" required />
+            <input type="text" id="contact-name" name="name" placeholder="Name" required />
           </div>
           <div class="form-group">
             <label for="contact-phone"><i data-lucide="phone" class="icon-xs label-icon"></i> phone number</label>
-            <input type="tel" id="contact-phone" placeholder="01X XXXX XXXX" />
+            <input type="tel" id="contact-phone" name="phone" placeholder="01X XXXX XXXX" />
           </div>
         </div>
         <div class="form-group">
           <label for="contact-email"><i data-lucide="mail" class="icon-xs label-icon"></i> email address *</label>
-          <input type="email" id="contact-email" placeholder="you@email.com" required />
+          <input type="email" id="contact-email" name="email" placeholder="you@email.com" required />
         </div>
         <div class="form-group">
           <label for="contact-msg"><i data-lucide="message-square" class="icon-xs label-icon"></i> message *</label>
-          <textarea id="contact-msg" rows="4" placeholder="How can we help with your order?" required></textarea>
+          <textarea id="contact-msg" name="message" rows="4" placeholder="How can we help with your order?" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary full-width">
+        <button type="submit" class="btn btn-primary full-width" id="contact-submit">
           send message <i data-lucide="send" class="icon-sm"></i>
         </button>
       </form>
