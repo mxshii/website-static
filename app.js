@@ -82,6 +82,33 @@ function logoutUser() {
   showToast("Logged out");
 }
 
+async function deleteMyAccount() {
+  if (!currentUser) return;
+  const confirmed = window.confirm(
+    `Delete your account (${currentUser.email})?\n\nThis cannot be undone. Your order history will be lost.`
+  );
+  if (!confirmed) return;
+
+  const saved = JSON.parse(localStorage.getItem("static_customer") || "{}");
+  const token = saved.token;
+  try {
+    const res = await fetch(`${EXPENSE_API}/api/customers/me`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      logoutUser();
+      closeAccountModal();
+      showToast("Account deleted");
+    } else {
+      const d = await res.json();
+      showToast(d.error || "Could not delete account");
+    }
+  } catch (_) {
+    showToast("Something went wrong. Try again.");
+  }
+}
+
 function updateAccountNavUI() {
   const btn = document.getElementById("account-btn");
   const label = document.getElementById("account-btn-label");
@@ -114,6 +141,7 @@ function initAccountModal() {
   document.getElementById("switch-to-register").addEventListener("click", () => openAccountModal("register"));
   document.getElementById("switch-to-login").addEventListener("click", () => openAccountModal("login"));
   document.getElementById("account-logout-btn").addEventListener("click", () => { logoutUser(); closeAccountModal(); });
+  document.getElementById("account-delete-btn").addEventListener("click", deleteMyAccount);
 
   document.getElementById("register-form").addEventListener("submit", handleRegister);
   document.getElementById("login-form").addEventListener("submit", handleLogin);
