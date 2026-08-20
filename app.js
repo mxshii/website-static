@@ -285,8 +285,17 @@ async function loadMyOrders() {
 // ══════════════════════════════════════════════════════
 // LOAD PRODUCTS FROM EXPENSE SYSTEM STOCK
 // ══════════════════════════════════════════════════════
-async function loadProducts() {
+let _stockCacheTime = 0;
+
+async function loadProducts(forceRefresh = false) {
   const grid = document.getElementById("products-grid");
+
+  // Use cached products if loaded within last 60s
+  if (!forceRefresh && PRODUCTS.length > 0 && (Date.now() - _stockCacheTime < 60000)) {
+    renderProducts();
+    return;
+  }
+
   grid.innerHTML = `
     <div class="products-loading">
       <div class="loading-spinner"></div>
@@ -296,6 +305,7 @@ async function loadProducts() {
   try {
     const res = await fetch(`${EXPENSE_API}/api/stock/public`);
     const stock = await res.json();
+    _stockCacheTime = Date.now();
 
     if (!stock.length) {
       grid.innerHTML = `<div class="products-empty"><p>Products coming soon — check back shortly!</p></div>`;
