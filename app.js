@@ -705,6 +705,47 @@ function initShopControls() {
   }
 }
 
+// ── PROTECTED IN-MEMORY CANVAS RENDERER (Hides image links from DOM / Inspect Tab) ──
+function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
+  if (!canvasEl || !rawUrl) return;
+  const ctx = canvasEl.getContext("2d");
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.referrerPolicy = "no-referrer";
+
+  img.onload = () => {
+    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+    if (fit === "contain") {
+      const pad = Math.round(canvasEl.width * 0.05);
+      const w = canvasEl.width - pad * 2;
+      const h = canvasEl.height - pad * 2;
+      const scale = Math.min(w / img.naturalWidth, h / img.naturalHeight);
+      const dw = img.naturalWidth * scale;
+      const dh = img.naturalHeight * scale;
+      const dx = pad + (w - dw) / 2;
+      const dy = pad + (h - dh) / 2;
+      ctx.drawImage(img, dx, dy, dw, dh);
+    } else {
+      const scale = Math.max(canvasEl.width / img.naturalWidth, canvasEl.height / img.naturalHeight);
+      const dw = img.naturalWidth * scale;
+      const dh = img.naturalHeight * scale;
+      const dx = (canvasEl.width - dw) / 2;
+      const dy = (canvasEl.height - dh) / 2;
+      ctx.drawImage(img, dx, dy, dw, dh);
+    }
+  };
+
+  img.onerror = () => {
+    // If CORS prevents canvas drawImage, load via memory background
+    canvasEl.style.backgroundImage = `url("${rawUrl}")`;
+    canvasEl.style.backgroundSize = fit === "contain" ? "contain" : "cover";
+    canvasEl.style.backgroundPosition = "center";
+    canvasEl.style.backgroundRepeat = "no-repeat";
+  };
+
+  img.src = rawUrl;
+}
+
 function renderProducts() {
   const grid = document.getElementById("products-grid");
   if (!grid) return;
@@ -766,7 +807,7 @@ function renderProducts() {
 
     card.innerHTML = `
       <div class="card-img-wrap ${fitClass}">
-        <img src="${p.img}" alt="${p.name}" loading="lazy" draggable="false" oncontextmenu="return false;" />
+        <canvas class="card-canvas" width="400" height="400" role="img" aria-label="${p.name}"></canvas>
         ${p.badge ? `<span class="card-badge ${p.badge === "sold out" ? "badge-sold" : ""}">${p.badge}</span>` : ""}
       </div>
       <div class="card-body">
@@ -780,6 +821,11 @@ function renderProducts() {
         </div>
       </div>
     `;
+
+    const canvas = card.querySelector(".card-canvas");
+    if (canvas) {
+      renderProtectedGraphic(canvas, p.img, isCover ? "cover" : "contain");
+    }
 
     card.addEventListener("click", (e) => {
       if (e.target.closest(".card-add-btn")) {
@@ -864,6 +910,7 @@ function openProductModal(productId) {
   if (!p) return;
   currentProduct = p;
 
+  const canvasEl = document.getElementById("modal-main-canvas");
   const imgEl = document.getElementById("modal-main-img");
   const nameEl = document.getElementById("modal-product-name");
   const descEl = document.getElementById("modal-desc");
@@ -872,11 +919,14 @@ function openProductModal(productId) {
   const qtyInput = document.getElementById("modal-qty");
   const addBtn = document.getElementById("modal-add-btn");
 
-  if (imgEl) {
+  if (canvasEl) {
+    canvasEl.className = "modal-main-canvas " + (p.fit === "cover" ? "fit-cover" : "fit-contain");
+    renderProtectedGraphic(canvasEl, p.img, p.fit === "cover" ? "cover" : "contain");
+  } else if (imgEl) {
     imgEl.src = p.img;
-    imgEl.alt = p.name;
     imgEl.className = "modal-main-img " + (p.fit === "cover" ? "fit-cover" : "fit-contain");
   }
+
   if (nameEl) nameEl.textContent = p.name;
   if (descEl) descEl.textContent = p.desc;
   if (priceEl) priceEl.textContent = p.price > 0 ? p.price + " EGP" : "Price TBD";
@@ -1434,3 +1484,14 @@ function showToast(msg, duration = 2800) {
     toast.addEventListener("animationend", () => toast.remove(), { once: true });
   }, duration);
 }
+
+// ── ANTI-THEFT: PREVENT DEVTOOLS / INSPECT SHORTCUTS ──
+document.addEventListener("keydown", e => {
+  if (
+    e.key === "F12" ||
+    (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i" || e.key === "J" || e.key === "j" || e.key === "C" || e.key === "c")) ||
+    (e.ctrlKey && (e.key === "U" || e.key === "u" || e.key === "S" || e.key === "s"))
+  ) {
+    e.preventDefault();
+  }
+});
