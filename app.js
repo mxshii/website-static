@@ -733,7 +733,6 @@ function renderProducts() {
       <div class="card-img-wrap ${fitClass}">
         <img src="${p.img}" alt="${p.name}" loading="lazy" draggable="false" oncontextmenu="return false;" />
         ${p.badge ? `<span class="card-badge ${p.badge === "sold out" ? "badge-sold" : ""}">${p.badge}</span>` : ""}
-        <div class="card-explore"><span>explore</span></div>
       </div>
       <div class="card-body">
         <div class="card-name">${p.name}</div>
