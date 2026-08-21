@@ -530,9 +530,10 @@ async function loadMyOrders() {
 
       const totalVal = o.totalAmount || o.total || o.finalTotal || "";
       const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-GB") : "";
+      const itemsPayload = encodeURIComponent(JSON.stringify(o.items || []));
 
       return `
-        <div class="profile-order-card">
+        <div class="profile-order-card" style="cursor:pointer;" onclick="reorderItems('${itemsPayload}')">
           <div class="profile-order-head">
             <span class="profile-order-id">#${o.id}</span>
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
@@ -543,7 +544,7 @@ async function loadMyOrders() {
           <div class="profile-order-items">${(o.items || []).map(i => `${i.name || i.itemName || 'Sticker'} ×${i.qty || i.quantity || 1}`).join(", ")}</div>
           <div class="profile-order-footer">
             <span class="profile-order-total">${totalVal ? totalVal + ' EGP' : ''}</span>
-            <span class="profile-order-date">${dateStr}</span>
+            <span style="font-size:0.75rem;color:var(--coffee-700);font-weight:700;text-decoration:underline;">add to cart &rarr;</span>
           </div>
         </div>
       `;
@@ -552,6 +553,44 @@ async function loadMyOrders() {
     container.innerHTML = "<p style='color:var(--coffee-400);font-size:.85rem'>Could not load orders.</p>";
   }
 }
+
+window.reorderItems = function (itemsJsonStr) {
+  try {
+    const rawItems = JSON.parse(decodeURIComponent(itemsJsonStr));
+    if (!Array.isArray(rawItems) || !rawItems.length) return;
+    
+    rawItems.forEach(item => {
+      const match = PRODUCTS.find(p => p.name === item.name || String(p.id) === String(item.id)) || {
+        id: item.id || item.stockId || item.name || Math.random().toString(),
+        name: item.name || item.itemName || "Sticker Item",
+        price: Number(item.price) || 0,
+        qty: Number(item.qty || item.quantity) || 1,
+        img: item.img || getProductImage(item.name, item.sku),
+      };
+      
+      const existing = cart.find(i => String(i.id) === String(match.id) || i.name === match.name);
+      if (existing) {
+        existing.qty = (existing.qty || 1) + (Number(item.qty || item.quantity) || 1);
+      } else {
+        cart.push({
+          id: match.id,
+          name: match.name,
+          price: Number(match.price) || 0,
+          qty: Number(item.qty || item.quantity) || 1,
+          img: match.img || getProductImage(match.name, match.sku),
+        });
+      }
+    });
+
+    saveCartToStorage();
+    updateCartUI();
+    closeAccountModal();
+    openCart();
+    showToast("Items loaded into cart ✦");
+  } catch (err) {
+    console.error("Reorder error:", err);
+  }
+};
 
 // ══════════════════════════════════════════════════════
 // PRODUCTS & SHOP (3 Categories: posters, single stickers, sticker sheet)
@@ -1020,20 +1059,38 @@ function quickAddToCart(productId) {
 
 function addToCart(productId, qty = 1) {
   let p = PRODUCTS.find(x => String(x.id) === String(productId)) || getFallbackProducts().find(x => String(x.id) === String(productId));
+  if (!p && currentProduct && String(currentProduct.id) === String(productId)) {
+    p = currentProduct;
+  }
+  if (!p) {
+    p = cart.find(x => String(x.id) === String(productId));
+  }
   if (!p || p.outOfStock) return;
 
   const existing = cart.find(i => String(i.id) === String(productId));
-  const maxStock = p.qty > 0 ? p.qty : 99;
+  const maxStock = (p.qty && p.qty > 0) ? p.qty : 99;
 
   if (existing) {
-    existing.qty = Math.min(existing.qty + qty, maxStock);
+    existing.qty = Math.min((existing.qty || 1) + qty, maxStock);
+    if (!existing.img && p.img) existing.img = p.img;
+    if (!existing.name && p.name) existing.name = p.name;
+    if (!existing.price && p.price) existing.price = p.price;
   } else {
-    cart.push({ ...p, qty: Math.min(qty, maxStock) });
+    cart.push({
+      id: p.id,
+      stockId: p.stockId || p.id,
+      name: p.name || "Sticker Item",
+      price: Number(p.price) || 0,
+      qty: Math.min(qty, maxStock),
+      img: p.img || getProductImage(p.name, p.sku) || "images/1111-removebg-preview.png",
+      category: p.category || "single stickers",
+      sku: p.sku || "",
+    });
   }
 
   saveCartToStorage();
   updateCartUI();
-  showToast(`${p.name} added ✦`);
+  showToast(`${p.name || 'Item'} added to cart ✦`);
 }
 
 function removeFromCart(productId) {
@@ -1081,8 +1138,16 @@ function updateCartUI() {
   }
 
   const emptyEl = document.getElementById("cart-empty");
-  const listEl = document.getElementById("cart-list");
+  let listEl = document.getElementById("cart-list");
   const footerEl = document.getElementById("cart-footer");
+  const cartItemsContainer = document.getElementById("cart-items");
+
+  if (!listEl && cartItemsContainer) {
+    listEl = document.createElement("div");
+    listEl.className = "cart-list";
+    listEl.id = "cart-list";
+    cartItemsContainer.appendChild(listEl);
+  }
 
   if (cart.length === 0) {
     if (emptyEl) emptyEl.classList.remove("hidden");
@@ -1096,33 +1161,37 @@ function updateCartUI() {
   if (footerEl) footerEl.style.display = "block";
 
   if (listEl) {
-    listEl.innerHTML = cart.map(item => `
-      <div class="cart-item">
-        <img class="cart-item-img" src="${item.img}" alt="${item.name}" />
-        <div class="cart-item-info">
-          <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-price">${item.price > 0 ? item.price + " EGP each" : "Price TBD"}</div>
+    listEl.innerHTML = cart.map(item => {
+      const imgSrc = item.img || getProductImage(item.name, item.sku) || "images/1111-removebg-preview.png";
+      const itemPrice = Number(item.price) || 0;
+      return `
+        <div class="cart-item">
+          <img class="cart-item-img" src="${imgSrc}" alt="${item.name || 'Sticker'}" onerror="this.src='images/1111-removebg-preview.png'" />
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name || 'Sticker'}</div>
+            <div class="cart-item-price">${itemPrice > 0 ? itemPrice + " EGP each" : "Price TBD"}</div>
+          </div>
+          <div class="cart-item-controls">
+            <button type="button" class="ci-qty-btn" aria-label="Decrease quantity" data-id="${item.id}" data-action="minus">
+              <i data-lucide="minus" class="icon-xs"></i>
+            </button>
+            <span class="ci-qty">${item.qty || 1}</span>
+            <button type="button" class="ci-qty-btn" aria-label="Increase quantity" data-id="${item.id}" data-action="plus">
+              <i data-lucide="plus" class="icon-xs"></i>
+            </button>
+            <button type="button" class="ci-remove" aria-label="Remove item" data-id="${item.id}" data-action="remove">
+              <i data-lucide="trash-2" class="icon-xs"></i>
+            </button>
+          </div>
         </div>
-        <div class="cart-item-controls">
-          <button type="button" class="ci-qty-btn" aria-label="Decrease quantity" data-id="${item.id}" data-action="minus">
-            <i data-lucide="minus" class="icon-xs"></i>
-          </button>
-          <span class="ci-qty">${item.qty}</span>
-          <button type="button" class="ci-qty-btn" aria-label="Increase quantity" data-id="${item.id}" data-action="plus">
-            <i data-lucide="plus" class="icon-xs"></i>
-          </button>
-          <button type="button" class="ci-remove" aria-label="Remove item" data-id="${item.id}" data-action="remove">
-            <i data-lucide="x" class="icon-xs"></i>
-          </button>
-        </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
 
-  const subtotal = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
+  const subtotal = cart.reduce((s, i) => s + ((Number(i.price) || 0) * (i.qty || 1)), 0);
   const subtotalEl = document.getElementById("cart-subtotal");
   if (subtotalEl) {
-    subtotalEl.textContent = subtotal > 0 ? subtotal + " EGP" : "TBD";
+    subtotalEl.textContent = subtotal > 0 ? subtotal + " EGP" : "0 EGP";
   }
 
   renderIcons();

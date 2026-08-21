@@ -190,18 +190,14 @@
     </div>
     <div class="cart-items" id="cart-items">
       <div class="cart-empty" id="cart-empty">
-        <div class="cart-empty-cat">
-          <img src="images/1111-removebg-preview.png" alt="STATIC Mascot" class="cart-empty-cat-img" />
-        </div>
-        <h4>your cart is empty</h4>
-        <p>Go find some stickers that speak to you!</p>
-        <a href="shop.html" class="btn btn-primary" style="margin-top:16px;">
-          explore shop <i data-lucide="arrow-right" class="icon-sm"></i>
-        </a>
+        <i data-lucide="shopping-bag" class="empty-bag-icon"></i>
+        <p>your cart is empty</p>
+        <a href="shop.html" class="btn btn-outline" onclick="closeCart()">start shopping</a>
       </div>
+      <div class="cart-list" id="cart-list"></div>
     </div>
-    <div class="cart-footer hidden" id="cart-footer">
-      <div class="cart-subtotal-row">
+    <div class="cart-footer" id="cart-footer" style="display:none">
+      <div class="cart-total-row">
         <span>subtotal</span>
         <span id="cart-subtotal">0 EGP</span>
       </div>
@@ -248,67 +244,75 @@
           </div>
           <div class="form-group">
             <label for="co-address">delivery address (alexandria only) *</label>
-            <textarea id="co-address" placeholder="Area &amp; street in Alexandria (e.g. Smouha, Miami, Gleem, Stanley, Sporting...)" rows="2" required autocomplete="street-address"></textarea>
+            <textarea id="co-address"
+              placeholder="Area &amp; street in Alexandria (e.g. Smouha, Miami, Gleem, Stanley, Sporting...)" rows="2"
+              required autocomplete="street-address"></textarea>
           </div>
           <div class="form-group">
             <label for="co-note">order note (optional)</label>
-            <input type="text" id="co-note" placeholder="Special delivery instructions, etc." />
+            <textarea id="co-note" placeholder="Any special requests or instructions?" rows="2"></textarea>
           </div>
-          <div class="checkout-actions">
-            <button type="button" class="btn btn-primary" id="step-1-next">
-              continue to payment <i data-lucide="arrow-right" class="icon-sm"></i>
-            </button>
-          </div>
+          <button type="button" class="btn btn-primary full-width" id="checkout-next-btn">
+            next: choose payment <i data-lucide="arrow-right" class="icon-sm"></i>
+          </button>
         </form>
       </div>
 
-      <!-- Step 2: Payment -->
+      <!-- Step 2: Payment Method -->
       <div class="checkout-step hidden" id="checkout-step-2">
-        <h2>payment method</h2>
-        <p class="checkout-sub">Select how you'd like to pay for your stickers</p>
+        <h2>choose payment</h2>
+        <p class="checkout-sub">How would you like to pay?</p>
+
         <div class="payment-options">
-          <div class="payment-option selected" id="opt-vodafone" onclick="selectPayment('vodafone')">
-            <div class="payment-option-icon vodafone-icon"><i data-lucide="smartphone" class="icon-sm"></i></div>
+          <div class="payment-option" data-method="vodafone" id="pay-vodafone">
+            <div class="payment-option-icon vodafone-icon">
+              <i data-lucide="smartphone" class="icon-lg"></i>
+            </div>
             <div class="payment-option-text">
               <strong>Vodafone Cash</strong>
-              <span>Send money to <span class="vcash-preview">01005792211</span></span>
+              <span>Send to: <span class="vcash-preview">01005792211</span></span>
             </div>
-            <i data-lucide="check-circle-2" class="icon-sm payment-option-check"></i>
+            <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
           </div>
-          <div class="payment-option" id="opt-card" onclick="selectPayment('card')">
-            <div class="payment-option-icon card-icon"><i data-lucide="credit-card" class="icon-sm"></i></div>
-            <div class="payment-option-text">
-              <strong>Credit / Debit Card</strong>
-              <span>Visa, Mastercard, Meeza</span>
+
+          <div class="payment-option" data-method="card" id="pay-card">
+            <div class="payment-option-icon card-icon">
+              <i data-lucide="credit-card" class="icon-lg"></i>
             </div>
-            <i data-lucide="check-circle-2" class="icon-sm payment-option-check"></i>
+            <div class="payment-option-text">
+              <strong>Card Payment</strong>
+              <span>We'll contact you with payment link</span>
+            </div>
+            <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
           </div>
         </div>
 
-        <div class="payment-panel" id="panel-vodafone">
+        <div class="payment-panel hidden" id="vodafone-panel">
           <div class="vodafone-instructions">
-            <i data-lucide="info" class="icon-sm" style="flex-shrink:0;margin-top:2px;"></i>
+            <i data-lucide="info" class="icon-sm"></i>
             <div>
-              <strong>How Vodafone Cash works:</strong>
+              <strong>How to pay with Vodafone Cash:</strong>
               <ol>
-                <li>Complete your order to get your Order ID</li>
-                <li>Send the total amount to <strong class="vcash-num">01005792211</strong></li>
-                <li>We'll confirm your payment and ship your stickers!</li>
+                <li>Open Vodafone Cash app or dial *9#</li>
+                <li>Transfer amount to: <strong class="vcash-num">01005792211</strong></li>
+                <li>Click Review Order below to finalize</li>
               </ol>
             </div>
           </div>
         </div>
 
-        <div class="payment-panel hidden" id="panel-card">
+        <div class="payment-panel hidden" id="card-panel">
           <div class="card-instructions">
-            <i data-lucide="lock" class="icon-sm" style="flex-shrink:0;margin-top:2px;"></i>
-            <span>Card payment will be processed securely. Card processing integration is active.</span>
+            <i data-lucide="info" class="icon-sm"></i>
+            <p>After placing your order, our team will reach out with a secure card payment link.</p>
           </div>
         </div>
 
-        <div class="checkout-actions" style="margin-top:24px;">
-          <button type="button" class="btn btn-outline" id="step-2-back">back</button>
-          <button type="button" class="btn btn-primary" id="step-2-next">
+        <div class="checkout-actions" style="margin-top:28px">
+          <button type="button" class="btn btn-outline" id="payment-back-btn">
+            <i data-lucide="arrow-left" class="icon-sm"></i> back
+          </button>
+          <button type="button" class="btn btn-primary" id="payment-next-btn">
             review order <i data-lucide="arrow-right" class="icon-sm"></i>
           </button>
         </div>
@@ -317,27 +321,24 @@
       <!-- Step 3: Review -->
       <div class="checkout-step hidden" id="checkout-step-3">
         <h2>review your order</h2>
-        <p class="checkout-sub">Check everything before placing your order</p>
         <div class="review-items" id="review-items"></div>
-        <div class="review-totals">
-          <div class="review-total-row"><span>items subtotal</span><span id="review-subtotal">0 EGP</span></div>
-          <div class="review-total-row"><span>delivery in alexandria</span><span id="review-shipping">50 EGP</span></div>
-          <div class="review-total-row grand"><span>total</span><span id="review-grand-total">0 EGP</span></div>
-        </div>
+        <div class="review-totals" id="review-totals"></div>
         <div class="review-customer" id="review-customer"></div>
         <div class="checkout-actions">
-          <button type="button" class="btn btn-outline" id="step-3-back">back</button>
-          <button type="button" class="btn btn-primary" id="place-order-btn">
-            place order <i data-lucide="arrow-right" class="icon-sm"></i>
+          <button type="button" class="btn btn-outline" id="checkout-back-btn">
+            <i data-lucide="arrow-left" class="icon-sm"></i> back
+          </button>
+          <button type="button" class="btn btn-primary" id="checkout-place-btn">
+            place order <i data-lucide="check" class="icon-sm"></i>
           </button>
         </div>
       </div>
 
-      <!-- Step 4: Done -->
+      <!-- Step 4: Confirmation -->
       <div class="checkout-step hidden" id="checkout-step-4">
         <div class="confirm-wrap">
           <div class="confirm-icon-wrap">
-            <i data-lucide="check" class="confirm-icon-lucide"></i>
+            <i data-lucide="package-check" class="confirm-icon-lucide"></i>
           </div>
           <h2>order placed!</h2>
           <p class="confirm-msg" id="confirm-msg"></p>
