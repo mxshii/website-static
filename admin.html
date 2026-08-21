@@ -148,7 +148,7 @@
     .admin-search-wrap {
       position: relative;
       flex: 1;
-      max-width: 320px;
+      max-width: 300px;
     }
     .admin-search-wrap input {
       width: 100%;
@@ -223,7 +223,7 @@
     }
     .item-title-input {
       font-family: var(--font-display);
-      font-size: 1.25rem !important;
+      font-size: 1.2rem !important;
       font-weight: 700 !important;
       color: var(--coffee-800) !important;
       padding: 6px 12px !important;
@@ -235,11 +235,6 @@
     .admin-form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .admin-form-row-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
     }
     .admin-input-group {
@@ -333,6 +328,50 @@
       gap: 4px;
     }
     .delete-item-btn:hover { text-decoration: underline; }
+
+    /* Bulk Modal Styles */
+    .modal-tab-btns {
+      display: flex;
+      border-bottom: 2px solid var(--beige-300);
+      margin-bottom: 20px;
+    }
+    .modal-tab-btn {
+      padding: 10px 20px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--coffee-500);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all var(--transition);
+    }
+    .modal-tab-btn.active {
+      color: var(--coffee-800);
+      border-bottom-color: var(--coffee-800);
+    }
+    .quick-qty-pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .quick-qty-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--beige-300);
+      background: var(--beige-200);
+      color: var(--coffee-700);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .quick-qty-btn.active, .quick-qty-btn:hover {
+      background: var(--coffee-800);
+      color: var(--beige-100);
+      border-color: var(--coffee-800);
+    }
+
     @media (max-width: 860px) {
       .admin-item-card {
         grid-template-columns: 1fr;
@@ -346,7 +385,7 @@
         width: 90px;
         height: 90px;
       }
-      .admin-form-row, .admin-form-row-3 {
+      .admin-form-row {
         grid-template-columns: 1fr;
       }
     }
@@ -437,7 +476,10 @@
         </div>
         <div class="admin-action-btns">
           <button type="button" class="btn btn-primary" onclick="addNewProductPrompt()">
-            <i data-lucide="plus" class="icon-xs"></i> add new product
+            <i data-lucide="plus" class="icon-xs"></i> + 1 product
+          </button>
+          <button type="button" class="btn btn-primary" style="background:#704214;" onclick="openBulkAddModal()">
+            <i data-lucide="layers" class="icon-xs"></i> ⚡ bulk add products
           </button>
           <button type="button" class="btn btn-outline" onclick="exportPictureConfig()" title="Export JSON backup">
             <i data-lucide="download" class="icon-xs"></i> export
@@ -457,7 +499,7 @@
         <div style="display:flex;align-items:center;gap:10px;">
           <i data-lucide="info" class="icon-sm" style="color:var(--coffee-700)"></i>
           <span style="font-size:0.85rem;color:var(--coffee-700);">
-            <strong>Shared Stock &amp; Custom Photos:</strong> Create multiple stickers (e.g. Spider-Man, Batman) and link them to the same stock pool. Upload photos to free image hosts and paste the link below!
+            <strong>Shared Stock &amp; Custom Photos:</strong> Create multiple stickers (e.g. Spider-Man, Batman, 60 designs) and link them to the same stock pool.
           </span>
         </div>
         <div style="display:flex;gap:8px;">
@@ -481,6 +523,108 @@
 
   </div>
 
+  <!-- BULK ADD PRODUCTS MODAL -->
+  <div class="modal-overlay" id="bulk-add-modal">
+    <div class="modal-box" style="max-width:680px;max-height:90vh;overflow-y:auto;padding:32px;">
+      <button type="button" class="modal-close" onclick="closeBulkAddModal()"><i data-lucide="x" class="icon-sm"></i></button>
+      
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <i data-lucide="layers" class="icon-md" style="color:var(--coffee-800)"></i>
+        <h2 style="font-size:1.4rem;margin:0;">Bulk Add Products</h2>
+      </div>
+      <p style="color:var(--coffee-500);font-size:0.85rem;margin-bottom:20px;">Quickly create multiple product cards (e.g. 10, 25, 60 items) linked to your stock pool.</p>
+
+      <div class="modal-tab-btns">
+        <button type="button" class="modal-tab-btn active" id="tab-btn-generator" onclick="switchBulkTab('generator')">Multi-Count Generator</button>
+        <button type="button" class="modal-tab-btn" id="tab-btn-paster" onclick="switchBulkTab('paster')">Paste Line-by-Line List</button>
+      </div>
+
+      <!-- TAB 1: GENERATOR -->
+      <div id="bulk-tab-generator">
+        <div class="admin-input-group" style="margin-bottom:16px;">
+          <label>number of products to create</label>
+          <input type="number" id="bulk-count" value="60" min="1" max="200" style="font-size:1.1rem;font-weight:700;" />
+          <div class="quick-qty-pills">
+            <button type="button" class="quick-qty-btn" onclick="setBulkCount(5)">+5</button>
+            <button type="button" class="quick-qty-btn" onclick="setBulkCount(10)">+10</button>
+            <button type="button" class="quick-qty-btn" onclick="setBulkCount(25)">+25</button>
+            <button type="button" class="quick-qty-btn active" onclick="setBulkCount(60)">+60</button>
+            <button type="button" class="quick-qty-btn" onclick="setBulkCount(100)">+100</button>
+          </div>
+        </div>
+
+        <div class="admin-input-group" style="margin-bottom:16px;">
+          <label>base product title (will append #1, #2, ...)</label>
+          <input type="text" id="bulk-base-name" value="Sticker Design" placeholder="e.g. Spider-Man Sticker, Vinyl Sticker, Poster" />
+        </div>
+
+        <div class="admin-form-row" style="margin-bottom:16px;">
+          <div class="admin-input-group">
+            <label>linked expense stock pool</label>
+            <select id="bulk-stock-id"></select>
+          </div>
+          <div class="admin-input-group">
+            <label>category</label>
+            <select id="bulk-category">
+              <option value="single stickers">Single Stickers</option>
+              <option value="sticker sheet">Sticker Sheet</option>
+              <option value="posters">Posters</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-form-row" style="margin-bottom:24px;">
+          <div class="admin-input-group">
+            <label>default price (egp)</label>
+            <input type="number" id="bulk-price" value="15" min="0" />
+          </div>
+          <div class="admin-input-group">
+            <label>default image preset</label>
+            <select id="bulk-img-preset">
+              <option value="images/sticker-cats.jpg">Cats Pack</option>
+              <option value="images/sticker-celestial.jpg">Celestial Pack</option>
+              <option value="images/sticker-food.jpg">Food Pack</option>
+              <option value="images/sticker-cozy.jpg">Cozy Pack</option>
+              <option value="images/1111-removebg-preview.png">STATIC Cat Logo</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary full-width" onclick="executeBulkGenerator()">
+          ⚡ create products &amp; add to shop <i data-lucide="arrow-right" class="icon-sm"></i>
+        </button>
+      </div>
+
+      <!-- TAB 2: PASTE LIST -->
+      <div id="bulk-tab-paster" style="display:none;">
+        <div class="admin-input-group" style="margin-bottom:16px;">
+          <label>paste items (one per line — "Title" or "Title | ImageURL")</label>
+          <textarea id="bulk-paste-text" rows="8" placeholder="Spider-Man Die-Cut | https://i.ibb.co/spiderman.jpg&#10;Batman Dark Knight | https://i.ibb.co/batman.jpg&#10;Iron Man Retro&#10;Cat Moods Vinyl Sheet | https://i.ibb.co/cats.jpg" style="font-family:monospace;font-size:0.82rem;"></textarea>
+        </div>
+
+        <div class="admin-form-row" style="margin-bottom:24px;">
+          <div class="admin-input-group">
+            <label>linked expense stock pool</label>
+            <select id="bulk-paster-stock-id"></select>
+          </div>
+          <div class="admin-input-group">
+            <label>category</label>
+            <select id="bulk-paster-category">
+              <option value="single stickers">Single Stickers</option>
+              <option value="sticker sheet">Sticker Sheet</option>
+              <option value="posters">Posters</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary full-width" onclick="executeBulkPaster()">
+          ⚡ import all line items <i data-lucide="arrow-right" class="icon-sm"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <script src="app.js"></script>
   <script>
     /* ══════════════════════════════════════════════════════
@@ -488,7 +632,7 @@
        ══════════════════════════════════════════════════════ */
     const ADMIN_PIN = "2026";
     let expenseStockItems = [];
-    let storefrontProducts = []; // Array of products displayed on shop
+    let storefrontProducts = [];
 
     // ── INITIALIZE ──
     document.addEventListener("DOMContentLoaded", async () => {
@@ -545,7 +689,6 @@
         if (customConfig && Array.isArray(customConfig.items) && customConfig.items.length > 0) {
           storefrontProducts = customConfig.items;
         } else if (customConfig && typeof customConfig === "object" && Object.keys(customConfig).length > 0 && !customConfig.items) {
-          // Convert legacy key-value overrides to items list
           storefrontProducts = expenseStockItems.map(stk => {
             const ovr = customConfig[stk.id] || customConfig[stk.itemName] || {};
             return {
@@ -560,7 +703,6 @@
             };
           });
         } else {
-          // Default from live stock
           storefrontProducts = expenseStockItems.map(stk => ({
             id: "sf_" + stk.id,
             stockId: stk.id,
@@ -573,7 +715,6 @@
           }));
         }
 
-        // If no stock items exist yet, create a starter item
         if (!storefrontProducts.length) {
           storefrontProducts = [{
             id: "sf_demo_1",
@@ -587,11 +728,25 @@
           }];
         }
 
+        populateStockDropdowns();
         renderAdminItems();
         updateAdminStats();
       } catch (err) {
         console.error("Error loading catalog:", err);
       }
+    }
+
+    function populateStockDropdowns() {
+      const optionsHtml = expenseStockItems.map(stk => `
+        <option value="${stk.id}">
+          ${escapeHtml(stk.itemName)} (${stk.quantity} available · ${stk.price} EGP · ${stk.sku || "no SKU"})
+        </option>
+      `).join("") || `<option value="">No stock in expense tracker</option>`;
+
+      const sel1 = document.getElementById("bulk-stock-id");
+      const sel2 = document.getElementById("bulk-paster-stock-id");
+      if (sel1) sel1.innerHTML = optionsHtml;
+      if (sel2) sel2.innerHTML = optionsHtml;
     }
 
     // ── RENDER ADMIN ITEMS ──
@@ -602,7 +757,7 @@
       if (!itemsToRender.length) {
         container.innerHTML = `
           <div style="text-align:center;padding:40px;color:var(--coffee-500);">
-            <p>No products found. Click <strong>+ Add New Product</strong> above to create one!</p>
+            <p>No products found. Click <strong>+ 1 product</strong> or <strong>⚡ bulk add</strong> above!</p>
           </div>`;
         return;
       }
@@ -610,7 +765,6 @@
       container.innerHTML = itemsToRender.map(item => {
         const linkedStock = expenseStockItems.find(s => String(s.id) === String(item.stockId));
         const stockQty = linkedStock ? linkedStock.quantity : 0;
-        const stockSku = linkedStock ? (linkedStock.sku || "NO-SKU") : "UNLINKED";
         const currentImg = item.img || "images/sticker-cozy.jpg";
 
         return `
@@ -770,7 +924,7 @@
       if (preview) preview.src = presetUrl;
     }
 
-    // ── ADD NEW PRODUCT ──
+    // ── ADD SINGLE PRODUCT ──
     function addNewProductPrompt() {
       const defaultStockId = expenseStockItems[0]?.id || "";
       const defaultStock = expenseStockItems[0];
@@ -791,7 +945,6 @@
       renderAdminItems();
       updateAdminStats();
 
-      // Highlight new card
       const card = document.getElementById(`card-${newId}`);
       if (card) {
         card.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -799,6 +952,114 @@
       }
 
       showToast("New product card added! Edit the title & photo, then click Save ✦");
+    }
+
+    // ── BULK ADD MODAL CONTROLS ──
+    function openBulkAddModal() {
+      populateStockDropdowns();
+      const modal = document.getElementById("bulk-add-modal");
+      if (modal) modal.classList.add("open");
+      renderIcons();
+    }
+
+    function closeBulkAddModal() {
+      const modal = document.getElementById("bulk-add-modal");
+      if (modal) modal.classList.remove("open");
+    }
+
+    function switchBulkTab(tab) {
+      document.getElementById("bulk-tab-generator").style.display = tab === "generator" ? "block" : "none";
+      document.getElementById("bulk-tab-paster").style.display = tab === "paster" ? "block" : "none";
+      document.getElementById("tab-btn-generator").classList.toggle("active", tab === "generator");
+      document.getElementById("tab-btn-paster").classList.toggle("active", tab === "paster");
+    }
+
+    function setBulkCount(n) {
+      document.getElementById("bulk-count").value = n;
+      document.querySelectorAll(".quick-qty-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.textContent === "+" + n);
+      });
+    }
+
+    // ── EXECUTE BULK GENERATOR (e.g. 60 items) ──
+    async function executeBulkGenerator() {
+      const count = parseInt(document.getElementById("bulk-count").value, 10) || 60;
+      const baseName = (document.getElementById("bulk-base-name").value || "Sticker").trim();
+      const stockId = document.getElementById("bulk-stock-id").value;
+      const category = document.getElementById("bulk-category").value;
+      const price = parseFloat(document.getElementById("bulk-price").value) || 15;
+      const img = document.getElementById("bulk-img-preset").value || "images/sticker-cats.jpg";
+
+      const newItems = [];
+      const now = Date.now();
+
+      for (let i = 1; i <= count; i++) {
+        newItems.push({
+          id: `sf_${now}_${i}`,
+          stockId: stockId,
+          name: `${baseName} #${i}`,
+          img: img,
+          category: category,
+          price: price,
+          badge: i <= 5 ? "new" : "",
+          desc: `Handmade ${category} design from STATIC. Waterproof vinyl, die-cut.`,
+        });
+      }
+
+      storefrontProducts = [...newItems, ...storefrontProducts];
+      closeBulkAddModal();
+      renderAdminItems();
+      updateAdminStats();
+
+      // Automatically sync to cloud database
+      await saveStorefrontPictureMap({ items: storefrontProducts });
+      showToast(`⚡ ${count} products generated & synced to shop live! ✦`, 4000);
+    }
+
+    // ── EXECUTE BULK PASTER ──
+    async function executeBulkPaster() {
+      const rawText = (document.getElementById("bulk-paste-text").value || "").trim();
+      if (!rawText) {
+        showToast("Please paste at least one line item");
+        return;
+      }
+
+      const stockId = document.getElementById("bulk-paster-stock-id").value;
+      const category = document.getElementById("bulk-paster-category").value;
+      const lines = rawText.split("\n").map(l => l.trim()).filter(Boolean);
+
+      const newItems = [];
+      const now = Date.now();
+
+      lines.forEach((line, idx) => {
+        let name = line;
+        let img = "images/sticker-cats.jpg";
+
+        if (line.includes("|")) {
+          const parts = line.split("|").map(p => p.trim());
+          name = parts[0] || `Product #${idx + 1}`;
+          img = parts[1] || img;
+        }
+
+        newItems.push({
+          id: `sf_${now}_${idx + 1}`,
+          stockId: stockId,
+          name: name,
+          img: img,
+          category: category,
+          price: 15,
+          badge: idx < 3 ? "new" : "",
+          desc: `Handmade ${category} from STATIC. Waterproof vinyl, die-cut.`,
+        });
+      });
+
+      storefrontProducts = [...newItems, ...storefrontProducts];
+      closeBulkAddModal();
+      renderAdminItems();
+      updateAdminStats();
+
+      await saveStorefrontPictureMap({ items: storefrontProducts });
+      showToast(`⚡ ${newItems.length} products imported & synced to shop! ✦`, 4000);
     }
 
     // ── CLONE / DUPLICATE PRODUCT ──
