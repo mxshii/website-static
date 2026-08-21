@@ -244,18 +244,14 @@
     </div>
     <div class="cart-items" id="cart-items">
       <div class="cart-empty" id="cart-empty">
-        <div class="cart-empty-cat">
-          <img src="images/1111-removebg-preview.png" alt="STATIC Mascot" class="cart-empty-cat-img" />
-        </div>
-        <h4>your cart is empty</h4>
-        <p>Go find some stickers that speak to you!</p>
-        <a href="shop.html" class="btn btn-primary" style="margin-top:16px;">
-          explore shop <i data-lucide="arrow-right" class="icon-sm"></i>
-        </a>
+        <i data-lucide="shopping-bag" class="empty-bag-icon"></i>
+        <p>your cart is empty</p>
+        <a href="shop.html" class="btn btn-outline" onclick="closeCart()">start shopping</a>
       </div>
+      <div class="cart-list" id="cart-list"></div>
     </div>
-    <div class="cart-footer hidden" id="cart-footer">
-      <div class="cart-subtotal-row">
+    <div class="cart-footer" id="cart-footer" style="display:none">
+      <div class="cart-total-row">
         <span>subtotal</span>
         <span id="cart-subtotal">0 EGP</span>
       </div>
@@ -267,52 +263,52 @@
   </aside>
 
   <!-- CHECKOUT MODAL -->
-  <div class="modal-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title">
+  <div class="modal-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
     <div class="modal-box checkout-box" id="checkout-box">
-      <button type="button" class="modal-close" id="checkout-modal-close"><i data-lucide="x" class="icon-sm"></i></button>
+      <button type="button" class="modal-close" id="checkout-close"><i data-lucide="x" class="icon-sm"></i></button>
 
-      <!-- Step Indicator -->
       <div class="checkout-steps">
-        <div class="step-dot active" id="dot-1"><span>1</span> details</div>
+        <div class="step active" id="step-ind-1"><span class="step-num">1</span><span>details</span></div>
         <div class="step-line"></div>
-        <div class="step-dot" id="dot-2"><span>2</span> payment</div>
+        <div class="step" id="step-ind-2"><span class="step-num">2</span><span>payment</span></div>
         <div class="step-line"></div>
-        <div class="step-dot" id="dot-3"><span>3</span> review</div>
+        <div class="step" id="step-ind-3"><span class="step-num">3</span><span>review</span></div>
+        <div class="step-line"></div>
+        <div class="step" id="step-ind-4"><span class="step-num">4</span><span>done</span></div>
       </div>
 
-      <!-- Step 1: Customer Details -->
+      <!-- Step 1: Details -->
       <div class="checkout-step" id="checkout-step-1">
-        <h2 id="checkout-modal-title">shipping details</h2>
-        <p class="checkout-sub">Delivering exclusively to Alexandria (50 EGP flat rate)</p>
-
+        <h2 id="checkout-title">delivery details</h2>
+        <p class="checkout-sub">Delivering exclusively across Alexandria (50 EGP)</p>
         <form id="checkout-form" novalidate>
           <div class="form-row">
             <div class="form-group">
               <label for="co-name">full name *</label>
-              <input type="text" id="co-name" placeholder="Your Name" required autocomplete="name"/>
+              <input type="text" id="co-name" placeholder="Your Name" required autocomplete="name" />
             </div>
             <div class="form-group">
               <label for="co-phone">phone number *</label>
-              <input type="tel" id="co-phone" placeholder="01X XXXX XXXX" required autocomplete="tel"/>
+              <input type="tel" id="co-phone" placeholder="01X XXXX XXXX" required autocomplete="tel" />
             </div>
           </div>
           <div class="form-group">
             <label for="co-email">email address (optional)</label>
-            <input type="email" id="co-email" placeholder="you@email.com" autocomplete="email"/>
+            <input type="email" id="co-email" placeholder="you@email.com" autocomplete="email" />
           </div>
           <div class="form-group">
             <label for="co-address">delivery address (alexandria only) *</label>
-            <textarea id="co-address" placeholder="Area &amp; street in Alexandria (e.g. Smouha, Miami, Gleem, Stanley, Sporting...)" rows="2" required autocomplete="street-address"></textarea>
+            <textarea id="co-address"
+              placeholder="Area &amp; street in Alexandria (e.g. Smouha, Miami, Gleem, Stanley, Sporting...)" rows="2"
+              required autocomplete="street-address"></textarea>
           </div>
           <div class="form-group">
             <label for="co-note">order note (optional)</label>
-            <input type="text" id="co-note" placeholder="Special delivery instructions, etc."/>
+            <textarea id="co-note" placeholder="Any special requests or instructions?" rows="2"></textarea>
           </div>
-          <div class="checkout-actions">
-            <button type="submit" class="btn btn-primary" id="step-1-btn">
-              continue to payment <i data-lucide="arrow-right" class="icon-sm"></i>
-            </button>
-          </div>
+          <button type="button" class="btn btn-primary full-width" id="checkout-next-btn">
+            next: choose payment <i data-lucide="arrow-right" class="icon-sm"></i>
+          </button>
         </form>
       </div>
 
