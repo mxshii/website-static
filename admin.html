@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>STATIC — Storefront Picture & Category Manager</title>
+  <title>STATIC — Storefront Product &amp; Stock Manager</title>
   <link rel="icon" type="image/png" href="images/1111-removebg-preview.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,7 +21,7 @@
     .admin-header {
       background: var(--coffee-900);
       color: var(--beige-100);
-      padding: 20px 32px;
+      padding: 18px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -58,14 +58,14 @@
     }
     .admin-container {
       max-width: 1280px;
-      margin: 32px auto;
+      margin: 28px auto;
       padding: 0 24px;
     }
     .admin-card {
       background: var(--beige-100);
       border-radius: var(--radius-xl);
       border: 1.5px solid var(--beige-300);
-      padding: 32px;
+      padding: 28px;
       box-shadow: var(--shadow-sm);
       margin-bottom: 24px;
     }
@@ -98,22 +98,22 @@
     /* Stats Row */
     .admin-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
     }
     .stat-card {
       background: var(--beige-100);
       border: 1.5px solid var(--beige-300);
       border-radius: var(--radius-lg);
-      padding: 20px;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
     .stat-icon {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: var(--radius-md);
       background: var(--coffee-100);
       color: var(--coffee-800);
@@ -123,13 +123,13 @@
       flex-shrink: 0;
     }
     .stat-info .stat-val {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 800;
       color: var(--coffee-800);
       line-height: 1;
     }
     .stat-info .stat-label {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: var(--coffee-500);
       font-weight: 600;
       text-transform: uppercase;
@@ -142,13 +142,13 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: 14px;
+      margin-bottom: 20px;
     }
     .admin-search-wrap {
       position: relative;
       flex: 1;
-      max-width: 360px;
+      max-width: 320px;
     }
     .admin-search-wrap input {
       width: 100%;
@@ -171,6 +171,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
     /* Product Item Editor Cards */
     .admin-items-grid {
@@ -184,17 +185,18 @@
       border-radius: var(--radius-xl);
       padding: 24px;
       display: grid;
-      grid-template-columns: 160px 1fr auto;
+      grid-template-columns: 150px 1fr auto;
       gap: 24px;
       align-items: start;
       box-shadow: var(--shadow-sm);
       transition: border-color var(--transition), box-shadow var(--transition);
+      position: relative;
     }
     .admin-item-card:hover {
       border-color: var(--coffee-400);
       box-shadow: var(--shadow-md);
     }
-    .admin-item-card.has-custom {
+    .admin-item-card.is-linked {
       border-left: 5px solid var(--coffee-800);
     }
     /* Image Preview Column */
@@ -205,70 +207,39 @@
       gap: 10px;
     }
     .admin-img-preview {
-      width: 150px;
-      height: 150px;
+      width: 140px;
+      height: 140px;
       border-radius: var(--radius-lg);
       object-fit: cover;
       background: var(--beige-200);
       border: 1.5px solid var(--beige-300);
       box-shadow: var(--shadow-xs);
     }
-    .upload-btn-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--coffee-700);
-      background: var(--beige-200);
-      padding: 7px 12px;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      border: 1px solid var(--beige-300);
-      transition: background var(--transition);
-    }
-    .upload-btn-label:hover {
-      background: var(--beige-300);
-    }
-    .upload-btn-label input {
-      display: none;
-    }
     /* Form Fields Column */
     .admin-fields-col {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-    }
-    .item-header-row {
-      display: flex;
-      align-items: center;
       gap: 12px;
-      flex-wrap: wrap;
     }
-    .item-title {
-      font-size: 1.25rem;
+    .item-title-input {
       font-family: var(--font-display);
-      font-weight: 700;
-      color: var(--coffee-800);
-    }
-    .item-sku-tag {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      background: var(--beige-300);
-      border-radius: var(--radius-sm);
-      color: var(--coffee-600);
-    }
-    .item-stock-tag {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--coffee-600);
+      font-size: 1.25rem !important;
+      font-weight: 700 !important;
+      color: var(--coffee-800) !important;
+      padding: 6px 12px !important;
+      background: var(--beige-200) !important;
+      border: 1.5px solid var(--beige-300) !important;
+      border-radius: var(--radius-md) !important;
+      width: 100%;
     }
     .admin-form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .admin-form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
     }
     .admin-input-group {
@@ -282,6 +253,9 @@
       letter-spacing: 0.05em;
       text-transform: lowercase;
       color: var(--coffee-600);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .admin-input-group input,
     .admin-input-group select,
@@ -331,16 +305,34 @@
       font-size: 0.85rem;
       white-space: nowrap;
     }
-    .reset-item-btn {
+    .clone-item-btn {
+      padding: 7px 12px;
+      font-size: 0.78rem;
+      background: var(--beige-200);
+      border: 1px solid var(--beige-300);
+      color: var(--coffee-700);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .clone-item-btn:hover { background: var(--beige-300); }
+    .delete-item-btn {
       font-size: 0.75rem;
       color: #c0392b;
       background: none;
       border: none;
       cursor: pointer;
-      text-decoration: underline;
       padding: 4px;
       text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
     }
+    .delete-item-btn:hover { text-decoration: underline; }
     @media (max-width: 860px) {
       .admin-item-card {
         grid-template-columns: 1fr;
@@ -354,7 +346,7 @@
         width: 90px;
         height: 90px;
       }
-      .admin-form-row {
+      .admin-form-row, .admin-form-row-3 {
         grid-template-columns: 1fr;
       }
     }
@@ -368,7 +360,7 @@
       <img src="images/1111-removebg-preview.png" alt="STATIC Logo" />
       <div class="admin-title-wrap">
         <h1>STATIC Storefront Manager</h1>
-        <p>Zero-Neon Picture Database &amp; Category Controller</p>
+        <p>Custom Items, Names, Categories &amp; Shared Stock Pools</p>
       </div>
     </div>
     <div class="admin-header-actions">
@@ -388,7 +380,7 @@
         <i data-lucide="lock" class="icon-md"></i>
       </div>
       <h2>Storefront Admin Access</h2>
-      <p>Enter your 4-digit admin PIN to customize sticker images and categories.</p>
+      <p>Enter your admin PIN to customize product titles, photos, and stock links.</p>
       <form id="pin-form" onsubmit="handlePinSubmit(event)">
         <div class="admin-input-group" style="margin-bottom:16px;">
           <input type="password" id="pin-input" placeholder="Enter PIN (Default: 2026)" maxlength="10" style="font-size:1.2rem;text-align:center;letter-spacing:4px;" required autocomplete="current-password" autofocus />
@@ -407,10 +399,10 @@
     <!-- STATS -->
     <div class="admin-stats">
       <div class="stat-card">
-        <div class="stat-icon"><i data-lucide="package" class="icon-sm"></i></div>
+        <div class="stat-icon"><i data-lucide="layout-grid" class="icon-sm"></i></div>
         <div class="stat-info">
           <div class="stat-val" id="stat-total">0</div>
-          <div class="stat-label">Stock Items</div>
+          <div class="stat-label">Storefront Items</div>
         </div>
       </div>
       <div class="stat-card">
@@ -441,9 +433,12 @@
       <div class="admin-toolbar">
         <div class="admin-search-wrap">
           <i data-lucide="search" class="icon-sm"></i>
-          <input type="text" id="admin-search" placeholder="Search items by name or SKU..." oninput="filterAdminItems()" />
+          <input type="text" id="admin-search" placeholder="Search products..." oninput="filterAdminItems()" />
         </div>
         <div class="admin-action-btns">
+          <button type="button" class="btn btn-primary" onclick="addNewProductPrompt()">
+            <i data-lucide="plus" class="icon-xs"></i> add new product
+          </button>
           <button type="button" class="btn btn-outline" onclick="exportPictureConfig()" title="Export JSON backup">
             <i data-lucide="download" class="icon-xs"></i> export
           </button>
@@ -451,7 +446,7 @@
             <i data-lucide="upload" class="icon-xs"></i> import
             <input type="file" accept=".json" onchange="importPictureConfig(event)" style="display:none;" />
           </label>
-          <button type="button" class="btn btn-primary" onclick="saveAllItems()">
+          <button type="button" class="btn btn-dark" onclick="saveAllItems()">
             <i data-lucide="save" class="icon-xs"></i> save all changes
           </button>
         </div>
@@ -462,7 +457,7 @@
         <div style="display:flex;align-items:center;gap:10px;">
           <i data-lucide="info" class="icon-sm" style="color:var(--coffee-700)"></i>
           <span style="font-size:0.85rem;color:var(--coffee-700);">
-            <strong>Cloud Photo Sync:</strong> Upload your sticker photos to free image hosts, paste the direct link below, and click <strong>Save</strong>. Every customer &amp; phone worldwide will see them immediately!
+            <strong>Shared Stock &amp; Custom Photos:</strong> Create multiple stickers (e.g. Spider-Man, Batman) and link them to the same stock pool. Upload photos to free image hosts and paste the link below!
           </span>
         </div>
         <div style="display:flex;gap:8px;">
@@ -489,17 +484,16 @@
   <script src="app.js"></script>
   <script>
     /* ══════════════════════════════════════════════════════
-       STOREFRONT ADMIN & PICTURE DB CONTROLLER
+       STOREFRONT ADMIN & CATALOG MANAGER
        ══════════════════════════════════════════════════════ */
     const ADMIN_PIN = "2026";
-    let adminStockItems = [];
-    let customPictureMap = {};
+    let expenseStockItems = [];
+    let storefrontProducts = []; // Array of products displayed on shop
 
     // ── INITIALIZE ──
     document.addEventListener("DOMContentLoaded", async () => {
-      customPictureMap = await fetchStorefrontPictureMap();
       if (sessionStorage.getItem("static_admin_unlocked") === "true") {
-        showDashboard();
+        await showDashboard();
       }
       renderIcons();
     });
@@ -529,82 +523,135 @@
       document.getElementById("lock-section").style.display = "none";
       document.getElementById("dashboard-section").style.display = "block";
       document.getElementById("lock-btn").style.display = "inline-flex";
-      customPictureMap = await fetchStorefrontPictureMap();
-      await fetchStockForAdmin();
+      await fetchCatalogAndStock();
       renderIcons();
     }
 
-    // ── FETCH LIVE STOCK ──
-    async function fetchStockForAdmin() {
-      const container = document.getElementById("admin-items-list");
+    // ── FETCH LIVE STOCK & CUSTOM CATALOG ──
+    async function fetchCatalogAndStock() {
       try {
-        const res = await fetch("https://expense-sys-ten.vercel.app/api/stock/public");
-        adminStockItems = await res.json();
-        if (!adminStockItems.length) {
-          adminStockItems = getFallbackProducts().map(p => ({
-            id: p.id,
-            itemName: p.name,
-            sku: p.sku,
-            price: p.price,
-            quantity: p.qty,
+        const [stockRes, customConfig] = await Promise.all([
+          fetch("https://expense-sys-ten.vercel.app/api/stock/public").catch(() => null),
+          fetchStorefrontPictureMap().catch(() => ({}))
+        ]);
+
+        if (stockRes && stockRes.ok) {
+          expenseStockItems = await stockRes.json();
+        } else {
+          expenseStockItems = [];
+        }
+
+        // Initialize Storefront Products
+        if (customConfig && Array.isArray(customConfig.items) && customConfig.items.length > 0) {
+          storefrontProducts = customConfig.items;
+        } else if (customConfig && typeof customConfig === "object" && Object.keys(customConfig).length > 0 && !customConfig.items) {
+          // Convert legacy key-value overrides to items list
+          storefrontProducts = expenseStockItems.map(stk => {
+            const ovr = customConfig[stk.id] || customConfig[stk.itemName] || {};
+            return {
+              id: "sf_" + stk.id,
+              stockId: stk.id,
+              name: ovr.name || stk.itemName,
+              img: ovr.img || getProductImage(stk.itemName, stk.sku),
+              category: ovr.category || inferCategory(stk.itemName, stk.sku),
+              price: stk.price || 0,
+              badge: ovr.badge || "",
+              desc: ovr.desc || "",
+            };
+          });
+        } else {
+          // Default from live stock
+          storefrontProducts = expenseStockItems.map(stk => ({
+            id: "sf_" + stk.id,
+            stockId: stk.id,
+            name: stk.itemName,
+            img: getProductImage(stk.itemName, stk.sku),
+            category: inferCategory(stk.itemName, stk.sku),
+            price: stk.price || 0,
+            badge: "",
+            desc: "",
           }));
         }
+
+        // If no stock items exist yet, create a starter item
+        if (!storefrontProducts.length) {
+          storefrontProducts = [{
+            id: "sf_demo_1",
+            stockId: expenseStockItems[0]?.id || "stk_default",
+            name: "Spider-Man Die-Cut Sticker",
+            img: "images/sticker-cats.jpg",
+            category: "single stickers",
+            price: 15,
+            badge: "new",
+            desc: "Waterproof vinyl die-cut sticker.",
+          }];
+        }
+
         renderAdminItems();
         updateAdminStats();
       } catch (err) {
-        console.error("Error fetching stock:", err);
-        adminStockItems = getFallbackProducts().map(p => ({
-          id: p.id,
-          itemName: p.name,
-          sku: p.sku,
-          price: p.price,
-          quantity: p.qty,
-        }));
-        renderAdminItems();
-        updateAdminStats();
+        console.error("Error loading catalog:", err);
       }
     }
 
     // ── RENDER ADMIN ITEMS ──
-    function renderAdminItems(itemsToRender = adminStockItems) {
+    function renderAdminItems(itemsToRender = storefrontProducts) {
       const container = document.getElementById("admin-items-list");
       if (!container) return;
 
       if (!itemsToRender.length) {
-        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--coffee-500);"><p>No items found matching your search.</p></div>`;
+        container.innerHTML = `
+          <div style="text-align:center;padding:40px;color:var(--coffee-500);">
+            <p>No products found. Click <strong>+ Add New Product</strong> above to create one!</p>
+          </div>`;
         return;
       }
 
       container.innerHTML = itemsToRender.map(item => {
-        const custom = customPictureMap[item.id] || customPictureMap[item.itemName] || {};
-        const currentCategory = custom.category || inferCategory(item.itemName, item.sku);
-        const currentImg = custom.img || getProductImage(item.itemName, item.sku);
-        const currentBadge = custom.badge || "";
-        const currentDesc = custom.desc || "";
+        const linkedStock = expenseStockItems.find(s => String(s.id) === String(item.stockId));
+        const stockQty = linkedStock ? linkedStock.quantity : 0;
+        const stockSku = linkedStock ? (linkedStock.sku || "NO-SKU") : "UNLINKED";
+        const currentImg = item.img || "images/sticker-cozy.jpg";
 
         return `
-          <div class="admin-item-card ${custom.img || custom.category ? "has-custom" : ""}" id="card-${item.id}">
-            <!-- Photo Preview & File Uploader -->
+          <div class="admin-item-card is-linked" id="card-${item.id}">
+            <!-- Photo Preview -->
             <div class="admin-img-col">
-              <img src="${currentImg}" alt="${item.itemName}" class="admin-img-preview" id="img-preview-${item.id}" />
-              <label class="upload-btn-label">
-                <i data-lucide="upload" class="icon-xs"></i> change photo
-                <input type="file" accept="image/*" onchange="handleImageUpload('${item.id}', event)" />
-              </label>
+              <img src="${currentImg}" alt="${item.name}" class="admin-img-preview" id="img-preview-${item.id}" />
+              <span style="font-size:0.75rem;color:var(--coffee-500);font-weight:600;">✦ ${stockQty} in stock</span>
             </div>
 
             <!-- Fields -->
             <div class="admin-fields-col">
-              <div class="item-header-row">
-                <span class="item-title">${item.itemName}</span>
-                ${item.sku ? `<span class="item-sku-tag">${item.sku}</span>` : ""}
-                <span class="item-stock-tag">✦ ${item.quantity} in stock · ${item.price > 0 ? item.price + " EGP" : "Price TBD"}</span>
+              <!-- Changeable Display Name -->
+              <div class="admin-input-group">
+                <label>product display name (visible in shop)</label>
+                <input type="text" class="item-title-input" id="name-${item.id}" value="${escapeHtml(item.name || "")}" placeholder="e.g. Spider-Man Vinyl Sticker" />
+              </div>
+
+              <!-- Linked Stock Pool & Price -->
+              <div class="admin-form-row">
+                <div class="admin-input-group">
+                  <label>linked expense stock pool</label>
+                  <select id="stockId-${item.id}">
+                    ${expenseStockItems.map(stk => `
+                      <option value="${stk.id}" ${String(item.stockId) === String(stk.id) ? "selected" : ""}>
+                        ${escapeHtml(stk.itemName)} (${stk.quantity} available · ${stk.price} EGP · ${stk.sku || "no SKU"})
+                      </option>
+                    `).join("")}
+                    ${!expenseStockItems.length ? `<option value="">No stock items in expense tracker</option>` : ""}
+                  </select>
+                </div>
+                <div class="admin-input-group">
+                  <label>price in egp</label>
+                  <input type="number" id="price-${item.id}" value="${item.price || (linkedStock ? linkedStock.price : 0)}" min="0" step="1" placeholder="Price (EGP)" />
+                </div>
               </div>
 
               <!-- Photo URL & Presets -->
               <div class="admin-input-group">
-                <label>image url</label>
-                <input type="text" id="url-${item.id}" value="${custom.img || ""}" placeholder="Paste image URL (or upload above)" oninput="handleUrlInput('${item.id}', this.value)" />
+                <label>image url (from imgbb / postimages / discord)</label>
+                <input type="text" id="url-${item.id}" value="${escapeHtml(item.img || "")}" placeholder="https://i.ibb.co/..." oninput="handleUrlInput('${item.id}', this.value)" />
                 <div class="preset-pills">
                   <span style="font-size:0.7rem;color:var(--coffee-500);">presets:</span>
                   <button type="button" class="preset-btn" onclick="applyPreset('${item.id}', 'images/sticker-cats.jpg')">cats</button>
@@ -620,26 +667,26 @@
                 <div class="admin-input-group">
                   <label>category</label>
                   <select id="cat-${item.id}">
-                    <option value="posters" ${currentCategory === "posters" ? "selected" : ""}>Posters</option>
-                    <option value="single stickers" ${currentCategory === "single stickers" ? "selected" : ""}>Single Stickers</option>
-                    <option value="sticker sheet" ${currentCategory === "sticker sheet" ? "selected" : ""}>Sticker Sheet</option>
+                    <option value="posters" ${item.category === "posters" ? "selected" : ""}>Posters</option>
+                    <option value="single stickers" ${item.category === "single stickers" ? "selected" : ""}>Single Stickers</option>
+                    <option value="sticker sheet" ${item.category === "sticker sheet" ? "selected" : ""}>Sticker Sheet</option>
                   </select>
                 </div>
                 <div class="admin-input-group">
                   <label>badge (optional)</label>
                   <select id="badge-${item.id}">
-                    <option value="" ${!currentBadge ? "selected" : ""}>Auto (stock based)</option>
-                    <option value="new" ${currentBadge === "new" ? "selected" : ""}>New Drop</option>
-                    <option value="bestseller" ${currentBadge === "bestseller" ? "selected" : ""}>Bestseller</option>
-                    <option value="low stock" ${currentBadge === "low stock" ? "selected" : ""}>Low Stock</option>
-                    <option value="sold out" ${currentBadge === "sold out" ? "selected" : ""}>Sold Out</option>
+                    <option value="" ${!item.badge ? "selected" : ""}>Auto (stock based)</option>
+                    <option value="new" ${item.badge === "new" ? "selected" : ""}>New Drop</option>
+                    <option value="bestseller" ${item.badge === "bestseller" ? "selected" : ""}>Bestseller</option>
+                    <option value="low stock" ${item.badge === "low stock" ? "selected" : ""}>Low Stock</option>
+                    <option value="sold out" ${item.badge === "sold out" ? "selected" : ""}>Sold Out</option>
                   </select>
                 </div>
               </div>
 
               <div class="admin-input-group">
                 <label>custom description (optional)</label>
-                <input type="text" id="desc-${item.id}" value="${currentDesc}" placeholder="Leave blank for default description" />
+                <input type="text" id="desc-${item.id}" value="${escapeHtml(item.desc || "")}" placeholder="Leave blank for default description" />
               </div>
             </div>
 
@@ -648,8 +695,11 @@
               <button type="button" class="btn btn-primary save-item-btn" id="save-btn-${item.id}" onclick="saveSingleItem('${item.id}')">
                 <i data-lucide="check" class="icon-xs"></i> save
               </button>
-              <button type="button" class="reset-item-btn" onclick="resetSingleItem('${item.id}')">
-                reset to default
+              <button type="button" class="clone-item-btn" onclick="cloneItem('${item.id}')" title="Duplicate this product and link to same stock">
+                <i data-lucide="copy" class="icon-xs"></i> duplicate
+              </button>
+              <button type="button" class="delete-item-btn" onclick="deleteProduct('${item.id}')">
+                <i data-lucide="trash-2" class="icon-xs"></i> delete
               </button>
             </div>
           </div>
@@ -657,6 +707,16 @@
       }).join("");
 
       renderIcons();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
     }
 
     // ── CATEGORY INFERENCE ──
@@ -671,23 +731,22 @@
     function filterAdminItems() {
       const q = (document.getElementById("admin-search")?.value || "").toLowerCase().trim();
       if (!q) {
-        renderAdminItems(adminStockItems);
+        renderAdminItems(storefrontProducts);
         return;
       }
-      const filtered = adminStockItems.filter(item => {
-        return (item.itemName + " " + (item.sku || "")).toLowerCase().includes(q);
+      const filtered = storefrontProducts.filter(item => {
+        return (item.name + " " + (item.category || "") + " " + (item.desc || "")).toLowerCase().includes(q);
       });
       renderAdminItems(filtered);
     }
 
     // ── STATS UPDATE ──
     function updateAdminStats() {
-      document.getElementById("stat-total").textContent = adminStockItems.length;
+      document.getElementById("stat-total").textContent = storefrontProducts.length;
       let posters = 0, singles = 0, sheets = 0;
 
-      adminStockItems.forEach(item => {
-        const custom = customPictureMap[item.id] || customPictureMap[item.itemName] || {};
-        const cat = custom.category || inferCategory(item.itemName, item.sku);
+      storefrontProducts.forEach(item => {
+        const cat = (item.category || "").toLowerCase();
         if (cat === "posters") posters++;
         else if (cat === "sticker sheet") sheets++;
         else singles++;
@@ -711,69 +770,76 @@
       if (preview) preview.src = presetUrl;
     }
 
-    // ── IMAGE FILE UPLOAD WITH CLIENT COMPRESSION ──
-    function handleImageUpload(itemId, e) {
-      const file = e.target.files?.[0];
-      if (!file) return;
+    // ── ADD NEW PRODUCT ──
+    function addNewProductPrompt() {
+      const defaultStockId = expenseStockItems[0]?.id || "";
+      const defaultStock = expenseStockItems[0];
+      const newId = "sf_" + Date.now();
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          // Compress to max 800x800 for optimal fast load & 0 neon storage
-          const canvas = document.createElement("canvas");
-          const MAX_SIZE = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height && width > MAX_SIZE) {
-            height *= MAX_SIZE / width;
-            width = MAX_SIZE;
-          } else if (height > MAX_SIZE) {
-            width *= MAX_SIZE / height;
-            height = MAX_SIZE;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-
-          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
-
-          const input = document.getElementById(`url-${itemId}`);
-          const preview = document.getElementById(`img-preview-${itemId}`);
-          if (input) input.value = compressedDataUrl;
-          if (preview) preview.src = compressedDataUrl;
-
-          showToast("Image compressed & ready! Click Save to apply ✦");
-        };
-        img.src = event.target.result;
+      const newProduct = {
+        id: newId,
+        stockId: defaultStockId,
+        name: "New Sticker Product",
+        img: "images/sticker-cats.jpg",
+        category: "single stickers",
+        price: defaultStock ? defaultStock.price : 15,
+        badge: "new",
+        desc: "Handmade die-cut vinyl sticker from STATIC.",
       };
-      reader.readAsDataURL(file);
+
+      storefrontProducts.unshift(newProduct);
+      renderAdminItems();
+      updateAdminStats();
+
+      // Highlight new card
+      const card = document.getElementById(`card-${newId}`);
+      if (card) {
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+        card.style.borderColor = "var(--coffee-800)";
+      }
+
+      showToast("New product card added! Edit the title & photo, then click Save ✦");
+    }
+
+    // ── CLONE / DUPLICATE PRODUCT ──
+    function cloneItem(itemId) {
+      const original = storefrontProducts.find(p => p.id === itemId);
+      if (!original) return;
+
+      const newId = "sf_" + Date.now();
+      const cloned = {
+        ...original,
+        id: newId,
+        name: `${original.name} (Copy)`,
+        badge: "new",
+      };
+
+      const index = storefrontProducts.findIndex(p => p.id === itemId);
+      storefrontProducts.splice(index + 1, 0, cloned);
+
+      renderAdminItems();
+      updateAdminStats();
+      showToast(`Duplicated "${original.name}"! Linked to the same stock pool ✦`);
+    }
+
+    // ── DELETE PRODUCT ──
+    function deleteProduct(itemId) {
+      const item = storefrontProducts.find(p => p.id === itemId);
+      const name = item ? item.name : "this product";
+
+      if (!confirm(`Delete "${name}" from the storefront?`)) return;
+
+      storefrontProducts = storefrontProducts.filter(p => p.id !== itemId);
+      saveAllItems();
+      renderAdminItems();
+      updateAdminStats();
+      showToast(`"${name}" removed from storefront`);
     }
 
     // ── SAVE SINGLE ITEM ──
-    function saveSingleItem(itemId) {
-      const url = (document.getElementById(`url-${itemId}`)?.value || "").trim();
-      const cat = document.getElementById(`cat-${itemId}`)?.value || "single stickers";
-      const badge = document.getElementById(`badge-${itemId}`)?.value || "";
-      const desc = (document.getElementById(`desc-${itemId}`)?.value || "").trim();
-
-      const item = adminStockItems.find(i => String(i.id) === String(itemId));
-
-      customPictureMap[itemId] = {
-        img: url || (item ? getProductImage(item.itemName, item.sku) : "images/sticker-cozy.jpg"),
-        category: cat,
-        badge: badge,
-        desc: desc,
-      };
-
-      if (item && item.itemName) {
-        customPictureMap[item.itemName] = customPictureMap[itemId];
-      }
-
-      saveStorefrontPictureMap(customPictureMap);
+    async function saveSingleItem(itemId) {
+      collectItemDataFromDOM(itemId);
+      await saveStorefrontPictureMap({ items: storefrontProducts });
       updateAdminStats();
 
       const btn = document.getElementById(`save-btn-${itemId}`);
@@ -787,53 +853,41 @@
         }, 1500);
       }
 
-      showToast("Item picture & category saved ✦");
+      showToast("Product saved & synced to all devices ✦");
     }
 
-    // ── RESET SINGLE ITEM ──
-    function resetSingleItem(itemId) {
-      const item = adminStockItems.find(i => String(i.id) === String(itemId));
-      delete customPictureMap[itemId];
-      if (item && item.itemName) delete customPictureMap[item.itemName];
+    function collectItemDataFromDOM(itemId) {
+      const item = storefrontProducts.find(p => p.id === itemId);
+      if (!item) return;
 
-      saveStorefrontPictureMap(customPictureMap);
-      renderAdminItems();
-      updateAdminStats();
-      showToast("Reset to default");
+      item.name = (document.getElementById(`name-${itemId}`)?.value || item.name).trim();
+      item.stockId = document.getElementById(`stockId-${itemId}`)?.value || item.stockId;
+      item.price = parseFloat(document.getElementById(`price-${itemId}`)?.value) || item.price || 0;
+      item.img = (document.getElementById(`url-${itemId}`)?.value || item.img).trim();
+      item.category = document.getElementById(`cat-${itemId}`)?.value || item.category || "single stickers";
+      item.badge = document.getElementById(`badge-${itemId}`)?.value || "";
+      item.desc = (document.getElementById(`desc-${itemId}`)?.value || "").trim();
     }
 
     // ── SAVE ALL ITEMS ──
-    function saveAllItems() {
-      adminStockItems.forEach(item => {
-        const url = (document.getElementById(`url-${item.id}`)?.value || "").trim();
-        const cat = document.getElementById(`cat-${item.id}`)?.value || "single stickers";
-        const badge = document.getElementById(`badge-${item.id}`)?.value || "";
-        const desc = (document.getElementById(`desc-${item.id}`)?.value || "").trim();
-
-        if (url || cat || badge || desc) {
-          customPictureMap[item.id] = {
-            img: url || getProductImage(item.itemName, item.sku),
-            category: cat,
-            badge: badge,
-            desc: desc,
-          };
-          if (item.itemName) customPictureMap[item.itemName] = customPictureMap[item.id];
-        }
+    async function saveAllItems() {
+      storefrontProducts.forEach(item => {
+        collectItemDataFromDOM(item.id);
       });
 
-      saveStorefrontPictureMap(customPictureMap);
+      await saveStorefrontPictureMap({ items: storefrontProducts });
       updateAdminStats();
-      showToast("All product pictures & categories saved ✦");
+      showToast("All products synced live to all devices ✦");
     }
 
     // ── EXPORT & IMPORT JSON ──
     function exportPictureConfig() {
-      const blob = new Blob([JSON.stringify(customPictureMap, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify({ items: storefrontProducts }, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `static-storefront-pictures-${new Date().toISOString().slice(0,10)}.json`;
+      a.download = `static-storefront-catalog-${new Date().toISOString().slice(0,10)}.json`;
       a.click();
-      showToast("Picture database exported ✦");
+      showToast("Catalog exported ✦");
     }
 
     function importPictureConfig(e) {
@@ -841,14 +895,18 @@
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         try {
           const parsed = JSON.parse(event.target.result);
-          customPictureMap = { ...customPictureMap, ...parsed };
-          saveStorefrontPictureMap(customPictureMap);
+          if (parsed && Array.isArray(parsed.items)) {
+            storefrontProducts = parsed.items;
+          } else if (Array.isArray(parsed)) {
+            storefrontProducts = parsed;
+          }
+          await saveStorefrontPictureMap({ items: storefrontProducts });
           renderAdminItems();
           updateAdminStats();
-          showToast("Picture database imported successfully ✦");
+          showToast("Catalog imported & synced successfully ✦");
         } catch (_) {
           showToast("Invalid JSON file format");
         }

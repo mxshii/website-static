@@ -549,27 +549,57 @@ async function loadProducts(forceRefresh = false) {
 
     const safeMap = customMap || {};
 
-    PRODUCTS = stock.map(item => {
-      const custom = safeMap[item.id] || safeMap[item.itemName] || safeMap[item.sku] || {};
-      const category = custom.category || inferProductCategory(item.itemName, item.sku);
-      const img = custom.img || getProductImage(item.itemName, item.sku);
-      const badge = custom.badge !== undefined && custom.badge !== ""
-        ? custom.badge
-        : (item.quantity > 0 && item.quantity <= 5 ? "low stock" : item.quantity === 0 ? "sold out" : null);
+    if (safeMap && Array.isArray(safeMap.items) && safeMap.items.length > 0) {
+      PRODUCTS = safeMap.items.map(item => {
+        const linkedStock = stock.find(s => String(s.id) === String(item.stockId));
+        const stockQty = linkedStock ? linkedStock.quantity : 0;
+        const stockPrice = (item.price !== undefined && item.price !== null && item.price !== "")
+          ? Number(item.price)
+          : (linkedStock ? Number(linkedStock.price) : 0);
+        const category = item.category || inferProductCategory(item.name, linkedStock?.sku);
+        const img = item.img || getProductImage(item.name, linkedStock?.sku);
+        const badge = item.badge !== undefined && item.badge !== ""
+          ? item.badge
+          : (stockQty > 0 && stockQty <= 5 ? "low stock" : stockQty === 0 ? "sold out" : null);
 
-      return {
-        id: item.id,
-        name: item.itemName,
-        sku: item.sku || "",
-        desc: custom.desc || `${item.itemName} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Cairo.`,
-        price: item.price || 0,
-        qty: item.quantity,
-        category: category,
-        img: img,
-        badge: badge,
-        outOfStock: item.quantity === 0,
-      };
-    });
+        return {
+          id: item.id,
+          stockId: item.stockId || linkedStock?.id || item.id,
+          name: item.name || "Sticker Item",
+          sku: linkedStock ? (linkedStock.sku || "") : "",
+          desc: item.desc || `${item.name} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Cairo.`,
+          price: stockPrice,
+          qty: stockQty,
+          category: category,
+          img: img,
+          badge: badge,
+          outOfStock: stockQty === 0,
+        };
+      });
+    } else {
+      PRODUCTS = stock.map(item => {
+        const custom = safeMap[item.id] || safeMap[item.itemName] || safeMap[item.sku] || {};
+        const category = custom.category || inferProductCategory(item.itemName, item.sku);
+        const img = custom.img || getProductImage(item.itemName, item.sku);
+        const badge = custom.badge !== undefined && custom.badge !== ""
+          ? custom.badge
+          : (item.quantity > 0 && item.quantity <= 5 ? "low stock" : item.quantity === 0 ? "sold out" : null);
+
+        return {
+          id: item.id,
+          stockId: item.id,
+          name: custom.name || item.itemName,
+          sku: item.sku || "",
+          desc: custom.desc || `${custom.name || item.itemName} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Cairo.`,
+          price: custom.price !== undefined && custom.price !== "" ? Number(custom.price) : (item.price || 0),
+          qty: item.quantity,
+          category: category,
+          img: img,
+          badge: badge,
+          outOfStock: item.quantity === 0,
+        };
+      });
+    }
 
     renderProducts();
   } catch (err) {
