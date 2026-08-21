@@ -508,20 +508,46 @@ async function loadMyOrders() {
       headers: { Authorization: `Bearer ${token}` },
     });
     const orders = await res.json();
-    if (!orders.length) {
+    if (!orders || !orders.length) {
       container.innerHTML = "<p style='color:var(--coffee-400);font-size:.85rem;padding:12px 0;'>No orders yet. Go stick some stuff!</p>";
       return;
     }
-    container.innerHTML = orders.map(o => `
-      <div class="profile-order-card">
-        <div class="profile-order-head">
-          <span class="profile-order-id">#${o.id}</span>
-          <span class="profile-order-status ${o.paymentStatus}">${o.paymentStatus}</span>
+    container.innerHTML = orders.map(o => {
+      const rawDel = (o.deliveryStatus || o.fulfillmentStatus || o.status || "preparing").toLowerCase();
+      let delBadgeClass = "del-preparing";
+      let delLabel = "dispatching from alexandria";
+      
+      if (rawDel.includes("deliver") && !rawDel.includes("out")) {
+        delBadgeClass = "del-delivered";
+        delLabel = "delivered";
+      } else if (rawDel.includes("out") || rawDel.includes("transit") || rawDel.includes("ship")) {
+        delBadgeClass = "del-transit";
+        delLabel = "out for delivery (alexandria)";
+      } else if (rawDel.includes("cancel")) {
+        delBadgeClass = "del-cancelled";
+        delLabel = "cancelled";
+      }
+
+      const totalVal = o.totalAmount || o.total || o.finalTotal || "";
+      const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-GB") : "";
+
+      return `
+        <div class="profile-order-card">
+          <div class="profile-order-head">
+            <span class="profile-order-id">#${o.id}</span>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+              <span class="profile-order-status ${o.paymentStatus || 'unpaid'}">${o.paymentStatus || 'unpaid'}</span>
+              <span class="profile-delivery-status ${delBadgeClass}">${delLabel}</span>
+            </div>
+          </div>
+          <div class="profile-order-items">${(o.items || []).map(i => `${i.name || i.itemName || 'Sticker'} ×${i.qty || i.quantity || 1}`).join(", ")}</div>
+          <div class="profile-order-footer">
+            <span class="profile-order-total">${totalVal ? totalVal + ' EGP' : ''}</span>
+            <span class="profile-order-date">${dateStr}</span>
+          </div>
         </div>
-        <div class="profile-order-items">${(o.items || []).map(i => `${i.name || i.itemName} ×${i.qty || i.quantity}`).join(", ")}</div>
-        <div class="profile-order-date">${new Date(o.createdAt).toLocaleDateString("en-GB")}</div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   } catch (_) {
     container.innerHTML = "<p style='color:var(--coffee-400);font-size:.85rem'>Could not load orders.</p>";
   }

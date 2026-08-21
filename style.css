@@ -1710,7 +1710,7 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 .profile-order-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .profile-order-id { font-weight: 700; font-size: 0.9rem; color: var(--coffee-800); }
 .profile-order-status {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .05em;
@@ -1721,7 +1721,34 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 }
 .profile-order-status.paid { background: #d4edda; color: #155724; }
 .profile-order-status.unpaid { background: #fff3cd; color: #856404; }
-.profile-order-items { font-size: 0.82rem; color: var(--coffee-600); margin-bottom: 4px; }
+
+.profile-delivery-status {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+.profile-delivery-status.del-delivered { background: #d4edda; color: #155724; }
+.profile-delivery-status.del-transit { background: #d1ecf1; color: #0c5460; }
+.profile-delivery-status.del-preparing { background: #fff3cd; color: #856404; }
+.profile-delivery-status.del-cancelled { background: #f8d7da; color: #721c24; }
+
+.profile-order-items { font-size: 0.82rem; color: var(--coffee-600); margin: 6px 0; }
+.profile-order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--beige-300);
+}
+.profile-order-total {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--coffee-800);
+}
 .profile-order-date { font-size: 0.75rem; color: var(--coffee-400); }
 
 /* ══════════════════════════════

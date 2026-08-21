@@ -43,24 +43,25 @@
         <a href="contact.html" class="active">contact</a>
       </nav>
 
-      <a href="index.html" class="logo">
+      <a href="index.html" class="logo" id="nav-logo" aria-label="Static Home">
         <img src="images/1111-removebg-preview.png" alt="STATIC Logo" class="logo-img" />
         <span class="logo-text">STATIC</span>
       </a>
 
-      <div class="nav-actions">
-        <button type="button" class="nav-btn" id="account-btn" aria-label="My account" title="Account">
+      <nav class="nav-links right">
+        <button type="button" class="account-nav-btn" id="account-btn" title="Sign in">
           <i data-lucide="user" class="icon-sm"></i>
-          <span class="account-name" id="nav-user-name">account</span>
+          <span id="account-btn-label">sign in</span>
         </button>
-        <button type="button" class="nav-btn cart-toggle" id="cart-btn" aria-label="Open shopping cart" title="Cart">
-          <i data-lucide="shopping-bag" class="icon-sm"></i>
-          <span class="cart-badge" id="cart-badge">0</span>
+        <button type="button" class="cart-btn" id="cart-btn" aria-label="Open cart">
+          <i data-lucide="shopping-bag" class="icon-md"></i>
+          <span class="cart-count" id="cart-count">0</span>
         </button>
-        <button type="button" class="nav-btn menu-toggle" id="menu-btn" aria-label="Toggle menu">
-          <i data-lucide="menu" class="icon-sm"></i>
-        </button>
-      </div>
+      </nav>
+
+      <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
+        <i data-lucide="menu" class="icon-md"></i>
+      </button>
     </div>
   </header>
 
