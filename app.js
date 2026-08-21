@@ -1295,7 +1295,7 @@ function populateReview() {
   const custEl = document.getElementById("review-customer");
   if (custEl) {
     custEl.innerHTML = `
-      <strong style="font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--coffee-500)">delivering to (alexandria)</strong><br/>
+      <strong style="font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--coffee-500)">delivery details</strong><br/>
       <strong>${customerData.name}</strong> &middot; ${customerData.phone}${customerData.email ? " &middot; " + customerData.email : ""}<br/>
       ${customerData.address}
       ${customerData.note ? `<br/><em style="color:var(--coffee-400);font-size:.82rem">Note: ${customerData.note}</em>` : ""}
@@ -1322,7 +1322,7 @@ async function placeOrder() {
     customerName: customerData.name,
     phone: customerData.phone,
     email: customerData.email || null,
-    address: customerData.address + " (Alexandria)",
+    address: customerData.address,
     items,
     shippingPrice: 50,
     paymentMethod: currentPaymentMethod === "vodafone" ? "Vodafone Cash" : "Card",
