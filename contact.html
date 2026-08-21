@@ -126,7 +126,7 @@
         <div class="contact-card-info">
           <h3>Instagram &amp; Socials</h3>
           <p>DM us for custom packs, sticker collabs, or just to say hi!</p>
-          <a href="https://instagram.com/static._.eg" target="_blank" rel="noopener" style="display:block;margin-top:4px;font-weight:700;color:var(--coffee-800);text-decoration:underline;">@static._.eg</a>
+          <a href="https://instagram.com/static._.eg" target="_blank" rel="noopener" style="display:inline-block;margin-top:4px;font-weight:700;color:var(--coffee-800);text-decoration:underline;">@static._.eg</a>
         </div>
       </div>
     </div>
@@ -134,25 +134,30 @@
     <!-- Contact Form -->
     <div class="contact-form-card">
       <h2>send a message</h2>
+      <p>Send a message directly to <strong>omarstatic2@gmail.com</strong>.</p>
       <form id="contact-form" action="https://formsubmit.co/omarstatic2@gmail.com" method="POST">
         <input type="hidden" name="_subject" value="New Inquiry from STATIC Website" />
         <input type="hidden" name="_captcha" value="false" />
         <div class="form-row">
           <div class="form-group">
-            <label for="contact-name">your name *</label>
-            <input type="text" id="contact-name" name="name" placeholder="Name" required />
+            <label for="ct-name">your name *</label>
+            <input type="text" id="ct-name" name="name" placeholder="Your Name" required autocomplete="name" />
           </div>
           <div class="form-group">
-            <label for="contact-email">your email *</label>
-            <input type="email" id="contact-email" name="email" placeholder="you@email.com" required />
+            <label for="ct-email">email address *</label>
+            <input type="email" id="ct-email" name="email" placeholder="you@email.com" required autocomplete="email" />
           </div>
         </div>
         <div class="form-group">
-          <label for="contact-msg">message *</label>
-          <textarea id="contact-msg" name="message" placeholder="Ask about an order, custom stickers, or anything else..." rows="5" required></textarea>
+          <label for="ct-subject">subject</label>
+          <input type="text" id="ct-subject" name="subject" placeholder="Order question, custom sticker request, etc." />
+        </div>
+        <div class="form-group">
+          <label for="ct-message">message *</label>
+          <textarea id="ct-message" name="message" rows="5" placeholder="Tell us what you're thinking..." required></textarea>
         </div>
         <button type="submit" class="btn btn-primary" id="contact-submit-btn">
-          send message <i data-lucide="send" class="icon-sm"></i>
+          send message <i data-lucide="arrow-right" class="icon-sm"></i>
         </button>
       </form>
     </div>
