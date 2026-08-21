@@ -377,21 +377,183 @@
       border-color: var(--coffee-800);
     }
 
+    /* ══════════════════════════════
+       ADMIN RESPONSIVE SYSTEM
+       ══════════════════════════════ */
     @media (max-width: 860px) {
       .admin-item-card {
         grid-template-columns: 1fr;
         gap: 16px;
+        padding: 18px 16px;
       }
       .admin-img-col {
         flex-direction: row;
         align-items: center;
+        gap: 14px;
+        width: 100%;
       }
       .admin-img-preview {
-        width: 90px;
-        height: 90px;
+        width: 84px;
+        height: 84px;
       }
-      .admin-form-row {
+      .admin-form-row,
+      .admin-form-row-3 {
         grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .admin-actions-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+        padding-top: 12px;
+        border-top: 1px solid var(--beige-300);
+      }
+      .save-item-btn {
+        grid-column: span 2;
+        height: 44px;
+        justify-content: center;
+      }
+      .clone-item-btn,
+      .delete-item-btn {
+        height: 38px;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .admin-header {
+        padding: 12px 14px;
+      }
+      .admin-brand img {
+        height: 28px;
+      }
+      .admin-title-wrap h1 {
+        font-size: 0.95rem;
+      }
+      .admin-title-wrap p {
+        display: none;
+      }
+      .admin-header-actions {
+        gap: 6px;
+      }
+      .admin-header-actions .btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+      }
+      .admin-container {
+        margin: 12px auto;
+        padding: 0 10px;
+      }
+      .admin-card {
+        padding: 16px 12px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 14px;
+      }
+      .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .stat-card {
+        padding: 10px 12px;
+        gap: 10px;
+      }
+      .stat-icon {
+        width: 34px;
+        height: 34px;
+      }
+      .stat-info .stat-val {
+        font-size: 1.2rem;
+      }
+      .stat-info .stat-label {
+        font-size: 0.65rem;
+      }
+      .admin-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .admin-search-wrap {
+        max-width: 100%;
+        width: 100%;
+      }
+      .admin-search-wrap input {
+        font-size: 16px !important;
+        padding: 10px 14px 10px 36px;
+      }
+      .admin-action-btns {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        width: 100%;
+      }
+      .admin-action-btns .btn,
+      .admin-action-btns label.btn {
+        width: 100%;
+        justify-content: center;
+        padding: 9px 6px;
+        font-size: 0.76rem;
+      }
+      .admin-action-btns button[onclick="saveAllItems()"] {
+        grid-column: span 2;
+        padding: 11px 14px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .admin-input-group input,
+      .admin-input-group select,
+      .admin-input-group textarea,
+      .item-title-input {
+        font-size: 16px !important;
+      }
+      .preset-pills {
+        gap: 4px;
+      }
+      .preset-btn {
+        font-size: 0.72rem;
+        padding: 4px 7px;
+      }
+      .modal-tab-btns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+      }
+      .modal-tab-btn {
+        padding: 8px 4px;
+        font-size: 0.75rem;
+        text-align: center;
+      }
+      .quick-qty-pills {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .quick-qty-btn {
+        flex: 1;
+        min-width: 44px;
+        padding: 6px 4px;
+      }
+      .lock-screen {
+        margin: 30px auto;
+        padding: 22px 14px;
+      }
+      #pin-input {
+        font-size: 1.3rem !important;
+        height: 46px;
+        letter-spacing: 5px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .admin-stats {
+        grid-template-columns: 1fr;
+      }
+      .admin-action-btns {
+        grid-template-columns: 1fr;
+      }
+      .admin-action-btns button[onclick="saveAllItems()"] {
+        grid-column: span 1;
       }
     }
   </style>
