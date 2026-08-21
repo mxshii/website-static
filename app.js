@@ -597,7 +597,7 @@ async function loadProducts(forceRefresh = false) {
           stockId: item.stockId || linkedStock?.id || item.id,
           name: item.name || "Sticker Item",
           sku: linkedStock ? (linkedStock.sku || "") : "",
-          desc: item.desc || `${item.name} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Cairo.`,
+          desc: item.desc || `${item.name} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Alexandria.`,
           price: stockPrice,
           qty: stockQty,
           category: category,
@@ -622,7 +622,7 @@ async function loadProducts(forceRefresh = false) {
           stockId: item.id,
           name: custom.name || item.itemName,
           sku: item.sku || "",
-          desc: custom.desc || `${custom.name || item.itemName} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Cairo.`,
+          desc: custom.desc || `${custom.name || item.itemName} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Alexandria.`,
           price: custom.price !== undefined && custom.price !== "" ? Number(custom.price) : (item.price || 0),
           qty: item.quantity,
           category: category,
@@ -1194,22 +1194,24 @@ function populateReview() {
   }
 
   const subtotal = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
+  const shippingFee = 50; // Flat 50 EGP to Alexandria
+  const total = subtotal + shippingFee;
   const methodLabel = currentPaymentMethod === "vodafone" ? "Vodafone Cash" : "Card Payment";
 
   const totalsEl = document.getElementById("review-totals");
   if (totalsEl) {
     totalsEl.innerHTML = `
-      <div class="review-total-row"><span>subtotal</span><span>${subtotal > 0 ? subtotal + " EGP" : "TBD"}</span></div>
-      <div class="review-total-row"><span>shipping</span><span>calculated on delivery</span></div>
+      <div class="review-total-row"><span>subtotal</span><span>${subtotal > 0 ? subtotal + " EGP" : "0 EGP"}</span></div>
+      <div class="review-total-row"><span>shipping (alexandria only)</span><span>${shippingFee} EGP</span></div>
       <div class="review-total-row"><span>payment method</span><span>${methodLabel}</span></div>
-      <div class="review-total-row grand"><span>total</span><span>${subtotal > 0 ? subtotal + " EGP" : "TBD"}</span></div>
+      <div class="review-total-row grand"><span>total</span><span>${total} EGP</span></div>
     `;
   }
 
   const custEl = document.getElementById("review-customer");
   if (custEl) {
     custEl.innerHTML = `
-      <strong style="font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--coffee-500)">delivering to</strong><br/>
+      <strong style="font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--coffee-500)">delivering to (alexandria)</strong><br/>
       <strong>${customerData.name}</strong> &middot; ${customerData.phone}${customerData.email ? " &middot; " + customerData.email : ""}<br/>
       ${customerData.address}
       ${customerData.note ? `<br/><em style="color:var(--coffee-400);font-size:.82rem">Note: ${customerData.note}</em>` : ""}
@@ -1236,9 +1238,9 @@ async function placeOrder() {
     customerName: customerData.name,
     phone: customerData.phone,
     email: customerData.email || null,
-    address: customerData.address,
+    address: customerData.address + " (Alexandria)",
     items,
-    shippingPrice: 0,
+    shippingPrice: 50,
     paymentMethod: currentPaymentMethod === "vodafone" ? "Vodafone Cash" : "Card",
     note: customerData.note || null,
   };

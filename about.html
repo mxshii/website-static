@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Our Story — STATIC</title>
-  <meta name="description" content="Learn about STATIC — how we started drawing stickers in Cairo, Egypt, our materials, values and FAQ." />
+  <meta name="description" content="Learn about STATIC — how we started drawing stickers in Alexandria, Egypt, our materials, values and FAQ." />
   <link rel="icon" type="image/png" href="images/1111-removebg-preview.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,15 +18,15 @@
   <!-- ANNOUNCEMENT BAR -->
   <div class="announcement-bar">
     <div class="announcement-inner">
-      <span>✦ free shipping on orders over 200 EGP</span>
+      <span>✦ delivery to alexandria only (50 EGP)</span>
       <span class="sep">·</span>
-      <span>handmade with love in egypt</span>
+      <span>handmade with love in alexandria</span>
       <span class="sep">·</span>
       <span>waterproof vinyl stickers</span>
       <span class="sep">·</span>
-      <span>free shipping on orders over 200 EGP</span>
+      <span>delivery to alexandria only (50 EGP)</span>
       <span class="sep">·</span>
-      <span>handmade with love in egypt</span>
+      <span>handmade with love in alexandria</span>
       <span class="sep">·</span>
       <span>waterproof vinyl stickers</span>
       <span class="sep">·</span>
@@ -43,40 +43,48 @@
         <a href="contact.html">contact</a>
       </nav>
 
-      <a href="index.html" class="logo" id="nav-logo" aria-label="Static Home">
+      <a href="index.html" class="logo">
         <img src="images/1111-removebg-preview.png" alt="STATIC Logo" class="logo-img" />
         <span class="logo-text">STATIC</span>
       </a>
 
-      <nav class="nav-links right">
-        <button type="button" class="account-nav-btn" id="account-btn" title="Sign in">
+      <div class="nav-actions">
+        <button type="button" class="nav-btn" id="account-btn" aria-label="My account" title="Account">
           <i data-lucide="user" class="icon-sm"></i>
-          <span id="account-btn-label">sign in</span>
+          <span class="account-name" id="nav-user-name">account</span>
         </button>
-        <button type="button" class="cart-btn" id="cart-btn" aria-label="Open cart">
-          <i data-lucide="shopping-bag" class="icon-md"></i>
-          <span class="cart-count" id="cart-count">0</span>
+        <button type="button" class="nav-btn cart-toggle" id="cart-btn" aria-label="Open shopping cart" title="Cart">
+          <i data-lucide="shopping-bag" class="icon-sm"></i>
+          <span class="cart-badge" id="cart-badge">0</span>
         </button>
-      </nav>
-
-      <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
-        <i data-lucide="menu" class="icon-md"></i>
-      </button>
-    </div>
-
-    <div class="mobile-menu" id="mobile-menu">
-      <a href="index.html">home</a>
-      <a href="shop.html">shop</a>
-      <a href="about.html" class="active">our story</a>
-      <a href="contact.html">contact</a>
-      <a href="#" id="mob-account">sign in</a>
+        <button type="button" class="nav-btn menu-toggle" id="menu-btn" aria-label="Toggle menu">
+          <i data-lucide="menu" class="icon-sm"></i>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- PAGE HEADER -->
-  <section class="page-header">
-    <p class="page-header-eyebrow"><i data-lucide="heart" class="icon-xs"></i> behind the brand</p>
-    <h1>Our Story</h1>
+  <!-- MOBILE MENU DRAWER -->
+  <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <div class="mobile-menu-head">
+      <a href="index.html" class="logo">
+        <img src="images/1111-removebg-preview.png" alt="STATIC Logo" class="logo-img" />
+        <span class="logo-text">STATIC</span>
+      </a>
+      <button type="button" class="modal-close" id="mobile-menu-close" aria-label="Close navigation menu"><i data-lucide="x" class="icon-sm"></i></button>
+    </div>
+    <nav class="mobile-nav-links">
+      <a href="index.html"><i data-lucide="home" class="icon-sm"></i> home</a>
+      <a href="shop.html"><i data-lucide="shopping-bag" class="icon-sm"></i> shop</a>
+      <a href="about.html" class="active"><i data-lucide="heart" class="icon-sm"></i> our story</a>
+      <a href="contact.html"><i data-lucide="mail" class="icon-sm"></i> contact</a>
+    </nav>
+  </div>
+
+  <!-- HERO -->
+  <section class="page-hero">
+    <h1>our story</h1>
     <p>How a cup of coffee, a sketchbook, and an obsession with stickers turned into STATIC.</p>
   </section>
 
@@ -86,7 +94,7 @@
       <div class="about-text">
         <p class="about-eyebrow"><i data-lucide="sparkles" class="icon-sm"></i> the origin</p>
         <h2>just a cat,<br/>a pen &amp; a dream.</h2>
-        <p>STATIC was born in Cairo out of a desire to make things you can actually hold, touch, and stick on your favorite stuff. We got tired of generic mass-produced stickers that peel off after two days or fade in the sun.</p>
+        <p>STATIC was born in Alexandria out of a desire to make things you can actually hold, touch, and stick on your favorite stuff. We got tired of generic mass-produced stickers that peel off after two days or fade in the sun.</p>
         <p>Every single sticker starts as a rough hand drawing on paper before being digitally inked, colored, and printed onto heavy-duty waterproof vinyl with scratch-resistant matte coating.</p>
         <p class="about-tagline">"we draw it, you stick it."</p>
       </div>
@@ -129,8 +137,8 @@
       </div>
 
       <div class="faq-item">
-        <h4><i data-lucide="truck" class="icon-sm"></i> How long does delivery take in Egypt?</h4>
-        <p>Cairo and Giza delivery usually takes 2–3 business days. Alexandria, Delta, and other Governorates take 3–4 business days.</p>
+        <h4><i data-lucide="truck" class="icon-sm"></i> Where do you deliver and how long does it take?</h4>
+        <p>Currently, we deliver exclusively across Alexandria! Orders arrive in 1–2 business days for a flat rate of 50 EGP.</p>
       </div>
 
       <div class="faq-item">
@@ -189,7 +197,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 STATIC. All rights reserved. Made with <i data-lucide="heart" class="icon-inline icon-heart"></i> in Egypt.</p>
+      <p>© 2026 STATIC. All rights reserved. Made with <i data-lucide="heart" class="icon-inline icon-heart"></i> in Alexandria.</p>
     </div>
   </footer>
 
@@ -213,7 +221,7 @@
         <span>subtotal</span>
         <span id="cart-subtotal">0 EGP</span>
       </div>
-      <p class="cart-note"><i data-lucide="info" class="icon-xs"></i> Shipping calculated on checkout</p>
+      <p class="cart-note"><i data-lucide="info" class="icon-xs"></i> 50 EGP flat delivery in Alexandria</p>
       <button type="button" class="btn btn-primary cart-checkout-btn" id="cart-checkout-btn">
         proceed to checkout <i data-lucide="arrow-right" class="icon-sm"></i>
       </button>
@@ -236,7 +244,7 @@
 
       <div class="checkout-step" id="checkout-step-1">
         <h2>delivery details</h2>
-        <p class="checkout-sub">Fill in your delivery information</p>
+        <p class="checkout-sub">Delivering exclusively across Alexandria (50 EGP)</p>
         <form id="checkout-form" novalidate>
           <div class="form-row">
             <div class="form-group">
@@ -253,8 +261,8 @@
             <input type="email" id="co-email" placeholder="you@email.com"/>
           </div>
           <div class="form-group">
-            <label for="co-address">delivery address *</label>
-            <textarea id="co-address" placeholder="Street, area, city..." rows="2" required></textarea>
+            <label for="co-address">delivery address (alexandria only) *</label>
+            <textarea id="co-address" placeholder="Area &amp; street in Alexandria (e.g. Smouha, Miami, Gleem, Stanley, Sporting...)" rows="2" required></textarea>
           </div>
           <div class="form-group">
             <label for="co-note">order note (optional)</label>
