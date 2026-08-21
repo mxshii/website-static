@@ -525,19 +525,32 @@ async function loadProducts(forceRefresh = false) {
     </div>`;
 
   try {
-    const [stock, customMap] = await Promise.all([
-      res.json(),
-      fetchStorefrontPictureMap()
+    const [stockRes, customMap] = await Promise.all([
+      fetch(`${EXPENSE_API}/api/stock/public`).catch(e => {
+        console.error("Stock fetch error:", e);
+        return null;
+      }),
+      fetchStorefrontPictureMap().catch(e => {
+        console.error("Picture map fetch error:", e);
+        return {};
+      })
     ]);
+
+    let stock = [];
+    if (stockRes && stockRes.ok) {
+      stock = await stockRes.json();
+    }
     _stockCacheTime = Date.now();
 
-    if (!stock.length) {
+    if (!stock || !stock.length) {
       grid.innerHTML = `<div class="products-empty"><p>Products coming soon — check back shortly!</p></div>`;
       return;
     }
 
+    const safeMap = customMap || {};
+
     PRODUCTS = stock.map(item => {
-      const custom = customMap[item.id] || customMap[item.itemName] || customMap[item.sku] || {};
+      const custom = safeMap[item.id] || safeMap[item.itemName] || safeMap[item.sku] || {};
       const category = custom.category || inferProductCategory(item.itemName, item.sku);
       const img = custom.img || getProductImage(item.itemName, item.sku);
       const badge = custom.badge !== undefined && custom.badge !== ""
@@ -561,8 +574,7 @@ async function loadProducts(forceRefresh = false) {
     renderProducts();
   } catch (err) {
     console.error("Failed to load stock:", err);
-    PRODUCTS = getFallbackProducts();
-    renderProducts();
+    grid.innerHTML = `<div class="products-empty"><p>Could not load stock. Please refresh.</p></div>`;
   }
 }
 
