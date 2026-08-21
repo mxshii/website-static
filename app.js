@@ -562,6 +562,8 @@ async function loadProducts(forceRefresh = false) {
           ? item.badge
           : (stockQty > 0 && stockQty <= 5 ? "low stock" : stockQty === 0 ? "sold out" : null);
 
+        const fit = item.fit || (item.category === "posters" ? "cover" : "contain");
+
         return {
           id: item.id,
           stockId: item.stockId || linkedStock?.id || item.id,
@@ -573,6 +575,7 @@ async function loadProducts(forceRefresh = false) {
           category: category,
           img: img,
           badge: badge,
+          fit: fit,
           outOfStock: stockQty === 0,
         };
       });
@@ -584,6 +587,7 @@ async function loadProducts(forceRefresh = false) {
         const badge = custom.badge !== undefined && custom.badge !== ""
           ? custom.badge
           : (item.quantity > 0 && item.quantity <= 5 ? "low stock" : item.quantity === 0 ? "sold out" : null);
+        const fit = custom.fit || (category === "posters" ? "cover" : "contain");
 
         return {
           id: item.id,
@@ -596,6 +600,7 @@ async function loadProducts(forceRefresh = false) {
           category: category,
           img: img,
           badge: badge,
+          fit: fit,
           outOfStock: item.quantity === 0,
         };
       });
@@ -693,8 +698,11 @@ function renderProducts() {
     card.setAttribute("role", "button");
     card.setAttribute("tabindex", "0");
     card.setAttribute("aria-label", `View ${p.name}`);
+    const isCover = p.fit === "cover";
+    const fitClass = isCover ? "fit-cover" : "fit-contain zoomed-out";
+
     card.innerHTML = `
-      <div class="card-img-wrap">
+      <div class="card-img-wrap ${fitClass}">
         <img src="${p.img}" alt="${p.name}" loading="lazy" />
         ${p.badge ? `<span class="card-badge ${p.badge === "sold out" ? "badge-sold" : ""}">${p.badge}</span>` : ""}
         <div class="card-explore"><span>explore</span></div>
@@ -802,7 +810,11 @@ function openProductModal(productId) {
   const qtyInput = document.getElementById("modal-qty");
   const addBtn = document.getElementById("modal-add-btn");
 
-  if (imgEl) { imgEl.src = p.img; imgEl.alt = p.name; }
+  if (imgEl) {
+    imgEl.src = p.img;
+    imgEl.alt = p.name;
+    imgEl.className = "modal-main-img " + (p.fit === "cover" ? "fit-cover" : "fit-contain");
+  }
   if (nameEl) nameEl.textContent = p.name;
   if (descEl) descEl.textContent = p.desc;
   if (priceEl) priceEl.textContent = p.price > 0 ? p.price + " EGP" : "Price TBD";

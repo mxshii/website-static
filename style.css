@@ -577,15 +577,14 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   cursor: pointer;
   border: 1.5px solid var(--beige-300);
 }
-.product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-md);
-}
 .card-img-wrap {
   position: relative;
   overflow: hidden;
   aspect-ratio: 1 / 1;
-  background: var(--beige-300);
+  background: var(--beige-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .card-img-wrap img {
   width: 100%; height: 100%;
@@ -593,6 +592,25 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   transition: transform var(--transition-spring);
 }
 .product-card:hover .card-img-wrap img { transform: scale(1.06); }
+
+/* Zoomed-out / Full Sticker Contain Mode (default for die-cut & circle stickers) */
+.card-img-wrap.fit-contain,
+.card-img-wrap.zoomed-out {
+  padding: 16px;
+  background: var(--beige-200);
+}
+.card-img-wrap.fit-contain img,
+.card-img-wrap.zoomed-out img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  filter: drop-shadow(0 6px 14px rgba(44, 24, 16, 0.08));
+}
+.product-card:hover .card-img-wrap.fit-contain img,
+.product-card:hover .card-img-wrap.zoomed-out img {
+  transform: scale(1.08);
+}
 .card-badge {
   position: absolute;
   top: 14px; left: 14px;
@@ -1091,7 +1109,13 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background: var(--beige-200);
+  padding: 20px;
+}
+.modal-main-img.fit-cover {
   object-fit: cover;
+  padding: 0;
 }
 .modal-badge {
   font-size: 0.7rem;

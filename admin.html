@@ -481,6 +481,9 @@
           <button type="button" class="btn btn-primary" style="background:#704214;" onclick="openBulkAddModal()">
             <i data-lucide="layers" class="icon-xs"></i> ⚡ bulk add products
           </button>
+          <button type="button" class="btn btn-outline" onclick="setAllProductsFit('contain')" title="Set all products to zoomed out / full sticker view">
+            <i data-lucide="zoom-out" class="icon-xs"></i> set all zoomed-out
+          </button>
           <button type="button" class="btn btn-outline" onclick="exportPictureConfig()" title="Export JSON backup">
             <i data-lucide="download" class="icon-xs"></i> export
           </button>
@@ -563,12 +566,20 @@
             <label>linked expense stock pool</label>
             <select id="bulk-stock-id"></select>
           </div>
+        <div class="admin-form-row" style="margin-bottom:16px;">
           <div class="admin-input-group">
             <label>category</label>
             <select id="bulk-category">
               <option value="single stickers">Single Stickers</option>
               <option value="sticker sheet">Sticker Sheet</option>
               <option value="posters">Posters</option>
+            </select>
+          </div>
+          <div class="admin-input-group">
+            <label>photo display style</label>
+            <select id="bulk-fit">
+              <option value="contain" selected>🔍 Zoomed Out (Full Sticker — Recommended)</option>
+              <option value="cover">🖼️ Fill / Cover (Zoomed In)</option>
             </select>
           </div>
         </div>
@@ -613,6 +624,13 @@
               <option value="single stickers">Single Stickers</option>
               <option value="sticker sheet">Sticker Sheet</option>
               <option value="posters">Posters</option>
+            </select>
+          </div>
+          <div class="admin-input-group">
+            <label>photo display style</label>
+            <select id="bulk-paster-fit">
+              <option value="contain" selected>🔍 Zoomed Out (Full Sticker)</option>
+              <option value="cover">🖼️ Fill / Cover (Zoomed In)</option>
             </select>
           </div>
         </div>
@@ -816,8 +834,8 @@
                 </div>
               </div>
 
-              <!-- Category & Badge -->
-              <div class="admin-form-row">
+              <!-- Category, Badge & Fit -->
+              <div class="admin-form-row-3">
                 <div class="admin-input-group">
                   <label>category</label>
                   <select id="cat-${item.id}">
@@ -834,6 +852,13 @@
                     <option value="bestseller" ${item.badge === "bestseller" ? "selected" : ""}>Bestseller</option>
                     <option value="low stock" ${item.badge === "low stock" ? "selected" : ""}>Low Stock</option>
                     <option value="sold out" ${item.badge === "sold out" ? "selected" : ""}>Sold Out</option>
+                  </select>
+                </div>
+                <div class="admin-input-group">
+                  <label>photo display fit</label>
+                  <select id="fit-${item.id}">
+                    <option value="contain" ${item.fit !== "cover" ? "selected" : ""}>🔍 Zoomed Out (Full Sticker)</option>
+                    <option value="cover" ${item.fit === "cover" ? "selected" : ""}>🖼️ Fill / Cover (Zoomed In)</option>
                   </select>
                 </div>
               </div>
@@ -937,6 +962,7 @@
         img: "images/sticker-cats.jpg",
         category: "single stickers",
         price: defaultStock ? defaultStock.price : 15,
+        fit: "contain",
         badge: "new",
         desc: "Handmade die-cut vinyl sticker from STATIC.",
       };
@@ -952,6 +978,16 @@
       }
 
       showToast("New product card added! Edit the title & photo, then click Save ✦");
+    }
+
+    // ── SET ALL PRODUCTS FIT (ZOOMED OUT / FULL STICKER) ──
+    async function setAllProductsFit(fitMode = "contain") {
+      storefrontProducts.forEach(item => {
+        item.fit = fitMode;
+      });
+      renderAdminItems();
+      await saveStorefrontPictureMap({ items: storefrontProducts });
+      showToast(`All products set to ${fitMode === "contain" ? "Zoomed Out (Full Sticker)" : "Fill"}! ✦`);
     }
 
     // ── BULK ADD MODAL CONTROLS ──
@@ -987,6 +1023,7 @@
       const baseName = (document.getElementById("bulk-base-name").value || "Sticker").trim();
       const stockId = document.getElementById("bulk-stock-id").value;
       const category = document.getElementById("bulk-category").value;
+      const fit = document.getElementById("bulk-fit")?.value || "contain";
       const price = parseFloat(document.getElementById("bulk-price").value) || 15;
       const img = document.getElementById("bulk-img-preset").value || "images/sticker-cats.jpg";
 
@@ -1001,6 +1038,7 @@
           img: img,
           category: category,
           price: price,
+          fit: fit,
           badge: i <= 5 ? "new" : "",
           desc: `Handmade ${category} design from STATIC. Waterproof vinyl, die-cut.`,
         });
@@ -1026,6 +1064,7 @@
 
       const stockId = document.getElementById("bulk-paster-stock-id").value;
       const category = document.getElementById("bulk-paster-category").value;
+      const fit = document.getElementById("bulk-paster-fit")?.value || "contain";
       const lines = rawText.split("\n").map(l => l.trim()).filter(Boolean);
 
       const newItems = [];
@@ -1048,6 +1087,7 @@
           img: img,
           category: category,
           price: 15,
+          fit: fit,
           badge: idx < 3 ? "new" : "",
           desc: `Handmade ${category} from STATIC. Waterproof vinyl, die-cut.`,
         });
@@ -1126,6 +1166,7 @@
       item.price = parseFloat(document.getElementById(`price-${itemId}`)?.value) || item.price || 0;
       item.img = (document.getElementById(`url-${itemId}`)?.value || item.img).trim();
       item.category = document.getElementById(`cat-${itemId}`)?.value || item.category || "single stickers";
+      item.fit = document.getElementById(`fit-${itemId}`)?.value || item.fit || "contain";
       item.badge = document.getElementById(`badge-${itemId}`)?.value || "";
       item.desc = (document.getElementById(`desc-${itemId}`)?.value || "").trim();
     }
