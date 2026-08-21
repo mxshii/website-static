@@ -457,6 +457,24 @@
         </div>
       </div>
 
+      <!-- Free Image Hosting Tip Box -->
+      <div style="background:var(--beige-200);border:1.5px dashed var(--coffee-300);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <i data-lucide="info" class="icon-sm" style="color:var(--coffee-700)"></i>
+          <span style="font-size:0.85rem;color:var(--coffee-700);">
+            <strong>Cloud Photo Sync:</strong> Upload your sticker photos to free image hosts, paste the direct link below, and click <strong>Save</strong>. Every customer &amp; phone worldwide will see them immediately!
+          </span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <a href="https://imgbb.com/upload" target="_blank" class="btn btn-outline" style="padding:6px 12px;font-size:0.78rem;background:#fff;">
+            ImgBB Upload <i data-lucide="external-link" class="icon-xs"></i>
+          </a>
+          <a href="https://postimages.org/" target="_blank" class="btn btn-outline" style="padding:6px 12px;font-size:0.78rem;background:#fff;">
+            Postimages <i data-lucide="external-link" class="icon-xs"></i>
+          </a>
+        </div>
+      </div>
+
       <!-- INVENTORY LIST -->
       <div id="admin-items-list" class="admin-items-grid">
         <div style="text-align:center;padding:40px;color:var(--coffee-500);">
@@ -478,8 +496,8 @@
     let customPictureMap = {};
 
     // ── INITIALIZE ──
-    document.addEventListener("DOMContentLoaded", () => {
-      customPictureMap = getStorefrontPictureMap();
+    document.addEventListener("DOMContentLoaded", async () => {
+      customPictureMap = await fetchStorefrontPictureMap();
       if (sessionStorage.getItem("static_admin_unlocked") === "true") {
         showDashboard();
       }
@@ -511,6 +529,7 @@
       document.getElementById("lock-section").style.display = "none";
       document.getElementById("dashboard-section").style.display = "block";
       document.getElementById("lock-btn").style.display = "inline-flex";
+      customPictureMap = await fetchStorefrontPictureMap();
       await fetchStockForAdmin();
       renderIcons();
     }

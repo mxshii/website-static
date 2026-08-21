@@ -17,7 +17,24 @@ let activeCategory = "all";
 let searchQuery = "";
 let _stockCacheTime = 0;
 
-// ── DEDICATED STOREFRONT PICTURE & METADATA DATABASE ──
+// ── DEDICATED STOREFRONT PICTURE & METADATA DATABASE (SYNCED ACROSS ALL DEVICES) ──
+async function fetchStorefrontPictureMap() {
+  try {
+    const res = await fetch("/api/pictures");
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem(PICTURE_DB_KEY, JSON.stringify(data));
+      return data;
+    }
+  } catch (_) {}
+
+  try {
+    const cached = localStorage.getItem(PICTURE_DB_KEY);
+    if (cached) return JSON.parse(cached);
+  } catch (_) {}
+  return {};
+}
+
 function getStorefrontPictureMap() {
   try {
     const saved = localStorage.getItem(PICTURE_DB_KEY);
@@ -26,10 +43,20 @@ function getStorefrontPictureMap() {
   return {};
 }
 
-function saveStorefrontPictureMap(map) {
+async function saveStorefrontPictureMap(map) {
   try {
     localStorage.setItem(PICTURE_DB_KEY, JSON.stringify(map));
   } catch (_) {}
+
+  try {
+    await fetch("/api/pictures", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(map),
+    });
+  } catch (err) {
+    console.warn("Could not sync to cloud /api/pictures endpoint:", err);
+  }
 }
 
 // ── ICON HELPER ───────────────────────────────────────
@@ -498,16 +525,16 @@ async function loadProducts(forceRefresh = false) {
     </div>`;
 
   try {
-    const res = await fetch(`${EXPENSE_API}/api/stock/public`);
-    const stock = await res.json();
+    const [stock, customMap] = await Promise.all([
+      res.json(),
+      fetchStorefrontPictureMap()
+    ]);
     _stockCacheTime = Date.now();
 
     if (!stock.length) {
       grid.innerHTML = `<div class="products-empty"><p>Products coming soon — check back shortly!</p></div>`;
       return;
     }
-
-    const customMap = getStorefrontPictureMap();
 
     PRODUCTS = stock.map(item => {
       const custom = customMap[item.id] || customMap[item.itemName] || customMap[item.sku] || {};
