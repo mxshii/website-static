@@ -645,15 +645,18 @@ async function loadProducts(forceRefresh = false) {
     if (safeMap && Array.isArray(safeMap.items) && safeMap.items.length > 0) {
       PRODUCTS = safeMap.items.map(item => {
         const linkedStock = stock.find(s => String(s.id) === String(item.stockId));
-        const stockQty = linkedStock ? linkedStock.quantity : 0;
+        // Default to 1 in stock unless customized in admin
+        const stockQty = (item.qty !== undefined && item.qty !== null && item.qty !== "")
+          ? Number(item.qty)
+          : 1;
         const stockPrice = (item.price !== undefined && item.price !== null && item.price !== "")
           ? Number(item.price)
-          : (linkedStock ? Number(linkedStock.price) : 0);
+          : (linkedStock ? Number(linkedStock.price) : 15);
         const category = item.category || inferProductCategory(item.name, linkedStock?.sku);
         const img = item.img || getProductImage(item.name, linkedStock?.sku);
         const badge = item.badge !== undefined && item.badge !== ""
           ? item.badge
-          : (stockQty > 0 && stockQty <= 5 ? "low stock" : stockQty === 0 ? "sold out" : null);
+          : (stockQty === 0 ? "sold out" : null);
 
         const fit = item.fit || (item.category === "posters" ? "cover" : "contain");
 
@@ -675,11 +678,14 @@ async function loadProducts(forceRefresh = false) {
     } else {
       PRODUCTS = stock.map(item => {
         const custom = safeMap[item.id] || safeMap[item.itemName] || safeMap[item.sku] || {};
+        const stockQty = (custom.qty !== undefined && custom.qty !== null && custom.qty !== "")
+          ? Number(custom.qty)
+          : 1;
         const category = custom.category || inferProductCategory(item.itemName, item.sku);
         const img = custom.img || getProductImage(item.itemName, item.sku);
         const badge = custom.badge !== undefined && custom.badge !== ""
           ? custom.badge
-          : (item.quantity > 0 && item.quantity <= 5 ? "low stock" : item.quantity === 0 ? "sold out" : null);
+          : (stockQty === 0 ? "sold out" : null);
         const fit = custom.fit || (category === "posters" ? "cover" : "contain");
 
         return {
@@ -688,13 +694,13 @@ async function loadProducts(forceRefresh = false) {
           name: custom.name || item.itemName,
           sku: item.sku || "",
           desc: custom.desc || `${custom.name || item.itemName} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Alexandria.`,
-          price: custom.price !== undefined && custom.price !== "" ? Number(custom.price) : (item.price || 0),
-          qty: item.quantity,
+          price: custom.price !== undefined && custom.price !== "" ? Number(custom.price) : (item.price || 15),
+          qty: stockQty,
           category: category,
           img: img,
           badge: badge,
           fit: fit,
-          outOfStock: item.quantity === 0,
+          outOfStock: stockQty === 0,
         };
       });
     }
@@ -716,10 +722,10 @@ function getProductImage(name, sku) {
 
 function getFallbackProducts() {
   return [
-    { id: "cozy", name: "Kawaii Cozy Sticker Sheet", sku: "STK-COZY", desc: "18 cozy stickers: cats, coffees, moons, daisies.", price: 45, qty: 99, category: "sticker sheet", img: "images/sticker-cozy.jpg", badge: null, outOfStock: false },
-    { id: "cats", name: "Cat Emotions Pack", sku: "STK-CATS", desc: "6 die-cut cat stickers in different moods.", price: 35, qty: 99, category: "sticker sheet", img: "images/sticker-cats.jpg", badge: "new", outOfStock: false },
-    { id: "celes", name: "Celestial Art Poster A4", sku: "PST-CELES", desc: "Heavyweight matte botanical art poster.", price: 65, qty: 50, category: "posters", img: "images/sticker-celestial.jpg", badge: null, outOfStock: false },
-    { id: "food", name: "Boba Cat Single Sticker", sku: "STK-SNGL-1", desc: "Individual die-cut vinyl sticker for your hydroflask.", price: 15, qty: 99, category: "single stickers", img: "images/sticker-food.jpg", badge: null, outOfStock: false },
+    { id: "cozy", name: "Kawaii Cozy Sticker Sheet", sku: "STK-COZY", desc: "18 cozy stickers: cats, coffees, moons, daisies.", price: 45, qty: 1, category: "sticker sheet", img: "images/sticker-cozy.jpg", badge: null, outOfStock: false },
+    { id: "cats", name: "Cat Emotions Pack", sku: "STK-CATS", desc: "6 die-cut cat stickers in different moods.", price: 35, qty: 1, category: "sticker sheet", img: "images/sticker-cats.jpg", badge: "new", outOfStock: false },
+    { id: "celes", name: "Celestial Art Poster A4", sku: "PST-CELES", desc: "Heavyweight matte botanical art poster.", price: 65, qty: 1, category: "posters", img: "images/sticker-celestial.jpg", badge: null, outOfStock: false },
+    { id: "food", name: "Boba Cat Single Sticker", sku: "STK-SNGL-1", desc: "Individual die-cut vinyl sticker for your hydroflask.", price: 15, qty: 1, category: "single stickers", img: "images/sticker-food.jpg", badge: null, outOfStock: false },
   ];
 }
 

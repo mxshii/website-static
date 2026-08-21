@@ -237,6 +237,11 @@
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
+    .admin-form-row-3 {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 12px;
+    }
     .admin-input-group {
       display: flex;
       flex-direction: column;
@@ -786,7 +791,7 @@
 
       container.innerHTML = itemsToRender.map(item => {
         const linkedStock = expenseStockItems.find(s => String(s.id) === String(item.stockId));
-        const stockQty = linkedStock ? linkedStock.quantity : 0;
+        const itemQty = (item.qty !== undefined && item.qty !== null && item.qty !== "") ? Number(item.qty) : 1;
         const currentImg = item.img || "images/sticker-cozy.jpg";
 
         return `
@@ -794,7 +799,7 @@
             <!-- Photo Preview -->
             <div class="admin-img-col">
               <img src="${currentImg}" alt="${item.name}" class="admin-img-preview" id="img-preview-${item.id}" />
-              <span style="font-size:0.75rem;color:var(--coffee-500);font-weight:600;"><i data-lucide="package" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> ${stockQty} in stock</span>
+              <span style="font-size:0.75rem;color:var(--coffee-500);font-weight:600;" id="stock-badge-${item.id}"><i data-lucide="package" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> ${itemQty} in stock</span>
             </div>
 
             <!-- Fields -->
@@ -805,14 +810,14 @@
                 <input type="text" class="item-title-input" id="name-${item.id}" value="${escapeHtml(item.name || "")}" placeholder="e.g. Spider-Man Vinyl Sticker" />
               </div>
 
-              <!-- Linked Stock Pool & Price -->
-              <div class="admin-form-row">
+              <!-- Linked Stock Pool, Price & Quantity -->
+              <div class="admin-form-row-3">
                 <div class="admin-input-group">
                   <label>linked expense stock pool</label>
                   <select id="stockId-${item.id}">
                     ${expenseStockItems.map(stk => `
                       <option value="${stk.id}" ${String(item.stockId) === String(stk.id) ? "selected" : ""}>
-                        ${escapeHtml(stk.itemName)} (${stk.quantity} available · ${stk.price} EGP · ${stk.sku || "no SKU"})
+                        ${escapeHtml(stk.itemName)} (${stk.sku || "no SKU"})
                       </option>
                     `).join("")}
                     ${!expenseStockItems.length ? `<option value="">No stock items in expense tracker</option>` : ""}
@@ -820,7 +825,11 @@
                 </div>
                 <div class="admin-input-group">
                   <label>price in egp</label>
-                  <input type="number" id="price-${item.id}" value="${item.price || (linkedStock ? linkedStock.price : 0)}" min="0" step="1" placeholder="Price (EGP)" />
+                  <input type="number" id="price-${item.id}" value="${item.price !== undefined ? item.price : (linkedStock ? linkedStock.price : 15)}" min="0" step="1" placeholder="Price (EGP)" />
+                </div>
+                <div class="admin-input-group">
+                  <label>stock quantity (default: 1)</label>
+                  <input type="number" id="qty-${item.id}" value="${itemQty}" min="0" step="1" placeholder="Stock Qty" oninput="const b = document.getElementById('stock-badge-${item.id}'); if(b) { b.innerHTML = '<i data-lucide=\\'package\\' class=\\'icon-xs\\' style=\\'vertical-align:middle;margin-right:2px;\\'></i> ' + (this.value || 0) + ' in stock'; renderIcons(); }" />
                 </div>
               </div>
 
@@ -966,6 +975,7 @@
         img: "images/sticker-cats.jpg",
         category: "single stickers",
         price: defaultStock ? defaultStock.price : 15,
+        qty: 1, // default 1 in stock
         fit: "contain",
         badge: "new",
         desc: "Handmade die-cut vinyl sticker from STATIC.",
@@ -1043,6 +1053,7 @@
           img: img,
           category: category,
           price: price,
+          qty: 1, // default 1 in stock
           fit: fit,
           badge: i <= 5 ? "new" : "",
           desc: `Handmade ${category} design from STATIC. Waterproof vinyl, die-cut.`,
@@ -1092,6 +1103,7 @@
           img: img,
           category: category,
           price: 15,
+          qty: 1, // default 1 in stock
           fit: fit,
           badge: idx < 3 ? "new" : "",
           desc: `Handmade ${category} from STATIC. Waterproof vinyl, die-cut.`,
@@ -1118,6 +1130,7 @@
         id: newId,
         name: `${original.name} (Copy)`,
         badge: "new",
+        qty: original.qty !== undefined ? original.qty : 1,
       };
 
       const index = storefrontProducts.findIndex(p => p.id === itemId);
@@ -1169,6 +1182,8 @@
       item.name = (document.getElementById(`name-${itemId}`)?.value || item.name).trim();
       item.stockId = document.getElementById(`stockId-${itemId}`)?.value || item.stockId;
       item.price = parseFloat(document.getElementById(`price-${itemId}`)?.value) || item.price || 0;
+      const parsedQty = parseInt(document.getElementById(`qty-${itemId}`)?.value, 10);
+      item.qty = (isNaN(parsedQty) || parsedQty < 0) ? 1 : parsedQty;
       item.img = (document.getElementById(`url-${itemId}`)?.value || item.img).trim();
       item.category = document.getElementById(`cat-${itemId}`)?.value || item.category || "single stickers";
       item.fit = document.getElementById(`fit-${itemId}`)?.value || item.fit || "contain";
