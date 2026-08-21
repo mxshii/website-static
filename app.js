@@ -683,30 +683,39 @@ function renderProducts() {
   const grid = document.getElementById("products-grid");
   if (!grid) return;
 
+  const isHomePage = document.getElementById("featured") !== null && !document.querySelector(".shop-controls");
+
   let filtered = PRODUCTS;
 
-  // 3-Category Filter Logic: 'posters', 'single stickers', 'sticker sheet', or 'all'
-  if (activeCategory && activeCategory !== "all") {
-    filtered = filtered.filter(p => {
-      const cat = (p.category || "").toLowerCase();
-      if (activeCategory === "posters") {
-        return cat.includes("poster");
-      }
-      if (activeCategory === "single stickers" || activeCategory === "single") {
-        return cat.includes("single");
-      }
-      if (activeCategory === "sticker sheet" || activeCategory === "sheet") {
-        return cat.includes("sheet") || cat.includes("pack");
-      }
-      return cat === activeCategory;
-    });
-  }
+  if (isHomePage) {
+    // Show only 4 Best Sellers on the Home page
+    const bestSellers = PRODUCTS.filter(p => p.badge === "bestseller");
+    const others = PRODUCTS.filter(p => p.badge !== "bestseller");
+    filtered = [...bestSellers, ...others].slice(0, 4);
+  } else {
+    // 3-Category Filter Logic: 'posters', 'single stickers', 'sticker sheet', or 'all'
+    if (activeCategory && activeCategory !== "all") {
+      filtered = filtered.filter(p => {
+        const cat = (p.category || "").toLowerCase();
+        if (activeCategory === "posters") {
+          return cat.includes("poster");
+        }
+        if (activeCategory === "single stickers" || activeCategory === "single") {
+          return cat.includes("single");
+        }
+        if (activeCategory === "sticker sheet" || activeCategory === "sheet") {
+          return cat.includes("sheet") || cat.includes("pack");
+        }
+        return cat === activeCategory;
+      });
+    }
 
-  if (searchQuery) {
-    filtered = filtered.filter(p => {
-      const text = (p.name + " " + p.sku + " " + (p.category || "") + " " + p.desc).toLowerCase();
-      return text.includes(searchQuery);
-    });
+    if (searchQuery) {
+      filtered = filtered.filter(p => {
+        const text = (p.name + " " + p.sku + " " + (p.category || "") + " " + p.desc).toLowerCase();
+        return text.includes(searchQuery);
+      });
+    }
   }
 
   grid.innerHTML = "";
