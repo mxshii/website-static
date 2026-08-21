@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shop All Stickers — STATIC</title>
-  <meta name="description" content="Browse all hand-drawn waterproof vinyl sticker packs from STATIC. Flat 50 EGP delivery exclusively across Alexandria, Egypt." />
+  <meta name="description" content="Browse all waterproof vinyl sticker packs from STATIC. Flat 50 EGP delivery exclusively across Alexandria, Egypt." />
   <link rel="icon" type="image/png" href="images/1111-removebg-preview.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,13 +20,13 @@
     <div class="announcement-inner">
       <span>✦ delivery to alexandria only (50 EGP)</span>
       <span class="sep">·</span>
-      <span>handmade with love in alexandria</span>
+      <span>made with love in egypt</span>
       <span class="sep">·</span>
       <span>waterproof vinyl stickers</span>
       <span class="sep">·</span>
       <span>delivery to alexandria only (50 EGP)</span>
       <span class="sep">·</span>
-      <span>handmade with love in alexandria</span>
+      <span>made with love in egypt</span>
       <span class="sep">·</span>
       <span>waterproof vinyl stickers</span>
       <span class="sep">·</span>
@@ -77,29 +77,37 @@
   <section class="page-header">
     <p class="page-header-eyebrow"><i data-lucide="sparkles" class="icon-xs"></i> original collection</p>
     <h1>The Sticker Shop</h1>
-    <p>Hand-illustrated die-cut vinyl sticker packs. Peel, stick, and personalize your life.</p>
+    <p>Unique die-cut vinyl sticker packs. Peel, stick, and personalize your life.</p>
   </section>
 
-  <!-- SHOP SECTION -->
-  <section class="shop" id="shop">
+  <!-- SHOP MAIN -->
+  <main class="shop">
+    <!-- Filters & Search -->
     <div class="shop-controls">
-      <div class="search-bar-wrap">
-        <i data-lucide="search" class="search-icon"></i>
-        <input type="text" id="search-input" placeholder="Search stickers, themes, vibes..." autocomplete="off" />
-        <button type="button" class="search-clear hidden" id="search-clear" aria-label="Clear search">✕</button>
+      <div class="filter-tabs">
+        <button type="button" class="filter-pill active" data-category="all">
+          <i data-lucide="layers" class="icon-xs"></i> all items
+        </button>
+        <button type="button" class="filter-pill" data-category="posters">
+          <i data-lucide="image" class="icon-xs"></i> posters
+        </button>
+        <button type="button" class="filter-pill" data-category="single stickers">
+          <i data-lucide="tag" class="icon-xs"></i> single stickers
+        </button>
+        <button type="button" class="filter-pill" data-category="sticker sheet">
+          <i data-lucide="sparkles" class="icon-xs"></i> sticker sheets
+        </button>
       </div>
 
-      <div class="filter-tabs" id="filter-tabs">
-        <button type="button" class="filter-tab active" data-category="all">all stickers</button>
-        <button type="button" class="filter-tab" data-category="pack">sticker packs</button>
-        <button type="button" class="filter-tab" data-category="single">singles</button>
-        <button type="button" class="filter-tab" data-category="sheets">sheets</button>
-        <button type="button" class="filter-tab" data-category="posters">posters</button>
+      <div class="shop-search">
+        <i data-lucide="search" class="icon-sm"></i>
+        <input type="text" id="shop-search-input" placeholder="Search stickers..." aria-label="Search stickers" />
       </div>
     </div>
 
+    <!-- Products Grid -->
     <div class="products-grid" id="products-grid"></div>
-  </section>
+  </main>
 
   <!-- BULK ORDER SECTION -->
   <section class="bulk-order-section">
@@ -121,6 +129,32 @@
     </div>
   </section>
 
+  <!-- PERKS BAR -->
+  <section class="perks">
+    <div class="perks-inner">
+      <div class="perk">
+        <div class="perk-icon-wrap"><i data-lucide="droplets" class="perk-icon"></i></div>
+        <strong>Waterproof</strong>
+        <p>Thick premium vinyl made to last</p>
+      </div>
+      <div class="perk">
+        <div class="perk-icon-wrap"><i data-lucide="scissors" class="perk-icon"></i></div>
+        <strong>Die-Cut</strong>
+        <p>Contour cut to shape</p>
+      </div>
+      <div class="perk">
+        <div class="perk-icon-wrap"><i data-lucide="palette" class="perk-icon"></i></div>
+        <strong>Unique Designs</strong>
+        <p>Exclusive stickers crafted for you</p>
+      </div>
+      <div class="perk">
+        <div class="perk-icon-wrap"><i data-lucide="truck" class="perk-icon"></i></div>
+        <strong>Alexandria Delivery</strong>
+        <p>Flat 50 EGP across Alexandria</p>
+      </div>
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-inner">
@@ -135,7 +169,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
           </a>
           <a href="https://tiktok.com" target="_blank" rel="noopener" aria-label="TikTok">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.78 1.53V7.04a4.85 4.85 0 01-1.01-.35z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.78 1.53V7.04a4.85 4.85 0 01-1.01-.35z"/></svg>
           </a>
         </div>
       </div>
@@ -158,7 +192,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 STATIC. All rights reserved. Made with <i data-lucide="heart" class="icon-inline icon-heart"></i> in Alexandria.</p>
+      <p>© 2026 STATIC. All rights reserved. Made with <i data-lucide="heart" class="icon-inline icon-heart"></i> in Egypt.</p>
     </div>
   </footer>
 
@@ -210,14 +244,18 @@
     </div>
     <div class="cart-items" id="cart-items">
       <div class="cart-empty" id="cart-empty">
-        <i data-lucide="shopping-bag" class="empty-bag-icon"></i>
-        <p>your cart is empty</p>
-        <button type="button" class="btn btn-outline" onclick="closeCart()">start shopping</button>
+        <div class="cart-empty-cat">
+          <img src="images/1111-removebg-preview.png" alt="STATIC Mascot" class="cart-empty-cat-img" />
+        </div>
+        <h4>your cart is empty</h4>
+        <p>Go find some stickers that speak to you!</p>
+        <a href="shop.html" class="btn btn-primary" style="margin-top:16px;">
+          explore shop <i data-lucide="arrow-right" class="icon-sm"></i>
+        </a>
       </div>
-      <div class="cart-list" id="cart-list"></div>
     </div>
-    <div class="cart-footer" id="cart-footer" style="display:none">
-      <div class="cart-total-row">
+    <div class="cart-footer hidden" id="cart-footer">
+      <div class="cart-subtotal-row">
         <span>subtotal</span>
         <span id="cart-subtotal">0 EGP</span>
       </div>
@@ -229,24 +267,24 @@
   </aside>
 
   <!-- CHECKOUT MODAL -->
-  <div class="modal-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+  <div class="modal-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title">
     <div class="modal-box checkout-box" id="checkout-box">
-      <button type="button" class="modal-close" id="checkout-close"><i data-lucide="x" class="icon-sm"></i></button>
+      <button type="button" class="modal-close" id="checkout-modal-close"><i data-lucide="x" class="icon-sm"></i></button>
 
+      <!-- Step Indicator -->
       <div class="checkout-steps">
-        <div class="step active" id="step-ind-1"><span class="step-num">1</span><span>details</span></div>
+        <div class="step-dot active" id="dot-1"><span>1</span> details</div>
         <div class="step-line"></div>
-        <div class="step" id="step-ind-2"><span class="step-num">2</span><span>payment</span></div>
+        <div class="step-dot" id="dot-2"><span>2</span> payment</div>
         <div class="step-line"></div>
-        <div class="step" id="step-ind-3"><span class="step-num">3</span><span>review</span></div>
-        <div class="step-line"></div>
-        <div class="step" id="step-ind-4"><span class="step-num">4</span><span>done</span></div>
+        <div class="step-dot" id="dot-3"><span>3</span> review</div>
       </div>
 
-      <!-- Step 1: Details -->
+      <!-- Step 1: Customer Details -->
       <div class="checkout-step" id="checkout-step-1">
-        <h2 id="checkout-title">delivery details</h2>
-        <p class="checkout-sub">Delivering exclusively across Alexandria (50 EGP)</p>
+        <h2 id="checkout-modal-title">shipping details</h2>
+        <p class="checkout-sub">Delivering exclusively to Alexandria (50 EGP flat rate)</p>
+
         <form id="checkout-form" novalidate>
           <div class="form-row">
             <div class="form-group">
@@ -268,11 +306,13 @@
           </div>
           <div class="form-group">
             <label for="co-note">order note (optional)</label>
-            <textarea id="co-note" placeholder="Any special requests or instructions?" rows="2"></textarea>
+            <input type="text" id="co-note" placeholder="Special delivery instructions, etc."/>
           </div>
-          <button type="button" class="btn btn-primary full-width" id="checkout-next-btn">
-            next: choose payment <i data-lucide="arrow-right" class="icon-sm"></i>
-          </button>
+          <div class="checkout-actions">
+            <button type="submit" class="btn btn-primary" id="step-1-btn">
+              continue to payment <i data-lucide="arrow-right" class="icon-sm"></i>
+            </button>
+          </div>
         </form>
       </div>
 
