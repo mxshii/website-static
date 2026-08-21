@@ -750,38 +750,53 @@ function initShopControls() {
   }
 }
 
+const _imgCache = new Map();
+
 // ── PROTECTED IN-MEMORY CANVAS RENDERER (Hides image links from DOM / Inspect Tab) ──
+function drawToCanvas(ctx, canvasEl, img, fit) {
+  ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+  if (fit === "contain") {
+    const pad = Math.round(canvasEl.width * 0.04);
+    const w = canvasEl.width - pad * 2;
+    const h = canvasEl.height - pad * 2;
+    const scale = Math.min(w / img.naturalWidth, h / img.naturalHeight);
+    const dw = img.naturalWidth * scale;
+    const dh = img.naturalHeight * scale;
+    const dx = pad + (w - dw) / 2;
+    const dy = pad + (h - dh) / 2;
+    ctx.drawImage(img, dx, dy, dw, dh);
+  } else {
+    const scale = Math.max(canvasEl.width / img.naturalWidth, canvasEl.height / img.naturalHeight);
+    const dw = img.naturalWidth * scale;
+    const dh = img.naturalHeight * scale;
+    const dx = (canvasEl.width - dw) / 2;
+    const dy = (canvasEl.height - dh) / 2;
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+}
+
 function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
   if (!canvasEl || !rawUrl) return;
-  const ctx = canvasEl.getContext("2d");
+  const ctx = canvasEl.getContext("2d", { alpha: true });
+
+  if (_imgCache.has(rawUrl)) {
+    const cached = _imgCache.get(rawUrl);
+    if (cached.complete && cached.naturalWidth > 0) {
+      drawToCanvas(ctx, canvasEl, cached, fit);
+      return;
+    }
+  }
+
   const img = new Image();
   img.crossOrigin = "anonymous";
   img.referrerPolicy = "no-referrer";
 
   img.onload = () => {
-    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-    if (fit === "contain") {
-      const pad = Math.round(canvasEl.width * 0.05);
-      const w = canvasEl.width - pad * 2;
-      const h = canvasEl.height - pad * 2;
-      const scale = Math.min(w / img.naturalWidth, h / img.naturalHeight);
-      const dw = img.naturalWidth * scale;
-      const dh = img.naturalHeight * scale;
-      const dx = pad + (w - dw) / 2;
-      const dy = pad + (h - dh) / 2;
-      ctx.drawImage(img, dx, dy, dw, dh);
-    } else {
-      const scale = Math.max(canvasEl.width / img.naturalWidth, canvasEl.height / img.naturalHeight);
-      const dw = img.naturalWidth * scale;
-      const dh = img.naturalHeight * scale;
-      const dx = (canvasEl.width - dw) / 2;
-      const dy = (canvasEl.height - dh) / 2;
-      ctx.drawImage(img, dx, dy, dw, dh);
-    }
+    _imgCache.set(rawUrl, img);
+    drawToCanvas(ctx, canvasEl, img, fit);
   };
 
   img.onerror = () => {
-    // If CORS prevents canvas drawImage, load via memory background
     canvasEl.style.backgroundImage = `url("${rawUrl}")`;
     canvasEl.style.backgroundSize = fit === "contain" ? "contain" : "cover";
     canvasEl.style.backgroundPosition = "center";
@@ -852,7 +867,7 @@ function renderProducts() {
 
     card.innerHTML = `
       <div class="card-img-wrap ${fitClass}">
-        <canvas class="card-canvas" width="400" height="400" role="img" aria-label="${p.name}"></canvas>
+        <canvas class="card-canvas" width="280" height="280" role="img" aria-label="${p.name}"></canvas>
         ${p.badge ? `<span class="card-badge ${p.badge === "sold out" ? "badge-sold" : ""}">${p.badge}</span>` : ""}
       </div>
       <div class="card-body">
