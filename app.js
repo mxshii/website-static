@@ -4,6 +4,7 @@
 
 const EXPENSE_API = "https://expense-sys-ten.vercel.app";
 const VODAFONE_CASH_NUMBER = "01005792211";
+const PICTURE_DB_KEY = "static_storefront_pictures_v1";
 
 // ── STATE ─────────────────────────────────────────────
 let PRODUCTS = [];
@@ -15,6 +16,21 @@ let currentUser = null;          // logged-in customer
 let activeCategory = "all";
 let searchQuery = "";
 let _stockCacheTime = 0;
+
+// ── DEDICATED STOREFRONT PICTURE & METADATA DATABASE ──
+function getStorefrontPictureMap() {
+  try {
+    const saved = localStorage.getItem(PICTURE_DB_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (_) {}
+  return {};
+}
+
+function saveStorefrontPictureMap(map) {
+  try {
+    localStorage.setItem(PICTURE_DB_KEY, JSON.stringify(map));
+  } catch (_) {}
+}
 
 // ── ICON HELPER ───────────────────────────────────────
 function renderIcons() {
@@ -73,7 +89,6 @@ function initMobileMenu() {
 
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
-    // Close cart drawer if open
     closeCart();
     const isOpen = menu.classList.toggle("open");
     btn.setAttribute("aria-expanded", isOpen);
@@ -157,7 +172,7 @@ function highlightActiveNavLink() {
 }
 
 // ══════════════════════════════════════════════════════
-// MODAL & DRAWER HELPER (Prevents overlap & scroll traps)
+// MODAL & DRAWER HELPER
 // ══════════════════════════════════════════════════════
 function closeAllDrawersAndMenus() {
   closeCart();
@@ -458,8 +473,15 @@ async function loadMyOrders() {
 }
 
 // ══════════════════════════════════════════════════════
-// PRODUCTS & SHOP
+// PRODUCTS & SHOP (3 Categories: posters, single stickers, sticker sheet)
 // ══════════════════════════════════════════════════════
+function inferProductCategory(name, sku) {
+  const n = (name + " " + (sku || "")).toLowerCase();
+  if (n.includes("poster") || n.includes("print")) return "posters";
+  if (n.includes("sheet") || n.includes("pack") || n.includes("bundle") || n.includes("set")) return "sticker sheet";
+  return "single stickers";
+}
+
 async function loadProducts(forceRefresh = false) {
   const grid = document.getElementById("products-grid");
   if (!grid) return;
@@ -472,7 +494,7 @@ async function loadProducts(forceRefresh = false) {
   grid.innerHTML = `
     <div class="products-loading">
       <div class="loading-spinner"></div>
-      <p>Loading stickers...</p>
+      <p>Loading catalog...</p>
     </div>`;
 
   try {
@@ -485,17 +507,29 @@ async function loadProducts(forceRefresh = false) {
       return;
     }
 
-    PRODUCTS = stock.map(item => ({
-      id: item.id,
-      name: item.itemName,
-      sku: item.sku || "",
-      desc: `${item.itemName} — a hand-illustrated sticker pack from STATIC. Waterproof vinyl, die-cut, shipped from Cairo.`,
-      price: item.price || 0,
-      qty: item.quantity,
-      img: getProductImage(item.itemName, item.sku),
-      badge: item.quantity > 0 && item.quantity <= 5 ? "low stock" : item.quantity === 0 ? "sold out" : null,
-      outOfStock: item.quantity === 0,
-    }));
+    const customMap = getStorefrontPictureMap();
+
+    PRODUCTS = stock.map(item => {
+      const custom = customMap[item.id] || customMap[item.itemName] || customMap[item.sku] || {};
+      const category = custom.category || inferProductCategory(item.itemName, item.sku);
+      const img = custom.img || getProductImage(item.itemName, item.sku);
+      const badge = custom.badge !== undefined && custom.badge !== ""
+        ? custom.badge
+        : (item.quantity > 0 && item.quantity <= 5 ? "low stock" : item.quantity === 0 ? "sold out" : null);
+
+      return {
+        id: item.id,
+        name: item.itemName,
+        sku: item.sku || "",
+        desc: custom.desc || `${item.itemName} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Cairo.`,
+        price: item.price || 0,
+        qty: item.quantity,
+        category: category,
+        img: img,
+        badge: badge,
+        outOfStock: item.quantity === 0,
+      };
+    });
 
     renderProducts();
   } catch (err) {
@@ -515,10 +549,10 @@ function getProductImage(name, sku) {
 
 function getFallbackProducts() {
   return [
-    { id: "cozy", name: "Kawaii Cozy Pack", sku: "STK-COZY", desc: "18 cozy stickers: cats, coffees, moons, daisies.", price: 0, qty: 99, img: "images/sticker-cozy.jpg", badge: null, outOfStock: false },
-    { id: "cats", name: "Cat Emotions Pack", sku: "STK-CATS", desc: "6 die-cut cat stickers in different moods.", price: 0, qty: 99, img: "images/sticker-cats.jpg", badge: "new", outOfStock: false },
-    { id: "celes", name: "Celestial & Botanical", sku: "STK-CELES", desc: "Suns, moons, mushrooms and cosmic sparkles.", price: 0, qty: 99, img: "images/sticker-celestial.jpg", badge: null, outOfStock: false },
-    { id: "food", name: "Foodie Friends Pack", sku: "STK-FOOD", desc: "Ramen, boba, croissants, ice cream and more.", price: 0, qty: 99, img: "images/sticker-food.jpg", badge: null, outOfStock: false },
+    { id: "cozy", name: "Kawaii Cozy Sticker Sheet", sku: "STK-COZY", desc: "18 cozy stickers: cats, coffees, moons, daisies.", price: 45, qty: 99, category: "sticker sheet", img: "images/sticker-cozy.jpg", badge: null, outOfStock: false },
+    { id: "cats", name: "Cat Emotions Pack", sku: "STK-CATS", desc: "6 die-cut cat stickers in different moods.", price: 35, qty: 99, category: "sticker sheet", img: "images/sticker-cats.jpg", badge: "new", outOfStock: false },
+    { id: "celes", name: "Celestial Art Poster A4", sku: "PST-CELES", desc: "Heavyweight matte botanical art poster.", price: 65, qty: 50, category: "posters", img: "images/sticker-celestial.jpg", badge: null, outOfStock: false },
+    { id: "food", name: "Boba Cat Single Sticker", sku: "STK-SNGL-1", desc: "Individual die-cut vinyl sticker for your hydroflask.", price: 15, qty: 99, category: "single stickers", img: "images/sticker-food.jpg", badge: null, outOfStock: false },
   ];
 }
 
@@ -530,7 +564,7 @@ function initShopControls() {
     pill.addEventListener("click", () => {
       filterPills.forEach(p => p.classList.remove("active"));
       pill.classList.add("active");
-      activeCategory = pill.getAttribute("data-category") || "all";
+      activeCategory = (pill.getAttribute("data-category") || "all").toLowerCase().trim();
       renderProducts();
     });
   });
@@ -549,16 +583,26 @@ function renderProducts() {
 
   let filtered = PRODUCTS;
 
-  if (activeCategory !== "all") {
+  // 3-Category Filter Logic: 'posters', 'single stickers', 'sticker sheet', or 'all'
+  if (activeCategory && activeCategory !== "all") {
     filtered = filtered.filter(p => {
-      const text = (p.name + " " + p.sku + " " + p.desc).toLowerCase();
-      return text.includes(activeCategory);
+      const cat = (p.category || "").toLowerCase();
+      if (activeCategory === "posters") {
+        return cat.includes("poster");
+      }
+      if (activeCategory === "single stickers" || activeCategory === "single") {
+        return cat.includes("single");
+      }
+      if (activeCategory === "sticker sheet" || activeCategory === "sheet") {
+        return cat.includes("sheet") || cat.includes("pack");
+      }
+      return cat === activeCategory;
     });
   }
 
   if (searchQuery) {
     filtered = filtered.filter(p => {
-      const text = (p.name + " " + p.sku + " " + p.desc).toLowerCase();
+      const text = (p.name + " " + p.sku + " " + (p.category || "") + " " + p.desc).toLowerCase();
       return text.includes(searchQuery);
     });
   }
@@ -568,7 +612,7 @@ function renderProducts() {
   if (!filtered.length) {
     grid.innerHTML = `
       <div class="products-empty">
-        <p>No sticker packs found matching your selection.</p>
+        <p>No items found matching your selection.</p>
       </div>`;
     return;
   }
@@ -677,7 +721,7 @@ function initProductModal() {
 
 function openProductModal(productId) {
   closeAllDrawersAndMenus();
-  const p = PRODUCTS.find(x => x.id === productId) || getFallbackProducts().find(x => x.id === productId);
+  const p = PRODUCTS.find(x => String(x.id) === String(productId)) || getFallbackProducts().find(x => String(x.id) === String(productId));
   if (!p) return;
   currentProduct = p;
 
@@ -693,7 +737,7 @@ function openProductModal(productId) {
   if (nameEl) nameEl.textContent = p.name;
   if (descEl) descEl.textContent = p.desc;
   if (priceEl) priceEl.textContent = p.price > 0 ? p.price + " EGP" : "Price TBD";
-  if (piecesEl) piecesEl.textContent = p.qty > 0 ? `${p.qty} in stock` : "Out of stock";
+  if (piecesEl) piecesEl.textContent = p.qty > 0 ? `${p.qty} in stock · ${p.category}` : "Out of stock";
   if (qtyInput) qtyInput.value = 1;
 
   if (addBtn) {
@@ -782,10 +826,10 @@ function quickAddToCart(productId) {
 }
 
 function addToCart(productId, qty = 1) {
-  let p = PRODUCTS.find(x => x.id === productId) || getFallbackProducts().find(x => x.id === productId);
+  let p = PRODUCTS.find(x => String(x.id) === String(productId)) || getFallbackProducts().find(x => String(x.id) === String(productId));
   if (!p || p.outOfStock) return;
 
-  const existing = cart.find(i => i.id === productId);
+  const existing = cart.find(i => String(i.id) === String(productId));
   const maxStock = p.qty > 0 ? p.qty : 99;
 
   if (existing) {
@@ -800,15 +844,15 @@ function addToCart(productId, qty = 1) {
 }
 
 function removeFromCart(productId) {
-  cart = cart.filter(i => i.id !== productId);
+  cart = cart.filter(i => String(i.id) !== String(productId));
   saveCartToStorage();
   updateCartUI();
 }
 
 function changeQty(productId, delta) {
-  const item = cart.find(i => i.id === productId);
+  const item = cart.find(i => String(i.id) === String(productId));
   if (!item) return;
-  const prod = PRODUCTS.find(p => p.id === productId);
+  const prod = PRODUCTS.find(p => String(p.id) === String(productId));
   const maxQty = (prod && prod.qty > 0) ? prod.qty : 99;
 
   const next = item.qty + delta;
@@ -892,7 +936,7 @@ function updateCartUI() {
 }
 
 // ══════════════════════════════════════════════════════
-// CHECKOUT MODAL (4 steps: Details -> Payment -> Review -> Confirmation)
+// CHECKOUT MODAL (4 steps)
 // ══════════════════════════════════════════════════════
 let checkoutStep = 1;
 
