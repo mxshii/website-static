@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shop All Stickers — STATIC</title>
-  <meta name="description" content="Browse all hand-drawn waterproof vinyl sticker packs from STATIC. Flat 50 EGP delivery exclusively across Alexandria, Egypt." />
+  <title>FAQ — STATIC</title>
+  <meta name="description" content="Frequently Asked Questions about STATIC stickers, flat 50 EGP Alexandria delivery, waterproof materials, and Vodafone Cash payment." />
   <link rel="icon" type="image/png" href="images/1111-removebg-preview.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,7 +16,7 @@
 <body>
 
   <!-- ANNOUNCEMENT BAR -->
-  <div class="announcement-bar" id="announcement-bar">
+  <div class="announcement-bar">
     <div class="announcement-inner">
       <span>✦ delivery to alexandria only (50 EGP)</span>
       <span class="sep">·</span>
@@ -38,8 +38,8 @@
     <div class="nav-inner">
       <nav class="nav-links left">
         <a href="index.html">home</a>
-        <a href="shop.html" class="active">shop</a>
-        <a href="faq.html">faq</a>
+        <a href="shop.html">shop</a>
+        <a href="faq.html" class="active">faq</a>
         <a href="contact.html">contact</a>
       </nav>
 
@@ -63,62 +63,87 @@
         <i data-lucide="menu" class="icon-md"></i>
       </button>
     </div>
-
-    <div class="mobile-menu" id="mobile-menu">
-      <a href="index.html">home</a>
-      <a href="shop.html" class="active">shop</a>
-      <a href="faq.html">faq</a>
-      <a href="contact.html">contact</a>
-      <a href="#" id="mob-account">sign in</a>
-    </div>
   </header>
+
+  <!-- MOBILE MENU DRAWER -->
+  <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <div class="mobile-menu-head">
+      <a href="index.html" class="logo">
+        <img src="images/1111-removebg-preview.png" alt="STATIC Logo" class="logo-img" />
+        <span class="logo-text">STATIC</span>
+      </a>
+      <button type="button" class="modal-close" id="mobile-menu-close" aria-label="Close navigation menu"><i data-lucide="x" class="icon-sm"></i></button>
+    </div>
+    <nav class="mobile-nav-links">
+      <a href="index.html"><i data-lucide="home" class="icon-sm"></i> home</a>
+      <a href="shop.html"><i data-lucide="shopping-bag" class="icon-sm"></i> shop</a>
+      <a href="faq.html" class="active"><i data-lucide="help-circle" class="icon-sm"></i> faq</a>
+      <a href="contact.html"><i data-lucide="mail" class="icon-sm"></i> contact</a>
+    </nav>
+  </div>
 
   <!-- PAGE HEADER -->
   <section class="page-header">
-    <p class="page-header-eyebrow"><i data-lucide="sparkles" class="icon-xs"></i> original collection</p>
-    <h1>The Sticker Shop</h1>
-    <p>Hand-illustrated die-cut vinyl sticker packs. Peel, stick, and personalize your life.</p>
+    <p class="page-header-eyebrow"><i data-lucide="help-circle" class="icon-xs"></i> questions &amp; answers</p>
+    <h1>frequently asked questions</h1>
+    <p>Everything you need to know about our waterproof stickers, Alexandria delivery, and payments.</p>
   </section>
 
-  <!-- SHOP SECTION -->
-  <section class="shop" id="shop">
-    <div class="shop-controls">
-      <div class="search-bar-wrap">
-        <i data-lucide="search" class="search-icon"></i>
-        <input type="text" id="search-input" placeholder="Search stickers, themes, vibes..." autocomplete="off" />
-        <button type="button" class="search-clear hidden" id="search-clear" aria-label="Clear search">✕</button>
+  <!-- FAQ SECTION -->
+  <section class="faq-section" id="faq" style="padding-top:48px;">
+    <div class="faq-grid">
+      <div class="faq-item">
+        <h4><i data-lucide="help-circle" class="icon-sm"></i> Are the stickers really waterproof?</h4>
+        <p>Yes! They are printed on waterproof vinyl with an extra protective matte film. You can put them on water bottles, hand-wash them, or expose them to outdoor weather without smudging or peeling.</p>
       </div>
 
-      <div class="filter-tabs" id="filter-tabs">
-        <button type="button" class="filter-tab active" data-category="all">all stickers</button>
-        <button type="button" class="filter-tab" data-category="pack">sticker packs</button>
-        <button type="button" class="filter-tab" data-category="single">singles</button>
-        <button type="button" class="filter-tab" data-category="sheets">sheets</button>
-        <button type="button" class="filter-tab" data-category="posters">posters</button>
+      <div class="faq-item">
+        <h4><i data-lucide="truck" class="icon-sm"></i> Where do you deliver and how long does it take?</h4>
+        <p>Currently, we deliver exclusively across Alexandria! Orders arrive in 1–2 business days for a flat rate of 50 EGP.</p>
+      </div>
+
+      <div class="faq-item">
+        <h4><i data-lucide="smartphone" class="icon-sm"></i> How do I pay with Vodafone Cash?</h4>
+        <p>During checkout, select <strong>Vodafone Cash</strong>. Send your order total to <code>01005792211</code>. We verify and process your order immediately!</p>
+      </div>
+
+      <div class="faq-item">
+        <h4><i data-lucide="refresh-cw" class="icon-sm"></i> What is your returns / exchange policy?</h4>
+        <p>If your stickers arrive damaged or defective, reach out to us via the Contact page with your Order ID, and we'll gladly replace them or refund you.</p>
+      </div>
+
+      <div class="faq-item">
+        <h4><i data-lucide="sparkles" class="icon-sm"></i> What sizes are the stickers?</h4>
+        <p>Single die-cut stickers range from 5cm to 8cm. Sticker sheets are standard A5 size featuring multiple contour-cut peelable designs.</p>
       </div>
     </div>
-
-    <div class="products-grid" id="products-grid"></div>
   </section>
 
-  <!-- BULK ORDER SECTION -->
-  <section class="bulk-order-section">
-    <div class="bulk-order-card">
-      <div class="bulk-order-left">
-        <div class="bulk-icon-badge">
-          <i data-lucide="boxes" class="icon-md"></i>
-        </div>
-        <div>
-          <h3>ordering in bulk or custom stickers?</h3>
-          <p>We supply brands, cafés, universities, and student initiatives with custom-printed vinyl stickers at bulk rates.</p>
-        </div>
-      </div>
-      <div class="bulk-order-right">
-        <a href="contact.html" class="btn btn-dark">
-          get bulk quote <i data-lucide="arrow-right" class="icon-sm"></i>
-        </a>
-      </div>
+  <!-- VALUES SECTION -->
+  <section class="values-grid">
+    <div class="value-card">
+      <div class="value-icon"><i data-lucide="palette" class="icon-md"></i></div>
+      <h3>Unique Designs</h3>
+      <p>Exclusive creative artwork crafted with passion for individuality.</p>
     </div>
+    <div class="value-card">
+      <div class="value-icon"><i data-lucide="shield-check" class="icon-md"></i></div>
+      <h3>Weatherproof Vinyl</h3>
+      <p>Durable 100-micron vinyl with UV laminate. Slap them on hydroflasks, laptops, or car bumpers.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon"><i data-lucide="sparkles" class="icon-md"></i></div>
+      <h3>Carefully Packaged</h3>
+      <p>Every order comes in signature beige kraft mailers with surprise freebie mini-stickers inside.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="background:var(--beige-300);padding:60px 32px;text-align:center;">
+    <h2 style="margin-bottom:12px;font-family:var(--font-display);">Ready to stick something cool?</h2>
+    <p style="margin-bottom:24px;color:var(--coffee-600);">Browse our newest packs and give your belongings some personality.</p>
+    <a href="shop.html" class="btn btn-primary">explore the shop <i data-lucide="arrow-right" class="icon-sm"></i></a>
   </section>
 
   <!-- FOOTER -->
@@ -148,58 +173,23 @@
           <a href="contact.html">contact</a>
         </div>
         <div class="footer-col">
-          <h4>support</h4>
-          <a href="faq.html">help &amp; faq</a>
-          <a href="faq.html">shipping guide</a>
-          <a href="faq.html">returns policy</a>
-          <a href="faq.html">vodafone cash info</a>
-          <a href="admin.html">storefront manager</a>
+          <h4>stickers</h4>
+          <a href="shop.html">single stickers</a>
+          <a href="shop.html">sticker sheets</a>
+          <a href="shop.html">posters</a>
+        </div>
+        <div class="footer-col">
+          <h4>help &amp; info</h4>
+          <a href="faq.html">faq</a>
+          <a href="contact.html">shipping to alexandria (50 egp)</a>
+          <a href="contact.html">contact us</a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 STATIC. All rights reserved. Made with <i data-lucide="heart" class="icon-inline icon-heart"></i> in Alexandria.</p>
+      <p>© 2026 STATIC. All rights reserved. Made with <i data-lucide="heart" class="icon-inline icon-heart"></i> in Egypt.</p>
     </div>
   </footer>
-
-  <!-- PRODUCT MODAL -->
-  <div class="modal-overlay" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-product-name">
-    <div class="modal-box" id="modal-box">
-      <button type="button" class="modal-close" id="modal-close" aria-label="Close"><i data-lucide="x" class="icon-sm"></i></button>
-      <div class="modal-grid">
-        <div class="modal-images">
-          <canvas class="modal-main-canvas" id="modal-main-canvas" width="600" height="600" role="img"></canvas>
-          <img class="modal-main-img" id="modal-main-img" src="" alt="" style="display:none;" />
-        </div>
-        <div class="modal-info">
-          <p class="modal-badge">die-cut sticker pack</p>
-          <h2 class="modal-product-name" id="modal-product-name"></h2>
-          <p class="modal-desc" id="modal-desc"></p>
-          <div class="modal-price-row">
-            <span class="modal-price" id="modal-price"></span>
-            <span class="modal-pieces" id="modal-pieces"></span>
-          </div>
-          <div class="modal-qty-row">
-            <label for="modal-qty">quantity</label>
-            <div class="qty-ctrl">
-              <button type="button" class="qty-btn" id="modal-qty-minus"><i data-lucide="minus" class="icon-xs"></i></button>
-              <input type="number" id="modal-qty" value="1" min="1" max="99" readonly />
-              <button type="button" class="qty-btn" id="modal-qty-plus"><i data-lucide="plus" class="icon-xs"></i></button>
-            </div>
-          </div>
-          <button type="button" class="btn btn-primary modal-add-btn" id="modal-add-btn">
-            <i data-lucide="shopping-bag" class="icon-sm"></i> add to cart
-          </button>
-          <ul class="modal-features">
-            <li><i data-lucide="droplets" class="icon-xs feature-icon"></i> 100% Waterproof vinyl</li>
-            <li><i data-lucide="scissors" class="icon-xs feature-icon"></i> Die-cut to individual shape</li>
-            <li><i data-lucide="sun" class="icon-xs feature-icon"></i> UV &amp; scratch-resistant</li>
-            <li><i data-lucide="package" class="icon-xs feature-icon"></i> Dispatched from Alexandria in 1–2 days</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- CART DRAWER -->
   <div class="cart-overlay" id="cart-overlay"></div>
@@ -210,14 +200,18 @@
     </div>
     <div class="cart-items" id="cart-items">
       <div class="cart-empty" id="cart-empty">
-        <i data-lucide="shopping-bag" class="empty-bag-icon"></i>
-        <p>your cart is empty</p>
-        <button type="button" class="btn btn-outline" onclick="closeCart()">start shopping</button>
+        <div class="cart-empty-cat">
+          <img src="images/1111-removebg-preview.png" alt="STATIC Mascot" class="cart-empty-cat-img" />
+        </div>
+        <h4>your cart is empty</h4>
+        <p>Go find some stickers that speak to you!</p>
+        <a href="shop.html" class="btn btn-primary" style="margin-top:16px;">
+          explore shop <i data-lucide="arrow-right" class="icon-sm"></i>
+        </a>
       </div>
-      <div class="cart-list" id="cart-list"></div>
     </div>
-    <div class="cart-footer" id="cart-footer" style="display:none">
-      <div class="cart-total-row">
+    <div class="cart-footer hidden" id="cart-footer">
+      <div class="cart-subtotal-row">
         <span>subtotal</span>
         <span id="cart-subtotal">0 EGP</span>
       </div>
@@ -251,16 +245,16 @@
           <div class="form-row">
             <div class="form-group">
               <label for="co-name">full name *</label>
-              <input type="text" id="co-name" placeholder="Your Name" required autocomplete="name"/>
+              <input type="text" id="co-name" placeholder="Your Name" required autocomplete="name" />
             </div>
             <div class="form-group">
               <label for="co-phone">phone number *</label>
-              <input type="tel" id="co-phone" placeholder="01X XXXX XXXX" required autocomplete="tel"/>
+              <input type="tel" id="co-phone" placeholder="01X XXXX XXXX" required autocomplete="tel" />
             </div>
           </div>
           <div class="form-group">
             <label for="co-email">email address (optional)</label>
-            <input type="email" id="co-email" placeholder="you@email.com" autocomplete="email"/>
+            <input type="email" id="co-email" placeholder="you@email.com" autocomplete="email" />
           </div>
           <div class="form-group">
             <label for="co-address">delivery address (alexandria only) *</label>
@@ -268,69 +262,63 @@
           </div>
           <div class="form-group">
             <label for="co-note">order note (optional)</label>
-            <textarea id="co-note" placeholder="Any special requests or instructions?" rows="2"></textarea>
+            <input type="text" id="co-note" placeholder="Special delivery instructions, etc." />
           </div>
-          <button type="button" class="btn btn-primary full-width" id="checkout-next-btn">
-            next: choose payment <i data-lucide="arrow-right" class="icon-sm"></i>
-          </button>
+          <div class="checkout-actions">
+            <button type="button" class="btn btn-primary" id="step-1-next">
+              continue to payment <i data-lucide="arrow-right" class="icon-sm"></i>
+            </button>
+          </div>
         </form>
       </div>
 
-      <!-- Step 2: Payment Method -->
+      <!-- Step 2: Payment -->
       <div class="checkout-step hidden" id="checkout-step-2">
-        <h2>choose payment</h2>
-        <p class="checkout-sub">How would you like to pay?</p>
-
+        <h2>payment method</h2>
+        <p class="checkout-sub">Select how you'd like to pay for your stickers</p>
         <div class="payment-options">
-          <div class="payment-option" data-method="vodafone" id="pay-vodafone">
-            <div class="payment-option-icon vodafone-icon">
-              <i data-lucide="smartphone" class="icon-lg"></i>
-            </div>
+          <div class="payment-option selected" id="opt-vodafone" onclick="selectPayment('vodafone')">
+            <div class="payment-option-icon vodafone-icon"><i data-lucide="smartphone" class="icon-sm"></i></div>
             <div class="payment-option-text">
               <strong>Vodafone Cash</strong>
-              <span>Send to: <span class="vcash-preview">01005792211</span></span>
+              <span>Send money to <span class="vcash-preview">01005792211</span></span>
             </div>
-            <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
+            <i data-lucide="check-circle-2" class="icon-sm payment-option-check"></i>
           </div>
-
-          <div class="payment-option" data-method="card" id="pay-card">
-            <div class="payment-option-icon card-icon">
-              <i data-lucide="credit-card" class="icon-lg"></i>
-            </div>
+          <div class="payment-option" id="opt-card" onclick="selectPayment('card')">
+            <div class="payment-option-icon card-icon"><i data-lucide="credit-card" class="icon-sm"></i></div>
             <div class="payment-option-text">
-              <strong>Card Payment</strong>
-              <span>We'll contact you with payment link</span>
+              <strong>Credit / Debit Card</strong>
+              <span>Visa, Mastercard, Meeza</span>
             </div>
-            <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
+            <i data-lucide="check-circle-2" class="icon-sm payment-option-check"></i>
           </div>
         </div>
 
-        <div class="payment-panel hidden" id="vodafone-panel">
+        <div class="payment-panel" id="panel-vodafone">
           <div class="vodafone-instructions">
-            <i data-lucide="info" class="icon-sm"></i>
+            <i data-lucide="info" class="icon-sm" style="flex-shrink:0;margin-top:2px;"></i>
             <div>
-              <strong>How to pay with Vodafone Cash:</strong>
+              <strong>How Vodafone Cash works:</strong>
               <ol>
-                <li>Open Vodafone Cash app or dial *9#</li>
-                <li>Transfer amount to: <strong class="vcash-num">01005792211</strong></li>
-                <li>Click Review Order below to finalize</li>
+                <li>Complete your order to get your Order ID</li>
+                <li>Send the total amount to <strong class="vcash-num">01005792211</strong></li>
+                <li>We'll confirm your payment and ship your stickers!</li>
               </ol>
             </div>
           </div>
         </div>
 
-        <div class="payment-panel hidden" id="card-panel">
+        <div class="payment-panel hidden" id="panel-card">
           <div class="card-instructions">
-            <i data-lucide="info" class="icon-sm"></i>
-            <p>After placing your order, our team will reach out with a secure card payment link.</p>
+            <i data-lucide="lock" class="icon-sm" style="flex-shrink:0;margin-top:2px;"></i>
+            <span>Card payment will be processed securely. Card processing integration is active.</span>
           </div>
         </div>
 
-        <div class="checkout-actions" style="margin-top:28px">
-          <button type="button" class="btn btn-outline" id="payment-back-btn">
-            <i data-lucide="arrow-left" class="icon-sm"></i> back
-          </button>
-          <button type="button" class="btn btn-primary" id="payment-next-btn">
+        <div class="checkout-actions" style="margin-top:24px;">
+          <button type="button" class="btn btn-outline" id="step-2-back">back</button>
+          <button type="button" class="btn btn-primary" id="step-2-next">
             review order <i data-lucide="arrow-right" class="icon-sm"></i>
           </button>
         </div>
@@ -339,24 +327,27 @@
       <!-- Step 3: Review -->
       <div class="checkout-step hidden" id="checkout-step-3">
         <h2>review your order</h2>
+        <p class="checkout-sub">Check everything before placing your order</p>
         <div class="review-items" id="review-items"></div>
-        <div class="review-totals" id="review-totals"></div>
+        <div class="review-totals">
+          <div class="review-total-row"><span>items subtotal</span><span id="review-subtotal">0 EGP</span></div>
+          <div class="review-total-row"><span>delivery in alexandria</span><span id="review-shipping">50 EGP</span></div>
+          <div class="review-total-row grand"><span>total</span><span id="review-grand-total">0 EGP</span></div>
+        </div>
         <div class="review-customer" id="review-customer"></div>
         <div class="checkout-actions">
-          <button type="button" class="btn btn-outline" id="checkout-back-btn">
-            <i data-lucide="arrow-left" class="icon-sm"></i> back
-          </button>
-          <button type="button" class="btn btn-primary" id="checkout-place-btn">
-            place order <i data-lucide="check" class="icon-sm"></i>
+          <button type="button" class="btn btn-outline" id="step-3-back">back</button>
+          <button type="button" class="btn btn-primary" id="place-order-btn">
+            place order <i data-lucide="arrow-right" class="icon-sm"></i>
           </button>
         </div>
       </div>
 
-      <!-- Step 4: Confirmation -->
+      <!-- Step 4: Done -->
       <div class="checkout-step hidden" id="checkout-step-4">
         <div class="confirm-wrap">
           <div class="confirm-icon-wrap">
-            <i data-lucide="package-check" class="confirm-icon-lucide"></i>
+            <i data-lucide="check" class="confirm-icon-lucide"></i>
           </div>
           <h2>order placed!</h2>
           <p class="confirm-msg" id="confirm-msg"></p>
@@ -387,11 +378,11 @@
         <form id="login-form">
           <div class="form-group">
             <label for="login-email">email address</label>
-            <input type="email" id="login-email" placeholder="you@email.com" required autocomplete="email"/>
+            <input type="email" id="login-email" placeholder="you@email.com" required autocomplete="email" />
           </div>
           <div class="form-group">
             <label for="login-password">password</label>
-            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password"/>
+            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password" />
           </div>
           <p class="form-error" id="login-error"></p>
           <button type="submit" class="btn btn-primary full-width" id="login-submit">sign in</button>
@@ -412,20 +403,20 @@
           <div class="form-row">
             <div class="form-group">
               <label for="reg-name">full name</label>
-              <input type="text" id="reg-name" placeholder="Your Name" required autocomplete="name"/>
+              <input type="text" id="reg-name" placeholder="Your Name" required autocomplete="name" />
             </div>
             <div class="form-group">
               <label for="reg-phone">phone number (optional)</label>
-              <input type="tel" id="reg-phone" placeholder="01X XXXX XXXX" autocomplete="tel"/>
+              <input type="tel" id="reg-phone" placeholder="01X XXXX XXXX" autocomplete="tel" />
             </div>
           </div>
           <div class="form-group">
             <label for="reg-email">email address</label>
-            <input type="email" id="reg-email" placeholder="you@email.com" required autocomplete="email"/>
+            <input type="email" id="reg-email" placeholder="you@email.com" required autocomplete="email" />
           </div>
           <div class="form-group">
             <label for="reg-password">password (min. 6 characters)</label>
-            <input type="password" id="reg-password" placeholder="min. 6 characters" required autocomplete="new-password"/>
+            <input type="password" id="reg-password" placeholder="min. 6 characters" required autocomplete="new-password" />
           </div>
           <p class="form-error" id="register-error"></p>
           <button type="submit" class="btn btn-primary full-width" id="register-submit">create account</button>
