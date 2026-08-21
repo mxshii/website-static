@@ -73,6 +73,7 @@ function renderIcons() {
 // ── INIT ──────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   createToastContainer();
+  initImageProtection();
   loadCartFromStorage();
   loadCurrentUser();
   initNavbar();
@@ -92,6 +93,33 @@ document.addEventListener("DOMContentLoaded", () => {
   highlightActiveNavLink();
   renderIcons();
 });
+
+// ── ARTWORK ANTI-THEFT PROTECTION ──
+function initImageProtection() {
+  document.addEventListener("contextmenu", (e) => {
+    if (e.target.closest(".card-img-wrap, .modal-main-img, .modal-images, .product-card")) {
+      e.preventDefault();
+      showToast("✦ STATIC artwork is protected");
+      return false;
+    }
+  });
+
+  document.addEventListener("dragstart", (e) => {
+    if (e.target.tagName === "IMG" || e.target.closest(".card-img-wrap, .modal-images, .product-card")) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === "s" || e.key === "S")) {
+      if (!window.location.pathname.includes("admin")) {
+        e.preventDefault();
+        showToast("✦ STATIC artwork is protected");
+      }
+    }
+  });
+}
 
 // Run icon renderer after full page load as well
 window.addEventListener("load", () => {
@@ -703,7 +731,7 @@ function renderProducts() {
 
     card.innerHTML = `
       <div class="card-img-wrap ${fitClass}">
-        <img src="${p.img}" alt="${p.name}" loading="lazy" />
+        <img src="${p.img}" alt="${p.name}" loading="lazy" draggable="false" oncontextmenu="return false;" />
         ${p.badge ? `<span class="card-badge ${p.badge === "sold out" ? "badge-sold" : ""}">${p.badge}</span>` : ""}
         <div class="card-explore"><span>explore</span></div>
       </div>
