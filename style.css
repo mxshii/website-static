@@ -344,13 +344,15 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 /* ══════════════════════════════
    PAGE HEADER (Dedicated Pages)
    ══════════════════════════════ */
-.page-header {
+.page-header,
+.page-hero {
   background: var(--beige-100);
   border-bottom: 1.5px solid var(--beige-300);
   padding: 56px 32px 48px;
   text-align: center;
 }
-.page-header-eyebrow {
+.page-header-eyebrow,
+.page-hero-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -361,13 +363,15 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   color: var(--coffee-500);
   margin-bottom: 10px;
 }
-.page-header h1 {
+.page-header h1,
+.page-hero h1 {
   font-size: clamp(2.4rem, 5vw, 3.8rem);
   font-weight: 900;
   color: var(--coffee-800);
   margin-bottom: 12px;
 }
-.page-header p {
+.page-header p,
+.page-hero p {
   font-size: 1.05rem;
   color: var(--coffee-600);
   max-width: 600px;
