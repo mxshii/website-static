@@ -476,10 +476,10 @@
         </div>
         <div class="admin-action-btns">
           <button type="button" class="btn btn-primary" onclick="addNewProductPrompt()">
-            <i data-lucide="plus" class="icon-xs"></i> + 1 product
+            <i data-lucide="plus" class="icon-xs"></i> add 1 product
           </button>
           <button type="button" class="btn btn-primary" style="background:#704214;" onclick="openBulkAddModal()">
-            <i data-lucide="layers" class="icon-xs"></i> ⚡ bulk add products
+            <i data-lucide="layers" class="icon-xs"></i> bulk add products
           </button>
           <button type="button" class="btn btn-outline" onclick="setAllProductsFit('contain')" title="Set all products to zoomed out / full sticker view">
             <i data-lucide="zoom-out" class="icon-xs"></i> set all zoomed-out
@@ -535,11 +535,15 @@
         <i data-lucide="layers" class="icon-md" style="color:var(--coffee-800)"></i>
         <h2 style="font-size:1.4rem;margin:0;">Bulk Add Products</h2>
       </div>
-      <p style="color:var(--coffee-500);font-size:0.85rem;margin-bottom:20px;">Quickly create multiple product cards (e.g. 10, 25, 60 items) linked to your stock pool.</p>
+      <p style="color:var(--coffee-500);font-size:0.85rem;margin-bottom:20px;">Quickly generate multiple product cards (e.g. 10, 25, 60 items) linked to your stock pool.</p>
 
       <div class="modal-tab-btns">
-        <button type="button" class="modal-tab-btn active" id="tab-btn-generator" onclick="switchBulkTab('generator')">Multi-Count Generator</button>
-        <button type="button" class="modal-tab-btn" id="tab-btn-paster" onclick="switchBulkTab('paster')">Paste Line-by-Line List</button>
+        <button type="button" class="modal-tab-btn active" id="tab-btn-generator" onclick="switchBulkTab('generator')">
+          <i data-lucide="sparkles" class="icon-xs" style="vertical-align:middle;margin-right:4px;"></i> Multi-Count Generator
+        </button>
+        <button type="button" class="modal-tab-btn" id="tab-btn-paster" onclick="switchBulkTab('paster')">
+          <i data-lucide="list" class="icon-xs" style="vertical-align:middle;margin-right:4px;"></i> Paste Line-by-Line List
+        </button>
       </div>
 
       <!-- TAB 1: GENERATOR -->
@@ -566,7 +570,6 @@
             <label>linked expense stock pool</label>
             <select id="bulk-stock-id"></select>
           </div>
-        <div class="admin-form-row" style="margin-bottom:16px;">
           <div class="admin-input-group">
             <label>category</label>
             <select id="bulk-category">
@@ -575,34 +578,35 @@
               <option value="posters">Posters</option>
             </select>
           </div>
-          <div class="admin-input-group">
-            <label>photo display style</label>
-            <select id="bulk-fit">
-              <option value="contain" selected>🔍 Zoomed Out (Full Sticker — Recommended)</option>
-              <option value="cover">🖼️ Fill / Cover (Zoomed In)</option>
-            </select>
-          </div>
         </div>
 
-        <div class="admin-form-row" style="margin-bottom:24px;">
+        <div class="admin-form-row" style="margin-bottom:16px;">
           <div class="admin-input-group">
             <label>default price (egp)</label>
             <input type="number" id="bulk-price" value="15" min="0" />
           </div>
           <div class="admin-input-group">
-            <label>default image preset</label>
-            <select id="bulk-img-preset">
-              <option value="images/sticker-cats.jpg">Cats Pack</option>
-              <option value="images/sticker-celestial.jpg">Celestial Pack</option>
-              <option value="images/sticker-food.jpg">Food Pack</option>
-              <option value="images/sticker-cozy.jpg">Cozy Pack</option>
-              <option value="images/1111-removebg-preview.png">STATIC Cat Logo</option>
+            <label>photo display fit</label>
+            <select id="bulk-fit">
+              <option value="contain" selected>Zoomed Out (Full Sticker — Recommended)</option>
+              <option value="cover">Fill / Cover (Zoomed In)</option>
             </select>
           </div>
         </div>
 
-        <button type="button" class="btn btn-primary full-width" onclick="executeBulkGenerator()">
-          ⚡ create products &amp; add to shop <i data-lucide="arrow-right" class="icon-sm"></i>
+        <div class="admin-input-group" style="margin-bottom:24px;">
+          <label>default image preset</label>
+          <select id="bulk-img-preset">
+            <option value="images/sticker-cats.jpg">Cats Pack</option>
+            <option value="images/sticker-celestial.jpg">Celestial Pack</option>
+            <option value="images/sticker-food.jpg">Food Pack</option>
+            <option value="images/sticker-cozy.jpg">Cozy Pack</option>
+            <option value="images/1111-removebg-preview.png">STATIC Cat Logo</option>
+          </select>
+        </div>
+
+        <button type="button" class="btn btn-primary full-width" onclick="executeBulkGenerator()" style="gap:8px;">
+          <i data-lucide="sparkles" class="icon-sm"></i> create products &amp; add to shop <i data-lucide="arrow-right" class="icon-sm"></i>
         </button>
       </div>
 
@@ -613,9 +617,9 @@
           <textarea id="bulk-paste-text" rows="8" placeholder="Spider-Man Die-Cut | https://i.ibb.co/spiderman.jpg&#10;Batman Dark Knight | https://i.ibb.co/batman.jpg&#10;Iron Man Retro&#10;Cat Moods Vinyl Sheet | https://i.ibb.co/cats.jpg" style="font-family:monospace;font-size:0.82rem;"></textarea>
         </div>
 
-        <div class="admin-form-row" style="margin-bottom:24px;">
+        <div class="admin-form-row-3" style="margin-bottom:24px;">
           <div class="admin-input-group">
-            <label>linked expense stock pool</label>
+            <label>linked stock pool</label>
             <select id="bulk-paster-stock-id"></select>
           </div>
           <div class="admin-input-group">
@@ -627,16 +631,16 @@
             </select>
           </div>
           <div class="admin-input-group">
-            <label>photo display style</label>
+            <label>photo fit</label>
             <select id="bulk-paster-fit">
-              <option value="contain" selected>🔍 Zoomed Out (Full Sticker)</option>
-              <option value="cover">🖼️ Fill / Cover (Zoomed In)</option>
+              <option value="contain" selected>Zoomed Out</option>
+              <option value="cover">Fill / Cover</option>
             </select>
           </div>
         </div>
 
-        <button type="button" class="btn btn-primary full-width" onclick="executeBulkPaster()">
-          ⚡ import all line items <i data-lucide="arrow-right" class="icon-sm"></i>
+        <button type="button" class="btn btn-primary full-width" onclick="executeBulkPaster()" style="gap:8px;">
+          <i data-lucide="file-down" class="icon-sm"></i> import all line items <i data-lucide="arrow-right" class="icon-sm"></i>
         </button>
       </div>
 
@@ -790,7 +794,7 @@
             <!-- Photo Preview -->
             <div class="admin-img-col">
               <img src="${currentImg}" alt="${item.name}" class="admin-img-preview" id="img-preview-${item.id}" />
-              <span style="font-size:0.75rem;color:var(--coffee-500);font-weight:600;">✦ ${stockQty} in stock</span>
+              <span style="font-size:0.75rem;color:var(--coffee-500);font-weight:600;"><i data-lucide="package" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> ${stockQty} in stock</span>
             </div>
 
             <!-- Fields -->
@@ -857,8 +861,8 @@
                 <div class="admin-input-group">
                   <label>photo display fit</label>
                   <select id="fit-${item.id}">
-                    <option value="contain" ${item.fit !== "cover" ? "selected" : ""}>🔍 Zoomed Out (Full Sticker)</option>
-                    <option value="cover" ${item.fit === "cover" ? "selected" : ""}>🖼️ Fill / Cover (Zoomed In)</option>
+                    <option value="contain" ${item.fit !== "cover" ? "selected" : ""}>Zoomed Out (Full Sticker)</option>
+                    <option value="cover" ${item.fit === "cover" ? "selected" : ""}>Fill / Cover (Zoomed In)</option>
                   </select>
                 </div>
               </div>
@@ -1008,6 +1012,7 @@
       document.getElementById("bulk-tab-paster").style.display = tab === "paster" ? "block" : "none";
       document.getElementById("tab-btn-generator").classList.toggle("active", tab === "generator");
       document.getElementById("tab-btn-paster").classList.toggle("active", tab === "paster");
+      renderIcons();
     }
 
     function setBulkCount(n) {
@@ -1051,7 +1056,7 @@
 
       // Automatically sync to cloud database
       await saveStorefrontPictureMap({ items: storefrontProducts });
-      showToast(`⚡ ${count} products generated & synced to shop live! ✦`, 4000);
+      showToast(`${count} products generated & synced to shop live!`, 4000);
     }
 
     // ── EXECUTE BULK PASTER ──
@@ -1099,7 +1104,7 @@
       updateAdminStats();
 
       await saveStorefrontPictureMap({ items: storefrontProducts });
-      showToast(`⚡ ${newItems.length} products imported & synced to shop! ✦`, 4000);
+      showToast(`${newItems.length} products imported & synced to shop!`, 4000);
     }
 
     // ── CLONE / DUPLICATE PRODUCT ──

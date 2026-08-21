@@ -612,7 +612,7 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   transform: scale(1.08);
 }
 
-/* ── Anti-Theft Artwork Protection ── */
+/* ── Anti-Theft Artwork Protection & Thin STATIC Watermark ── */
 .card-img-wrap,
 .modal-images {
   position: relative;
@@ -620,6 +620,34 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
+
+/* Thin Elegant Watermark */
+.card-img-wrap::before,
+.modal-images::before {
+  content: 'STATIC';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-22deg);
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(44, 24, 16, 0.13);
+  pointer-events: none;
+  z-index: 4;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.modal-images::before {
+  font-size: 2.8rem;
+  letter-spacing: 0.35em;
+  color: rgba(44, 24, 16, 0.13);
+}
+
 .card-img-wrap::after,
 .modal-images::after {
   content: '';
