@@ -515,14 +515,14 @@ async function loadMyOrders() {
     container.innerHTML = orders.map(o => {
       const rawDel = (o.deliveryStatus || o.fulfillmentStatus || o.status || "preparing").toLowerCase();
       let delBadgeClass = "del-preparing";
-      let delLabel = "dispatching from alexandria";
+      let delLabel = "preparing order";
       
       if (rawDel.includes("deliver") && !rawDel.includes("out")) {
         delBadgeClass = "del-delivered";
         delLabel = "delivered";
       } else if (rawDel.includes("out") || rawDel.includes("transit") || rawDel.includes("ship")) {
         delBadgeClass = "del-transit";
-        delLabel = "out for delivery (alexandria)";
+        delLabel = "out for delivery";
       } else if (rawDel.includes("cancel")) {
         delBadgeClass = "del-cancelled";
         delLabel = "cancelled";
