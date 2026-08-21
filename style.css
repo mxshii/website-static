@@ -523,6 +523,12 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   cursor: pointer;
   transition: all var(--transition);
   user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.filter-pill .lucide {
+  color: currentColor;
 }
 .filter-pill:hover { border-color: var(--coffee-400); }
 .filter-pill.active {
