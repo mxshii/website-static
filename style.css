@@ -502,14 +502,98 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   margin-bottom: 36px;
 }
 
-/* Shop Controls (Search & Filter) */
+/* Shop Controls (Search, Category, Stock & Price Filters) */
 .shop-controls {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 32px;
+  width: 100%;
+}
+.shop-controls-top {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 36px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.shop-controls-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px dashed var(--beige-300);
+}
+.stock-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.stock-filter-group .filter-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--coffee-500);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 4px;
+}
+.stock-pill {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--beige-300);
+  background: var(--beige-100);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--coffee-700);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.stock-pill:hover {
+  border-color: var(--coffee-400);
+}
+.stock-pill.active {
+  background: var(--coffee-800);
+  color: var(--beige-100);
+  border-color: var(--coffee-800);
+}
+.shop-sort-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sort-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sort-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--coffee-500);
+}
+.shop-dropdown {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--beige-300);
+  background: var(--beige-100);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--coffee-800);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.shop-dropdown:focus {
+  border-color: var(--coffee-800);
 }
 .filter-tabs {
   display: flex;

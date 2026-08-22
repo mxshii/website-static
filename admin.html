@@ -1117,11 +1117,18 @@
         const safeMap = customMap || {};
 
         if (safeMap && Array.isArray(safeMap.items) && safeMap.items.length > 0) {
-          storefrontProducts = safeMap.items.map(item => ({
-            ...item,
-            qty: (item.qty !== undefined && item.qty !== null && item.qty !== "") ? Number(item.qty) : 1,
-            originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
-          }));
+          storefrontProducts = safeMap.items.map(item => {
+            const linkedStock = expenseStockItems.find(s => String(s.id) === String(item.stockId));
+            let currentQty = (item.qty !== undefined && item.qty !== null && item.qty !== "") ? Number(item.qty) : 1;
+            if (linkedStock && linkedStock.quantity !== undefined && linkedStock.quantity !== null) {
+              currentQty = Number(linkedStock.quantity);
+            }
+            return {
+              ...item,
+              qty: currentQty,
+              originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
+            };
+          });
         } else if (safeMap && typeof safeMap === "object" && Object.keys(safeMap).length > 0 && !safeMap.items) {
           storefrontProducts = Object.entries(safeMap).map(([k, v]) => ({
             id: k,

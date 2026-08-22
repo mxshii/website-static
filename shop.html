@@ -82,26 +82,61 @@
 
   <!-- SHOP MAIN -->
   <main class="shop">
-    <!-- Filters & Search -->
+    <!-- Filters, Search & Sorting Controls -->
     <div class="shop-controls">
-      <div class="filter-tabs">
-        <button type="button" class="filter-pill active" data-category="all">
-          <i data-lucide="layers" class="icon-xs"></i> all items
-        </button>
-        <button type="button" class="filter-pill" data-category="posters">
-          <i data-lucide="image" class="icon-xs"></i> posters
-        </button>
-        <button type="button" class="filter-pill" data-category="single stickers">
-          <i data-lucide="tag" class="icon-xs"></i> single stickers
-        </button>
-        <button type="button" class="filter-pill" data-category="sticker sheet">
-          <i data-lucide="sparkles" class="icon-xs"></i> sticker sheets
-        </button>
+      <div class="shop-controls-top">
+        <div class="filter-tabs">
+          <button type="button" class="filter-pill active" data-category="all">
+            <i data-lucide="layers" class="icon-xs"></i> all items
+          </button>
+          <button type="button" class="filter-pill" data-category="posters">
+            <i data-lucide="image" class="icon-xs"></i> posters
+          </button>
+          <button type="button" class="filter-pill" data-category="single stickers">
+            <i data-lucide="tag" class="icon-xs"></i> single stickers
+          </button>
+          <button type="button" class="filter-pill" data-category="sticker sheet">
+            <i data-lucide="sparkles" class="icon-xs"></i> sticker sheets
+          </button>
+        </div>
+
+        <div class="shop-search">
+          <i data-lucide="search" class="icon-sm"></i>
+          <input type="text" id="shop-search-input" placeholder="Search stickers..." aria-label="Search stickers" />
+        </div>
       </div>
 
-      <div class="shop-search">
-        <i data-lucide="search" class="icon-sm"></i>
-        <input type="text" id="shop-search-input" placeholder="Search stickers..." aria-label="Search stickers" />
+      <!-- Secondary Controls: Stock Availability & Price Sorting -->
+      <div class="shop-controls-secondary">
+        <div class="stock-filter-group">
+          <span class="filter-label"><i data-lucide="box" class="icon-xs"></i> stock:</span>
+          <button type="button" class="stock-pill active" data-stock="all" onclick="filterByStock('all')">all</button>
+          <button type="button" class="stock-pill" data-stock="in-stock" onclick="filterByStock('in-stock')">in stock</button>
+          <button type="button" class="stock-pill" data-stock="sold-out" onclick="filterByStock('sold-out')">sold out</button>
+        </div>
+
+        <div class="shop-sort-group">
+          <div class="sort-select-wrap">
+            <label for="shop-price-range" class="sort-label">price:</label>
+            <select id="shop-price-range" class="shop-dropdown" onchange="handlePriceRangeChange(this.value)">
+              <option value="all">all prices</option>
+              <option value="under-25">under 25 EGP</option>
+              <option value="25-50">25 to 50 EGP</option>
+              <option value="over-50">50+ EGP</option>
+              <option value="on-sale">🔥 on sale / offers</option>
+            </select>
+          </div>
+
+          <div class="sort-select-wrap">
+            <label for="shop-sort-select" class="sort-label">sort by:</label>
+            <select id="shop-sort-select" class="shop-dropdown" onchange="handleSortChange(this.value)">
+              <option value="default">featured</option>
+              <option value="low-high">price: low to high</option>
+              <option value="high-low">price: high to low</option>
+              <option value="name-az">name: a to z</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -692,10 +692,21 @@ async function loadProducts(forceRefresh = false) {
     if (safeMap && Array.isArray(safeMap.items) && safeMap.items.length > 0) {
       PRODUCTS = safeMap.items.map(item => {
         const linkedStock = Array.isArray(stock) ? stock.find(s => String(s.id) === String(item.stockId)) : null;
-        // Default to 1 in stock unless customized in admin
-        const stockQty = (item.qty !== undefined && item.qty !== null && item.qty !== "")
-          ? Number(item.qty)
-          : 1;
+        const isBadgeSoldOut = (item.badge || "").toLowerCase().trim() === "sold out";
+        let stockQty = 1;
+
+        // LIVE STOCK SYNC: If linked to an expense stock item, the live expense quantity takes precedence
+        if (linkedStock && linkedStock.quantity !== undefined && linkedStock.quantity !== null) {
+          stockQty = Number(linkedStock.quantity);
+        } else if (item.qty !== undefined && item.qty !== null && item.qty !== "") {
+          stockQty = Number(item.qty);
+        }
+
+        if (isNaN(stockQty) || stockQty <= 0 || isBadgeSoldOut) {
+          stockQty = 0;
+        }
+
+        const outOfStock = stockQty === 0 || isBadgeSoldOut;
         const stockPrice = (item.price !== undefined && item.price !== null && item.price !== "")
           ? Number(item.price)
           : (linkedStock ? Number(linkedStock.price) : 15);
@@ -704,11 +715,8 @@ async function loadProducts(forceRefresh = false) {
           : null;
         const category = item.category || inferProductCategory(item.name, linkedStock?.sku);
         const img = item.img || getProductImage(item.name, linkedStock?.sku);
-        const badge = item.badge !== undefined && item.badge !== ""
-          ? item.badge
-          : (stockQty === 0 ? "sold out" : null);
-
-        const fit = item.fit || (item.category === "posters" ? "cover" : "contain");
+        const badge = isBadgeSoldOut ? "sold out" : (item.badge || (outOfStock ? "sold out" : null));
+        const fit = item.fit || (category === "posters" ? "cover" : "contain");
 
         return {
           id: item.id,
@@ -723,7 +731,7 @@ async function loadProducts(forceRefresh = false) {
           img: img,
           badge: badge,
           fit: fit,
-          outOfStock: stockQty === 0,
+          outOfStock: outOfStock,
         };
       });
     } else if (Array.isArray(stock) && stock.length > 0) {
@@ -787,43 +795,21 @@ function getFallbackProducts() {
 }
 
 function initShopControls() {
-  const filterPills = document.querySelectorAll(".filter-pill");
-  const searchInput = document.getElementById("shop-search-input");
-
-  filterPills.forEach(pill => {
-    pill.addEventListener("click", () => {
-      filterPills.forEach(p => p.classList.remove("active"));
-      pill.classList.add("active");
-      activeCategory = (pill.getAttribute("data-category") || "all").toLowerCase().trim();
-      renderProducts();
-    });
-  });
-
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      searchQuery = e.target.value.toLowerCase().trim();
-      renderProducts();
-    });
-  }
+  initShopFilters();
 }
-
-const _imgCache = new Map();
 
 // ── PROTECTED IN-MEMORY CANVAS RENDERER (Hides image links from DOM / Inspect Tab) ──
 function drawToCanvas(ctx, canvasEl, img, fit) {
   ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-  if (fit === "contain") {
-    const pad = Math.round(canvasEl.width * 0.04);
-    const w = canvasEl.width - pad * 2;
-    const h = canvasEl.height - pad * 2;
-    const scale = Math.min(w / img.naturalWidth, h / img.naturalHeight);
+  if (fit === "cover") {
+    const scale = Math.max(canvasEl.width / img.naturalWidth, canvasEl.height / img.naturalHeight);
     const dw = img.naturalWidth * scale;
     const dh = img.naturalHeight * scale;
-    const dx = pad + (w - dw) / 2;
-    const dy = pad + (h - dh) / 2;
+    const dx = (canvasEl.width - dw) / 2;
+    const dy = (canvasEl.height - dh) / 2;
     ctx.drawImage(img, dx, dy, dw, dh);
   } else {
-    const scale = Math.max(canvasEl.width / img.naturalWidth, canvasEl.height / img.naturalHeight);
+    const scale = Math.min((canvasEl.width - 24) / img.naturalWidth, (canvasEl.height - 24) / img.naturalHeight);
     const dw = img.naturalWidth * scale;
     const dh = img.naturalHeight * scale;
     const dx = (canvasEl.width - dw) / 2;
@@ -872,26 +858,34 @@ function renderProducts() {
   let filtered = PRODUCTS;
 
   if (isHomePage) {
-    // Show only 4 Best Sellers on the Home page
     const bestSellers = PRODUCTS.filter(p => p.badge === "bestseller");
     const others = PRODUCTS.filter(p => p.badge !== "bestseller");
     filtered = [...bestSellers, ...others].slice(0, 4);
   } else {
-    // 3-Category Filter Logic: 'posters', 'single stickers', 'sticker sheet', or 'all'
     if (activeCategory && activeCategory !== "all") {
       filtered = filtered.filter(p => {
         const cat = (p.category || "").toLowerCase();
-        if (activeCategory === "posters") {
-          return cat.includes("poster");
-        }
-        if (activeCategory === "single stickers" || activeCategory === "single") {
-          return cat.includes("single");
-        }
-        if (activeCategory === "sticker sheet" || activeCategory === "sheet") {
-          return cat.includes("sheet") || cat.includes("pack");
-        }
+        if (activeCategory === "posters") return cat.includes("poster");
+        if (activeCategory === "single stickers" || activeCategory === "single") return cat.includes("single");
+        if (activeCategory === "sticker sheet" || activeCategory === "sheet") return cat.includes("sheet") || cat.includes("pack");
         return cat === activeCategory;
       });
+    }
+
+    if (activeStockFilter === "in-stock") {
+      filtered = filtered.filter(p => !p.outOfStock && p.qty > 0 && (p.badge || "").toLowerCase() !== "sold out");
+    } else if (activeStockFilter === "sold-out") {
+      filtered = filtered.filter(p => p.outOfStock || p.qty <= 0 || (p.badge || "").toLowerCase() === "sold out");
+    }
+
+    if (activePriceRange === "under-25") {
+      filtered = filtered.filter(p => Number(p.price) < 25);
+    } else if (activePriceRange === "25-50") {
+      filtered = filtered.filter(p => Number(p.price) >= 25 && Number(p.price) <= 50);
+    } else if (activePriceRange === "over-50") {
+      filtered = filtered.filter(p => Number(p.price) > 50);
+    } else if (activePriceRange === "on-sale") {
+      filtered = filtered.filter(p => (p.originalPrice && Number(p.originalPrice) > Number(p.price)) || (p.badge && (p.badge.includes("off") || p.badge === "sale" || p.badge === "offer" || p.badge.includes("buy"))));
     }
 
     if (searchQuery) {
@@ -899,6 +893,14 @@ function renderProducts() {
         const text = (p.name + " " + p.sku + " " + (p.category || "") + " " + p.desc).toLowerCase();
         return text.includes(searchQuery);
       });
+    }
+
+    if (activeSortOption === "low-high") {
+      filtered = [...filtered].sort((a, b) => Number(a.price) - Number(b.price));
+    } else if (activeSortOption === "high-low") {
+      filtered = [...filtered].sort((a, b) => Number(b.price) - Number(a.price));
+    } else if (activeSortOption === "name-az") {
+      filtered = [...filtered].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     }
   }
 
@@ -913,8 +915,9 @@ function renderProducts() {
   }
 
   filtered.forEach(p => {
+    const isSoldOut = p.outOfStock || p.qty <= 0 || (p.badge || "").toLowerCase() === "sold out";
     const card = document.createElement("div");
-    card.className = "product-card" + (p.outOfStock ? " sold-out" : "");
+    card.className = "product-card" + (isSoldOut ? " sold-out" : "");
     card.setAttribute("data-id", p.id);
     card.setAttribute("role", "button");
     card.setAttribute("tabindex", "0");
@@ -928,20 +931,21 @@ function renderProducts() {
       : `<span class="card-price">${p.price > 0 ? p.price + " EGP" : "Price TBD"}</span>`;
 
     const isOfferBadge = p.badge && (p.badge.includes("off") || p.badge === "sale" || p.badge === "offer" || p.badge.includes("buy"));
-    const badgeClass = p.badge === "sold out" ? "badge-sold" : isOfferBadge ? "badge-offer" : "";
+    const badgeClass = isSoldOut ? "badge-sold" : isOfferBadge ? "badge-offer" : "";
+    const badgeText = isSoldOut ? "sold out" : p.badge;
 
     card.innerHTML = `
       <div class="card-img-wrap ${fitClass}">
         <canvas class="card-canvas" width="280" height="280" role="img" aria-label="${p.name}"></canvas>
-        ${p.badge ? `<span class="card-badge ${badgeClass}">${p.badge}</span>` : ""}
+        ${badgeText ? `<span class="card-badge ${badgeClass}">${badgeText}</span>` : ""}
       </div>
       <div class="card-body">
         <div class="card-name">${p.name}</div>
-        <div class="card-pieces">${p.qty > 0 ? `${p.qty} in stock` : "out of stock"}</div>
+        <div class="card-pieces">${!isSoldOut && p.qty > 0 ? `${p.qty} in stock` : "out of stock"}</div>
         <div class="card-bottom">
           ${priceDisplay}
-          <button type="button" class="card-add-btn ${p.outOfStock ? "disabled" : ""}" aria-label="Quick add ${p.name}" data-id="${p.id}" ${p.outOfStock ? "disabled" : ""}>
-            <i data-lucide="plus" class="icon-sm"></i>
+          <button type="button" class="card-add-btn ${isSoldOut ? "disabled" : ""}" aria-label="Quick add ${p.name}" data-id="${p.id}" ${isSoldOut ? "disabled" : ""}>
+            <i data-lucide="${isSoldOut ? 'slash' : 'plus'}" class="icon-sm"></i>
           </button>
         </div>
       </div>
@@ -955,7 +959,11 @@ function renderProducts() {
     card.addEventListener("click", (e) => {
       if (e.target.closest(".card-add-btn")) {
         e.stopPropagation();
-        if (!p.outOfStock) quickAddToCart(p.id);
+        if (!isSoldOut) {
+          quickAddToCart(p.id);
+        } else {
+          showToast("Sorry, this item is sold out!");
+        }
         return;
       }
       openProductModal(p.id);
@@ -1010,7 +1018,10 @@ function initProductModal() {
 
   if (addBtn) {
     addBtn.addEventListener("click", () => {
-      if (!currentProduct || currentProduct.outOfStock) return;
+      if (!currentProduct || currentProduct.outOfStock || currentProduct.qty <= 0 || (currentProduct.badge || "").toLowerCase() === "sold out") {
+        showToast("Sorry, this item is sold out!");
+        return;
+      }
       const qty = parseInt(qtyInput.value, 10) || 1;
       addToCart(currentProduct.id, qty);
       closeProductModal();
@@ -1034,6 +1045,8 @@ function openProductModal(productId) {
   const p = PRODUCTS.find(x => String(x.id) === String(productId)) || getFallbackProducts().find(x => String(x.id) === String(productId));
   if (!p) return;
   currentProduct = p;
+
+  const isOutOfStock = p.outOfStock || p.qty <= 0 || (p.badge || "").toLowerCase() === "sold out";
 
   const canvasEl = document.getElementById("modal-main-canvas");
   const imgEl = document.getElementById("modal-main-img");
@@ -1063,13 +1076,13 @@ function openProductModal(productId) {
     }
   }
 
-  if (piecesEl) piecesEl.textContent = p.qty > 0 ? `${p.qty} in stock · ${p.category}` : "Out of stock";
+  if (piecesEl) piecesEl.textContent = !isOutOfStock && p.qty > 0 ? `${p.qty} in stock · ${p.category}` : "Out of stock";
   if (qtyInput) qtyInput.value = 1;
 
   if (addBtn) {
-    addBtn.disabled = p.outOfStock;
-    addBtn.innerHTML = p.outOfStock
-      ? "sold out"
+    addBtn.disabled = isOutOfStock;
+    addBtn.innerHTML = isOutOfStock
+      ? `<i data-lucide="slash" class="icon-sm"></i> sold out`
       : `<i data-lucide="shopping-bag" class="icon-sm"></i> add to cart`;
   }
 
@@ -1147,6 +1160,11 @@ window.closeCart = function () {
 };
 
 function quickAddToCart(productId) {
+  const p = PRODUCTS.find(x => String(x.id) === String(productId)) || getFallbackProducts().find(x => String(x.id) === String(productId));
+  if (!p || p.outOfStock || p.qty <= 0 || (p.badge || "").toLowerCase() === "sold out") {
+    showToast("Sorry, this item is sold out!");
+    return;
+  }
   addToCart(productId, 1);
   openCart();
 }
