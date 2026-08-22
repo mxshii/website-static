@@ -610,6 +610,16 @@ function inferProductCategory(name, sku) {
   return "single stickers";
 }
 
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 function updateAnnouncementBanner(bannerObj) {
   if (!bannerObj) return;
   const marqueeInner = document.querySelector(".announcement-inner");
@@ -652,25 +662,22 @@ async function loadProducts(forceRefresh = false) {
   try {
     const [stockRes, customMap] = await Promise.all([
       fetch(`${EXPENSE_API}/api/stock/public`).catch(e => {
-        console.error("Stock fetch error:", e);
+        console.warn("Stock fetch error:", e);
         return null;
       }),
       fetchStorefrontPictureMap().catch(e => {
-        console.error("Picture map fetch error:", e);
+        console.warn("Picture map fetch error:", e);
         return {};
       })
     ]);
 
     let stock = [];
     if (stockRes && stockRes.ok) {
-      stock = await stockRes.json();
+      try {
+        stock = await stockRes.json();
+      } catch (_) {}
     }
     _stockCacheTime = Date.now();
-
-    if (!stock || !stock.length) {
-      grid.innerHTML = `<div class="products-empty"><p>Products coming soon — check back shortly!</p></div>`;
-      return;
-    }
 
     const safeMap = customMap || {};
 
@@ -684,7 +691,7 @@ async function loadProducts(forceRefresh = false) {
 
     if (safeMap && Array.isArray(safeMap.items) && safeMap.items.length > 0) {
       PRODUCTS = safeMap.items.map(item => {
-        const linkedStock = stock.find(s => String(s.id) === String(item.stockId));
+        const linkedStock = Array.isArray(stock) ? stock.find(s => String(s.id) === String(item.stockId)) : null;
         // Default to 1 in stock unless customized in admin
         const stockQty = (item.qty !== undefined && item.qty !== null && item.qty !== "")
           ? Number(item.qty)
@@ -719,7 +726,7 @@ async function loadProducts(forceRefresh = false) {
           outOfStock: stockQty === 0,
         };
       });
-    } else {
+    } else if (Array.isArray(stock) && stock.length > 0) {
       PRODUCTS = stock.map(item => {
         const custom = safeMap[item.id] || safeMap[item.itemName] || safeMap[item.sku] || {};
         const stockQty = (custom.qty !== undefined && custom.qty !== null && custom.qty !== "")
@@ -750,12 +757,15 @@ async function loadProducts(forceRefresh = false) {
           outOfStock: stockQty === 0,
         };
       });
+    } else {
+      PRODUCTS = getFallbackProducts();
     }
 
     renderProducts();
   } catch (err) {
     console.error("Failed to load stock:", err);
-    grid.innerHTML = `<div class="products-empty"><p>Could not load stock. Please refresh.</p></div>`;
+    PRODUCTS = getFallbackProducts();
+    renderProducts();
   }
 }
 
