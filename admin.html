@@ -16,27 +16,29 @@
     .admin-page {
       background: var(--beige-200);
       min-height: 100vh;
-      padding-bottom: 80px;
+      padding-bottom: 90px;
     }
     .admin-header {
       background: var(--coffee-900);
       color: var(--beige-100);
-      padding: 18px 32px;
+      padding: 14px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--shadow-md);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 200;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
     .admin-brand {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
     .admin-brand img {
-      height: 36px;
+      height: 34px;
       width: auto;
       filter: brightness(0) invert(0.95);
     }
@@ -45,30 +47,33 @@
       font-family: var(--font-body);
       font-weight: 700;
       color: var(--beige-100);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
+      margin: 0;
     }
     .admin-title-wrap p {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--coffee-300);
+      margin: 0;
     }
     .admin-header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .admin-container {
       max-width: 1280px;
-      margin: 28px auto;
-      padding: 0 24px;
+      margin: 22px auto;
+      padding: 0 20px;
     }
     .admin-card {
       background: var(--beige-100);
       border-radius: var(--radius-xl);
       border: 1.5px solid var(--beige-300);
-      padding: 28px;
+      padding: 24px;
       box-shadow: var(--shadow-sm);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
+
     /* Lock Screen */
     .lock-screen {
       max-width: 420px;
@@ -95,25 +100,26 @@
       font-size: 0.88rem;
       margin-bottom: 24px;
     }
+
     /* Stats Row */
     .admin-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
+      gap: 12px;
+      margin-bottom: 18px;
     }
     .stat-card {
       background: var(--beige-100);
       border: 1.5px solid var(--beige-300);
       border-radius: var(--radius-lg);
-      padding: 16px 20px;
+      padding: 14px 18px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
     .stat-icon {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: var(--radius-md);
       background: var(--coffee-100);
       color: var(--coffee-800);
@@ -123,43 +129,57 @@
       flex-shrink: 0;
     }
     .stat-info .stat-val {
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: var(--coffee-800);
       line-height: 1;
     }
     .stat-info .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--coffee-500);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-top: 4px;
     }
-    /* Controls Bar */
-    .admin-toolbar {
+
+    /* Command Center Toolbar */
+    .admin-toolbar-v2 {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1.5px solid var(--beige-300);
+    }
+    .toolbar-row-top {
+      display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
     .admin-search-wrap {
       position: relative;
       flex: 1;
-      max-width: 300px;
+      min-width: 260px;
+      max-width: 420px;
     }
     .admin-search-wrap input {
       width: 100%;
-      padding: 10px 16px 10px 38px;
+      padding: 10px 38px 10px 38px;
       border-radius: var(--radius-full);
       border: 1.5px solid var(--beige-300);
       background: var(--beige-100);
       font-size: 0.88rem;
+      color: var(--coffee-800);
       outline: none;
+      transition: border-color var(--transition);
     }
-    .admin-search-wrap i {
+    .admin-search-wrap input:focus {
+      border-color: var(--coffee-800);
+    }
+    .admin-search-wrap .search-icon {
       position: absolute;
       left: 12px;
       top: 50%;
@@ -167,54 +187,153 @@
       color: var(--coffee-400);
       pointer-events: none;
     }
-    .admin-action-btns {
+    .admin-search-wrap .clear-search {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--coffee-400);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      display: none;
+    }
+    .admin-category-filters {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       flex-wrap: wrap;
     }
+    .admin-cat-pill {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: var(--beige-200);
+      border: 1px solid var(--beige-300);
+      color: var(--coffee-700);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .admin-cat-pill.active,
+    .admin-cat-pill:hover {
+      background: var(--coffee-800);
+      color: var(--beige-100);
+      border-color: var(--coffee-800);
+    }
+
+    /* Actions Row */
+    .toolbar-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .toolbar-left-actions,
+    .toolbar-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Bulk Selection Bar */
+    .admin-selection-bar {
+      background: var(--coffee-100);
+      border: 1.5px solid var(--coffee-300);
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .selection-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .selection-count-badge {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--coffee-900);
+    }
+    .selection-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     /* Product Item Editor Cards */
     .admin-items-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 18px;
+      gap: 16px;
     }
     .admin-item-card {
       background: var(--beige-100);
       border: 1.5px solid var(--beige-300);
       border-radius: var(--radius-xl);
-      padding: 24px;
+      padding: 22px 24px;
       display: grid;
-      grid-template-columns: 150px 1fr auto;
-      gap: 24px;
+      grid-template-columns: 36px 140px 1fr auto;
+      gap: 20px;
       align-items: start;
       box-shadow: var(--shadow-sm);
-      transition: border-color var(--transition), box-shadow var(--transition);
+      transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
       position: relative;
     }
     .admin-item-card:hover {
       border-color: var(--coffee-400);
       box-shadow: var(--shadow-md);
     }
-    .admin-item-card.is-linked {
-      border-left: 5px solid var(--coffee-800);
+    .admin-item-card.is-selected {
+      border-color: var(--coffee-800);
+      background: #fdfaf6;
+      box-shadow: 0 0 0 2px rgba(44, 24, 16, 0.15);
     }
+
+    /* Checkbox Column */
+    .admin-select-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 10px;
+    }
+    .item-select-cb {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--coffee-800);
+      cursor: pointer;
+    }
+
     /* Image Preview Column */
     .admin-img-col {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .admin-img-preview {
-      width: 140px;
-      height: 140px;
+      width: 130px;
+      height: 130px;
       border-radius: var(--radius-lg);
       object-fit: cover;
       background: var(--beige-200);
       border: 1.5px solid var(--beige-300);
       box-shadow: var(--shadow-xs);
     }
+
     /* Form Fields Column */
     .admin-fields-col {
       display: flex;
@@ -226,7 +345,7 @@
       font-size: 1.2rem !important;
       font-weight: 700 !important;
       color: var(--coffee-800) !important;
-      padding: 6px 12px !important;
+      padding: 7px 12px !important;
       background: var(--beige-200) !important;
       border: 1.5px solid var(--beige-300) !important;
       border-radius: var(--radius-md) !important;
@@ -242,15 +361,20 @@
       grid-template-columns: 1.2fr 1fr 1fr;
       gap: 12px;
     }
+    .admin-form-row-4 {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
     .admin-input-group {
       display: flex;
       flex-direction: column;
       gap: 5px;
     }
     .admin-input-group label {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 700;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       text-transform: lowercase;
       color: var(--coffee-600);
       display: flex;
@@ -264,9 +388,10 @@
       border-radius: var(--radius-sm);
       border: 1.5px solid var(--beige-300);
       background: var(--beige-100);
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       color: var(--coffee-800);
       outline: none;
+      transition: border-color var(--transition);
     }
     .admin-input-group input:focus,
     .admin-input-group select:focus,
@@ -293,15 +418,17 @@
     .preset-btn:hover {
       background: var(--beige-300);
     }
+
     /* Actions Column */
     .admin-actions-col {
       display: flex;
       flex-direction: column;
       gap: 8px;
       align-items: stretch;
+      min-width: 100px;
     }
     .save-item-btn {
-      padding: 10px 16px;
+      padding: 9px 14px;
       font-size: 0.85rem;
       white-space: nowrap;
     }
@@ -334,7 +461,7 @@
     }
     .delete-item-btn:hover { text-decoration: underline; }
 
-    /* Bulk Modal Styles */
+    /* Modals */
     .modal-tab-btns {
       display: flex;
       border-bottom: 2px solid var(--beige-300);
@@ -377,27 +504,78 @@
       border-color: var(--coffee-800);
     }
 
+    /* Offers Manager Table */
+    .offers-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.85rem;
+    }
+    .offers-table th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--beige-200);
+      color: var(--coffee-700);
+      font-weight: 700;
+      border-bottom: 1.5px solid var(--beige-300);
+    }
+    .offers-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--beige-300);
+      color: var(--coffee-800);
+    }
+    .offer-code-pill {
+      font-family: monospace;
+      font-weight: 800;
+      font-size: 0.9rem;
+      background: var(--coffee-100);
+      color: var(--coffee-900);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--coffee-300);
+    }
+
     /* ══════════════════════════════
        ADMIN RESPONSIVE SYSTEM
        ══════════════════════════════ */
-    @media (max-width: 860px) {
+    @media (max-width: 992px) {
+      .admin-item-card {
+        grid-template-columns: 32px 110px 1fr auto;
+        gap: 14px;
+        padding: 16px;
+      }
+      .admin-img-preview {
+        width: 110px;
+        height: 110px;
+      }
+      .admin-form-row-4 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
       .admin-item-card {
         grid-template-columns: 1fr;
-        gap: 16px;
-        padding: 18px 16px;
+        gap: 14px;
+        padding: 16px;
+      }
+      .admin-select-col {
+        justify-content: flex-start;
+        padding-top: 0;
       }
       .admin-img-col {
         flex-direction: row;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
         width: 100%;
       }
       .admin-img-preview {
-        width: 84px;
-        height: 84px;
+        width: 80px;
+        height: 80px;
       }
       .admin-form-row,
-      .admin-form-row-3 {
+      .admin-form-row-3,
+      .admin-form-row-4 {
         grid-template-columns: 1fr;
         gap: 10px;
       }
@@ -469,11 +647,9 @@
       .stat-info .stat-label {
         font-size: 0.65rem;
       }
-      .admin-toolbar {
+      .toolbar-row-top {
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
-        margin-bottom: 14px;
       }
       .admin-search-wrap {
         max-width: 100%;
@@ -483,20 +659,22 @@
         font-size: 16px !important;
         padding: 10px 14px 10px 36px;
       }
-      .admin-action-btns {
+      .toolbar-left-actions,
+      .toolbar-right-actions {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 6px;
         width: 100%;
       }
-      .admin-action-btns .btn,
-      .admin-action-btns label.btn {
+      .toolbar-left-actions .btn,
+      .toolbar-right-actions .btn,
+      .toolbar-right-actions label.btn {
         width: 100%;
         justify-content: center;
         padding: 9px 6px;
         font-size: 0.76rem;
       }
-      .admin-action-btns button[onclick="saveAllItems()"] {
+      .toolbar-right-actions button[onclick="saveAllItems()"] {
         grid-column: span 2;
         padding: 11px 14px;
         font-weight: 700;
@@ -507,53 +685,6 @@
       .admin-input-group textarea,
       .item-title-input {
         font-size: 16px !important;
-      }
-      .preset-pills {
-        gap: 4px;
-      }
-      .preset-btn {
-        font-size: 0.72rem;
-        padding: 4px 7px;
-      }
-      .modal-tab-btns {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4px;
-      }
-      .modal-tab-btn {
-        padding: 8px 4px;
-        font-size: 0.75rem;
-        text-align: center;
-      }
-      .quick-qty-pills {
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      .quick-qty-btn {
-        flex: 1;
-        min-width: 44px;
-        padding: 6px 4px;
-      }
-      .lock-screen {
-        margin: 30px auto;
-        padding: 22px 14px;
-      }
-      #pin-input {
-        font-size: 1.3rem !important;
-        height: 46px;
-        letter-spacing: 5px;
-      }
-    }
-
-    @media (max-width: 360px) {
-      .admin-stats {
-        grid-template-columns: 1fr;
-      }
-      .admin-action-btns {
-        grid-template-columns: 1fr;
-      }
-      .admin-action-btns button[onclick="saveAllItems()"] {
-        grid-column: span 1;
       }
     }
   </style>
@@ -566,10 +697,13 @@
       <img src="images/1111-removebg-preview.png" alt="STATIC Logo" />
       <div class="admin-title-wrap">
         <h1>STATIC Storefront Manager</h1>
-        <p>Custom Items, Names, Categories &amp; Shared Stock Pools</p>
+        <p>Products, Stock, Selection &amp; Offers System</p>
       </div>
     </div>
     <div class="admin-header-actions">
+      <button type="button" class="btn btn-outline" style="border-color:rgba(255,255,255,.3);color:var(--beige-100);" onclick="openOffersModal()">
+        <i data-lucide="tag" class="icon-xs"></i> offers &amp; promos
+      </button>
       <a href="shop.html" class="btn btn-outline" style="border-color:rgba(255,255,255,.3);color:var(--beige-100);" target="_blank">
         <i data-lucide="external-link" class="icon-xs"></i> view shop
       </a>
@@ -586,7 +720,7 @@
         <i data-lucide="lock" class="icon-md"></i>
       </div>
       <h2>Storefront Admin Access</h2>
-      <p>Enter your admin PIN to customize product titles, photos, and stock links.</p>
+      <p>Enter your admin PIN to customize products, select items, and manage offers.</p>
       <form id="pin-form" onsubmit="handlePinSubmit(event)">
         <div class="admin-input-group" style="margin-bottom:16px;">
           <input type="password" id="pin-input" placeholder="Enter Admin PIN" maxlength="20" style="font-size:1.2rem;text-align:center;letter-spacing:4px;" required autocomplete="current-password" autofocus />
@@ -632,53 +766,83 @@
           <div class="stat-label">Sticker Sheets</div>
         </div>
       </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i data-lucide="percent" class="icon-sm"></i></div>
+        <div class="stat-info">
+          <div class="stat-val" id="stat-offers">0</div>
+          <div class="stat-label">Active Offers</div>
+        </div>
+      </div>
     </div>
 
-    <!-- TOOLBAR -->
+    <!-- COMMAND CENTER TOOLBAR -->
     <div class="admin-card">
-      <div class="admin-toolbar">
-        <div class="admin-search-wrap">
-          <i data-lucide="search" class="icon-sm"></i>
-          <input type="text" id="admin-search" placeholder="Search products..." oninput="filterAdminItems()" />
+      <div class="admin-toolbar-v2">
+        <!-- TOP: SEARCH & CATEGORY TABS -->
+        <div class="toolbar-row-top">
+          <div class="admin-search-wrap">
+            <i data-lucide="search" class="icon-sm search-icon"></i>
+            <input type="text" id="admin-search" placeholder="Search products by title, SKU, or category..." oninput="filterAdminItems()" />
+            <button type="button" class="clear-search" id="clear-search-btn" onclick="clearSearch()"><i data-lucide="x" class="icon-xs"></i></button>
+          </div>
+          <div class="admin-category-filters">
+            <button type="button" class="admin-cat-pill active" data-cat="all" onclick="filterByAdminCat('all')">all</button>
+            <button type="button" class="admin-cat-pill" data-cat="posters" onclick="filterByAdminCat('posters')">posters</button>
+            <button type="button" class="admin-cat-pill" data-cat="single stickers" onclick="filterByAdminCat('single stickers')">single stickers</button>
+            <button type="button" class="admin-cat-pill" data-cat="sticker sheet" onclick="filterByAdminCat('sticker sheet')">sticker sheets</button>
+          </div>
         </div>
-        <div class="admin-action-btns">
-          <button type="button" class="btn btn-primary" onclick="addNewProductPrompt()">
-            <i data-lucide="plus" class="icon-xs"></i> add 1 product
-          </button>
-          <button type="button" class="btn btn-primary" style="background:#704214;" onclick="openBulkAddModal()">
-            <i data-lucide="layers" class="icon-xs"></i> bulk add products
-          </button>
-          <button type="button" class="btn btn-outline" onclick="setAllProductsFit('contain')" title="Set all products to zoomed out / full sticker view">
-            <i data-lucide="zoom-out" class="icon-xs"></i> set all zoomed-out
-          </button>
-          <button type="button" class="btn btn-outline" onclick="exportPictureConfig()" title="Export JSON backup">
-            <i data-lucide="download" class="icon-xs"></i> export
-          </button>
-          <label class="btn btn-outline" style="cursor:pointer;margin:0;" title="Import JSON backup">
-            <i data-lucide="upload" class="icon-xs"></i> import
-            <input type="file" accept=".json" onchange="importPictureConfig(event)" style="display:none;" />
-          </label>
-          <button type="button" class="btn btn-dark" onclick="saveAllItems()">
-            <i data-lucide="save" class="icon-xs"></i> save all changes
-          </button>
+
+        <!-- ACTIONS ROW -->
+        <div class="toolbar-row-actions">
+          <div class="toolbar-left-actions">
+            <button type="button" class="btn btn-primary" onclick="addNewProductPrompt()">
+              <i data-lucide="plus" class="icon-xs"></i> add 1 product
+            </button>
+            <button type="button" class="btn btn-primary" style="background:#704214;" onclick="openBulkAddModal()">
+              <i data-lucide="layers" class="icon-xs"></i> bulk add products
+            </button>
+            <button type="button" class="btn btn-outline" onclick="openOffersModal()">
+              <i data-lucide="tag" class="icon-xs"></i> offers &amp; promos
+            </button>
+          </div>
+          <div class="toolbar-right-actions">
+            <button type="button" class="btn btn-outline" onclick="toggleAllProductsFit()" id="fit-toggle-btn" title="Toggle zoom fit between full sticker and cover">
+              <i data-lucide="zoom-out" class="icon-xs"></i> fit: full sticker
+            </button>
+            <button type="button" class="btn btn-outline" onclick="exportPictureConfig()" title="Export JSON backup">
+              <i data-lucide="download" class="icon-xs"></i> export
+            </button>
+            <label class="btn btn-outline" style="cursor:pointer;margin:0;" title="Import JSON backup">
+              <i data-lucide="upload" class="icon-xs"></i> import
+              <input type="file" accept=".json" onchange="importPictureConfig(event)" style="display:none;" />
+            </label>
+            <button type="button" class="btn btn-dark" onclick="saveAllItems()">
+              <i data-lucide="save" class="icon-xs"></i> save all changes
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Free Image Hosting Tip Box -->
-      <div style="background:var(--beige-200);border:1.5px dashed var(--coffee-300);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <i data-lucide="info" class="icon-sm" style="color:var(--coffee-700)"></i>
-          <span style="font-size:0.85rem;color:var(--coffee-700);">
-            <strong>Shared Stock &amp; Custom Photos:</strong> Create multiple stickers (e.g. Spider-Man, Batman, 60 designs) and link them to the same stock pool.
-          </span>
+      <!-- BATCH SELECTION & ACTION BAR -->
+      <div class="admin-selection-bar" id="admin-selection-bar">
+        <div class="selection-left">
+          <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:0.88rem;color:var(--coffee-900);">
+            <input type="checkbox" id="select-all-cb" class="item-select-cb" onchange="handleSelectAllChange(this.checked)" />
+            <span>Select All Visible</span>
+          </label>
+          <span class="selection-count-badge" id="selection-count-badge">0 selected</span>
         </div>
-        <div style="display:flex;gap:8px;">
-          <a href="https://imgbb.com/upload" target="_blank" class="btn btn-outline" style="padding:6px 12px;font-size:0.78rem;background:#fff;">
-            ImgBB Upload <i data-lucide="external-link" class="icon-xs"></i>
-          </a>
-          <a href="https://postimages.org/" target="_blank" class="btn btn-outline" style="padding:6px 12px;font-size:0.78rem;background:#fff;">
-            Postimages <i data-lucide="external-link" class="icon-xs"></i>
-          </a>
+        <div class="selection-actions">
+          <button type="button" class="btn btn-outline" style="background:#fff;" onclick="openBatchOfferModal()">
+            <i data-lucide="percent" class="icon-xs"></i> apply offer to selected
+          </button>
+          <button type="button" class="btn btn-outline" style="background:#fff0f0;border-color:#f5c6cb;color:#c0392b;" onclick="deleteSelectedProducts()">
+            <i data-lucide="trash-2" class="icon-xs"></i> delete selected
+          </button>
+          <button type="button" class="btn btn-outline" style="font-size:0.75rem;padding:6px 10px;" onclick="deselectAllItems()">
+            deselect all
+          </button>
         </div>
       </div>
 
@@ -686,7 +850,7 @@
       <div id="admin-items-list" class="admin-items-grid">
         <div style="text-align:center;padding:40px;color:var(--coffee-500);">
           <i data-lucide="loader-2" class="icon-md" style="animation:spin 1s linear infinite"></i>
-          <p style="margin-top:8px;">Loading stock from expense tracker...</p>
+          <p style="margin-top:8px;">Loading stock &amp; catalog...</p>
         </div>
       </div>
     </div>
@@ -814,14 +978,144 @@
     </div>
   </div>
 
+  <!-- OFFERS & PROMOS MANAGER MODAL -->
+  <div class="modal-overlay" id="offers-modal">
+    <div class="modal-box" style="max-width:760px;max-height:92vh;overflow-y:auto;padding:32px;">
+      <button type="button" class="modal-close" onclick="closeOffersModal()"><i data-lucide="x" class="icon-sm"></i></button>
+      
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <i data-lucide="tag" class="icon-md" style="color:var(--coffee-800)"></i>
+        <h2 style="font-size:1.4rem;margin:0;">Offers &amp; Promo Codes Manager</h2>
+      </div>
+      <p style="color:var(--coffee-500);font-size:0.85rem;margin-bottom:20px;">Manage checkout promo discounts, special offers, and top announcement banner.</p>
+
+      <div class="modal-tab-btns">
+        <button type="button" class="modal-tab-btn active" id="tab-btn-coupons" onclick="switchOffersTab('coupons')">
+          <i data-lucide="percent" class="icon-xs"></i> Promo Codes &amp; Coupons
+        </button>
+        <button type="button" class="modal-tab-btn" id="tab-btn-banner" onclick="switchOffersTab('banner')">
+          <i data-lucide="megaphone" class="icon-xs"></i> Top Announcement Banner
+        </button>
+      </div>
+
+      <!-- OFFERS TAB 1: COUPONS -->
+      <div id="offers-tab-coupons">
+        <div style="background:var(--beige-200);border:1px solid var(--beige-300);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;">
+          <h4 style="font-size:0.95rem;margin:0 0 12px;color:var(--coffee-800);"><i data-lucide="plus-circle" class="icon-xs"></i> Create New Promo Code</h4>
+          <form id="create-promo-form" onsubmit="handleCreatePromo(event)">
+            <div class="admin-form-row-3" style="margin-bottom:12px;">
+              <div class="admin-input-group">
+                <label>promo code (e.g. STATIC10)</label>
+                <input type="text" id="new-promo-code" placeholder="STATIC10" style="text-transform:uppercase;font-weight:700;" required />
+              </div>
+              <div class="admin-input-group">
+                <label>discount type</label>
+                <select id="new-promo-type">
+                  <option value="percentage">Percentage Off (%)</option>
+                  <option value="fixed">Fixed Amount Off (EGP)</option>
+                  <option value="freeship">Free Delivery (Alexandria)</option>
+                </select>
+              </div>
+              <div class="admin-input-group">
+                <label>discount value</label>
+                <input type="number" id="new-promo-val" value="10" min="0" step="1" required />
+              </div>
+            </div>
+            <div class="admin-form-row" style="margin-bottom:14px;">
+              <div class="admin-input-group">
+                <label>minimum order amount (egp, optional)</label>
+                <input type="number" id="new-promo-min" value="0" min="0" placeholder="0 = no minimum" />
+              </div>
+              <div class="admin-input-group">
+                <label>offer note / description</label>
+                <input type="text" id="new-promo-desc" placeholder="e.g. 10% off your entire sticker haul!" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i data-lucide="plus" class="icon-xs"></i> add promo code
+            </button>
+          </form>
+        </div>
+
+        <h4 style="font-size:0.95rem;margin:0 0 8px;color:var(--coffee-800);">Active Promo Codes in Storefront</h4>
+        <div id="promo-codes-list"></div>
+      </div>
+
+      <!-- OFFERS TAB 2: BANNER -->
+      <div id="offers-tab-banner" style="display:none;">
+        <div style="background:var(--beige-200);border:1px solid var(--beige-300);border-radius:var(--radius-lg);padding:18px;">
+          <div class="admin-input-group" style="margin-bottom:16px;">
+            <label style="font-size:0.85rem;">announcement marquee banner text</label>
+            <textarea id="banner-text-input" rows="3" placeholder="✦ SPECIAL OFFER: Use code STATIC10 for 10% OFF all stickers! · Free Alexandria delivery on orders over 150 EGP ✦" style="font-size:0.9rem;"></textarea>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+            <input type="checkbox" id="banner-active-cb" style="width:18px;height:18px;accent-color:var(--coffee-800);" checked />
+            <label for="banner-active-cb" style="font-weight:700;font-size:0.88rem;cursor:pointer;">Show Announcement Bar on Website</label>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="saveBannerSettings()">
+            <i data-lucide="save" class="icon-xs"></i> save announcement banner
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATCH APPLY OFFER MODAL -->
+  <div class="modal-overlay" id="batch-offer-modal">
+    <div class="modal-box" style="max-width:520px;padding:28px;">
+      <button type="button" class="modal-close" onclick="closeBatchOfferModal()"><i data-lucide="x" class="icon-sm"></i></button>
+      <h3 style="margin:0 0 8px;font-size:1.3rem;">Apply Offer to Selected Items</h3>
+      <p style="color:var(--coffee-500);font-size:0.85rem;margin-bottom:18px;" id="batch-offer-subtitle">Apply discount or offer badge to selected products.</p>
+      
+      <div class="admin-input-group" style="margin-bottom:14px;">
+        <label>offer badge to apply</label>
+        <select id="batch-badge-select">
+          <option value="">No Badge (Clear)</option>
+          <option value="sale" selected>SALE</option>
+          <option value="offer">SPECIAL OFFER</option>
+          <option value="10% off">10% OFF</option>
+          <option value="20% off">20% OFF</option>
+          <option value="30% off">30% OFF</option>
+          <option value="50% off">50% OFF</option>
+          <option value="buy 2 get 1">BUY 2 GET 1</option>
+          <option value="new">NEW DROP</option>
+          <option value="bestseller">BESTSELLER</option>
+        </select>
+      </div>
+
+      <div class="admin-input-group" style="margin-bottom:14px;">
+        <label>discount percentage (e.g. 20 for 20% off) — optional</label>
+        <input type="number" id="batch-discount-percent" placeholder="Leave empty to keep current prices" min="1" max="90" />
+      </div>
+
+      <div class="admin-input-group" style="margin-bottom:20px;">
+        <label>or set fixed sale price in egp (optional)</label>
+        <input type="number" id="batch-fixed-price" placeholder="Leave empty to keep current prices" min="0" />
+      </div>
+
+      <button type="button" class="btn btn-primary full-width" onclick="executeBatchOffer()">
+        <i data-lucide="check" class="icon-sm"></i> apply offer to selected products
+      </button>
+    </div>
+  </div>
+
   <script src="app.js"></script>
   <script>
     /* ══════════════════════════════════════════════════════
-       STOREFRONT ADMIN & CATALOG MANAGER
+       STOREFRONT ADMIN, SELECTION & OFFERS MANAGER
        ══════════════════════════════════════════════════════ */
     const ADMIN_PIN = "2026";
     let expenseStockItems = [];
     let storefrontProducts = [];
+    let storefrontOffers = [];
+    let storefrontBanner = {
+      active: true,
+      text: "✦ SPECIAL OFFER: Use code STATIC10 for 10% OFF all stickers! · Free Alexandria delivery on orders over 150 EGP ✦"
+    };
+
+    let selectedItemIds = new Set();
+    let currentAdminFilterCat = "all";
+    let currentFitMode = "contain";
 
     // ── INITIALIZE ──
     document.addEventListener("DOMContentLoaded", async () => {
@@ -860,66 +1154,75 @@
       renderIcons();
     }
 
-    // ── FETCH LIVE STOCK & CUSTOM CATALOG ──
+    // ── FETCH CATALOG & STOCK ──
     async function fetchCatalogAndStock() {
       try {
-        const [stockRes, customConfig] = await Promise.all([
-          fetch("https://expense-sys-ten.vercel.app/api/stock/public").catch(() => null),
+        const [stockRes, customMap] = await Promise.all([
+          fetch(`${EXPENSE_API}/api/stock/public`).catch(() => null),
           fetchStorefrontPictureMap().catch(() => ({}))
         ]);
 
         if (stockRes && stockRes.ok) {
           expenseStockItems = await stockRes.json();
-        } else {
-          expenseStockItems = [];
         }
 
-        // Initialize Storefront Products
-        if (customConfig && Array.isArray(customConfig.items) && customConfig.items.length > 0) {
-          storefrontProducts = customConfig.items;
-        } else if (customConfig && typeof customConfig === "object" && Object.keys(customConfig).length > 0 && !customConfig.items) {
-          storefrontProducts = expenseStockItems.map(stk => {
-            const ovr = customConfig[stk.id] || customConfig[stk.itemName] || {};
-            return {
-              id: "sf_" + stk.id,
-              stockId: stk.id,
-              name: ovr.name || stk.itemName,
-              img: ovr.img || getProductImage(stk.itemName, stk.sku),
-              category: ovr.category || inferCategory(stk.itemName, stk.sku),
-              price: stk.price || 0,
-              badge: ovr.badge || "",
-              desc: ovr.desc || "",
-            };
-          });
-        } else {
+        const safeMap = customMap || {};
+
+        if (safeMap && Array.isArray(safeMap.items) && safeMap.items.length > 0) {
+          storefrontProducts = safeMap.items.map(item => ({
+            ...item,
+            qty: (item.qty !== undefined && item.qty !== null && item.qty !== "") ? Number(item.qty) : 1,
+            originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
+          }));
+        } else if (safeMap && typeof safeMap === "object" && Object.keys(safeMap).length > 0 && !safeMap.items) {
+          storefrontProducts = Object.entries(safeMap).map(([k, v]) => ({
+            id: k,
+            stockId: v.stockId || k,
+            name: v.name || "Sticker Item",
+            img: v.img || "images/sticker-cats.jpg",
+            category: v.category || "single stickers",
+            price: v.price !== undefined ? Number(v.price) : 15,
+            qty: v.qty !== undefined ? Number(v.qty) : 1,
+            originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
+            fit: v.fit || "contain",
+            badge: v.badge || "",
+            desc: v.desc || "",
+          }));
+        } else if (expenseStockItems.length > 0) {
           storefrontProducts = expenseStockItems.map(stk => ({
             id: "sf_" + stk.id,
             stockId: stk.id,
             name: stk.itemName,
             img: getProductImage(stk.itemName, stk.sku),
             category: inferCategory(stk.itemName, stk.sku),
-            price: stk.price || 0,
+            price: stk.price || 15,
+            qty: 1,
+            originalPrice: null,
             badge: "",
             desc: "",
           }));
         }
 
-        if (!storefrontProducts.length) {
-          storefrontProducts = [{
-            id: "sf_demo_1",
-            stockId: expenseStockItems[0]?.id || "stk_default",
-            name: "Spider-Man Die-Cut Sticker",
-            img: "images/sticker-cats.jpg",
-            category: "single stickers",
-            price: 15,
-            badge: "new",
-            desc: "Waterproof vinyl die-cut sticker.",
-          }];
+        // Load Offers
+        if (safeMap.offers && Array.isArray(safeMap.offers)) {
+          storefrontOffers = safeMap.offers;
+        } else {
+          storefrontOffers = [
+            { code: "STATIC10", type: "percentage", value: 10, minOrder: 0, desc: "10% off entire order", active: true },
+            { code: "FREESHIP", type: "freeship", value: 50, minOrder: 150, desc: "Free Alexandria delivery over 150 EGP", active: true },
+            { code: "STATIC20", type: "percentage", value: 20, minOrder: 200, desc: "20% off orders over 200 EGP", active: true },
+          ];
+        }
+
+        // Load Banner
+        if (safeMap.banner) {
+          storefrontBanner = safeMap.banner;
         }
 
         populateStockDropdowns();
         renderAdminItems();
         updateAdminStats();
+        renderPromoCodesList();
       } catch (err) {
         console.error("Error loading catalog:", err);
       }
@@ -939,41 +1242,53 @@
     }
 
     // ── RENDER ADMIN ITEMS ──
-    function renderAdminItems(itemsToRender = storefrontProducts) {
+    function renderAdminItems(itemsToRender = null) {
       const container = document.getElementById("admin-items-list");
       if (!container) return;
 
-      if (!itemsToRender.length) {
+      const items = itemsToRender || getFilteredItems();
+
+      if (!items.length) {
         container.innerHTML = `
           <div style="text-align:center;padding:40px;color:var(--coffee-500);">
-            <p>No products found. Click <strong>+ 1 product</strong> or <strong>⚡ bulk add</strong> above!</p>
+            <p>No products found matching your filter. Click <strong>+ 1 product</strong> or clear search!</p>
           </div>`;
+        updateSelectionUI();
         return;
       }
 
-      container.innerHTML = itemsToRender.map(item => {
+      container.innerHTML = items.map(item => {
         const linkedStock = expenseStockItems.find(s => String(s.id) === String(item.stockId));
         const itemQty = (item.qty !== undefined && item.qty !== null && item.qty !== "") ? Number(item.qty) : 1;
         const currentImg = item.img || "images/sticker-cozy.jpg";
+        const isSelected = selectedItemIds.has(item.id);
+        const origPrice = item.originalPrice !== undefined && item.originalPrice !== null ? item.originalPrice : "";
 
         return `
-          <div class="admin-item-card is-linked" id="card-${item.id}">
+          <div class="admin-item-card ${isSelected ? 'is-selected' : ''}" id="card-${item.id}">
+            <!-- Selection Checkbox -->
+            <div class="admin-select-col">
+              <input type="checkbox" class="item-select-cb" data-id="${item.id}" ${isSelected ? 'checked' : ''} onchange="handleItemCheckboxChange('${item.id}', this.checked)" title="Select product" />
+            </div>
+
             <!-- Photo Preview -->
             <div class="admin-img-col">
               <img src="${currentImg}" alt="${item.name}" class="admin-img-preview" id="img-preview-${item.id}" />
-              <span style="font-size:0.75rem;color:var(--coffee-500);font-weight:600;" id="stock-badge-${item.id}"><i data-lucide="package" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> ${itemQty} in stock</span>
+              <span style="font-size:0.75rem;color:var(--coffee-500);font-weight:600;" id="stock-badge-${item.id}">
+                <i data-lucide="package" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> ${itemQty} in stock
+              </span>
             </div>
 
             <!-- Fields -->
             <div class="admin-fields-col">
-              <!-- Changeable Display Name -->
+              <!-- Display Name -->
               <div class="admin-input-group">
                 <label>product display name (visible in shop)</label>
                 <input type="text" class="item-title-input" id="name-${item.id}" value="${escapeHtml(item.name || "")}" placeholder="e.g. Spider-Man Vinyl Sticker" />
               </div>
 
-              <!-- Linked Stock Pool, Price & Quantity -->
-              <div class="admin-form-row-3">
+              <!-- Stock, Price & Original (Offer) Price & Quantity -->
+              <div class="admin-form-row-4">
                 <div class="admin-input-group">
                   <label>linked expense stock pool</label>
                   <select id="stockId-${item.id}">
@@ -986,12 +1301,16 @@
                   </select>
                 </div>
                 <div class="admin-input-group">
-                  <label>price in egp</label>
+                  <label>sale price (egp) *</label>
                   <input type="number" id="price-${item.id}" value="${item.price !== undefined ? item.price : (linkedStock ? linkedStock.price : 15)}" min="0" step="1" placeholder="Price (EGP)" />
                 </div>
                 <div class="admin-input-group">
-                  <label>stock quantity (default: 1)</label>
-                  <input type="number" id="qty-${item.id}" value="${itemQty}" min="0" step="1" placeholder="Stock Qty" oninput="const b = document.getElementById('stock-badge-${item.id}'); if(b) { b.innerHTML = '<i data-lucide=\\'package\\' class=\\'icon-xs\\' style=\\'vertical-align:middle;margin-right:2px;\\'></i> ' + (this.value || 0) + ' in stock'; renderIcons(); }" />
+                  <label>original price (was, optional)</label>
+                  <input type="number" id="orig-price-${item.id}" value="${origPrice}" min="0" step="1" placeholder="e.g. 25 EGP (strikethrough)" />
+                </div>
+                <div class="admin-input-group">
+                  <label>stock quantity</label>
+                  <input type="number" id="qty-${item.id}" value="${itemQty}" min="0" step="1" placeholder="Stock Qty" oninput="updateStockBadge('${item.id}', this.value)" />
                 </div>
               </div>
 
@@ -1020,13 +1339,20 @@
                   </select>
                 </div>
                 <div class="admin-input-group">
-                  <label>badge (optional)</label>
+                  <label>badge / offer tag</label>
                   <select id="badge-${item.id}">
-                    <option value="" ${!item.badge ? "selected" : ""}>Auto (stock based)</option>
-                    <option value="new" ${item.badge === "new" ? "selected" : ""}>New Drop</option>
-                    <option value="bestseller" ${item.badge === "bestseller" ? "selected" : ""}>Bestseller</option>
-                    <option value="low stock" ${item.badge === "low stock" ? "selected" : ""}>Low Stock</option>
-                    <option value="sold out" ${item.badge === "sold out" ? "selected" : ""}>Sold Out</option>
+                    <option value="" ${!item.badge ? "selected" : ""}>No Badge (Default)</option>
+                    <option value="sale" ${item.badge === "sale" ? "selected" : ""}>SALE</option>
+                    <option value="offer" ${item.badge === "offer" ? "selected" : ""}>SPECIAL OFFER</option>
+                    <option value="10% off" ${item.badge === "10% off" ? "selected" : ""}>10% OFF</option>
+                    <option value="20% off" ${item.badge === "20% off" ? "selected" : ""}>20% OFF</option>
+                    <option value="30% off" ${item.badge === "30% off" ? "selected" : ""}>30% OFF</option>
+                    <option value="50% off" ${item.badge === "50% off" ? "selected" : ""}>50% OFF</option>
+                    <option value="buy 2 get 1" ${item.badge === "buy 2 get 1" ? "selected" : ""}>BUY 2 GET 1</option>
+                    <option value="new" ${item.badge === "new" ? "selected" : ""}>NEW DROP</option>
+                    <option value="bestseller" ${item.badge === "bestseller" ? "selected" : ""}>BESTSELLER</option>
+                    <option value="low stock" ${item.badge === "low stock" ? "selected" : ""}>LOW STOCK</option>
+                    <option value="sold out" ${item.badge === "sold out" ? "selected" : ""}>SOLD OUT</option>
                   </select>
                 </div>
                 <div class="admin-input-group">
@@ -1049,7 +1375,7 @@
               <button type="button" class="btn btn-primary save-item-btn" id="save-btn-${item.id}" onclick="saveSingleItem('${item.id}')">
                 <i data-lucide="check" class="icon-xs"></i> save
               </button>
-              <button type="button" class="clone-item-btn" onclick="cloneItem('${item.id}')" title="Duplicate this product and link to same stock">
+              <button type="button" class="clone-item-btn" onclick="cloneItem('${item.id}')" title="Duplicate this product">
                 <i data-lucide="copy" class="icon-xs"></i> duplicate
               </button>
               <button type="button" class="delete-item-btn" onclick="deleteProduct('${item.id}')">
@@ -1060,7 +1386,16 @@
         `;
       }).join("");
 
+      updateSelectionUI();
       renderIcons();
+    }
+
+    function updateStockBadge(id, val) {
+      const b = document.getElementById(`stock-badge-${id}`);
+      if (b) {
+        b.innerHTML = `<i data-lucide="package" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> ${(val || 0)} in stock`;
+        renderIcons();
+      }
     }
 
     function escapeHtml(str) {
@@ -1073,42 +1408,198 @@
         .replace(/>/g, "&gt;");
     }
 
-    // ── CATEGORY INFERENCE ──
-    function inferCategory(name, sku) {
-      const n = (name + " " + (sku || "")).toLowerCase();
-      if (n.includes("poster") || n.includes("print")) return "posters";
-      if (n.includes("sheet") || n.includes("pack") || n.includes("bundle") || n.includes("set")) return "sticker sheet";
-      return "single stickers";
+    // ── FILTER & SEARCH ──
+    function getFilteredItems() {
+      const q = (document.getElementById("admin-search")?.value || "").toLowerCase().trim();
+      let items = storefrontProducts;
+
+      if (currentAdminFilterCat && currentAdminFilterCat !== "all") {
+        items = items.filter(item => {
+          const cat = (item.category || "").toLowerCase();
+          if (currentAdminFilterCat === "posters") return cat.includes("poster");
+          if (currentAdminFilterCat === "single stickers") return cat.includes("single");
+          if (currentAdminFilterCat === "sticker sheet") return cat.includes("sheet") || cat.includes("pack");
+          return cat === currentAdminFilterCat;
+        });
+      }
+
+      if (q) {
+        items = items.filter(item => {
+          return (item.name + " " + (item.category || "") + " " + (item.desc || "") + " " + (item.badge || "")).toLowerCase().includes(q);
+        });
+      }
+
+      return items;
     }
 
-    // ── SEARCH FILTER ──
     function filterAdminItems() {
-      const q = (document.getElementById("admin-search")?.value || "").toLowerCase().trim();
-      if (!q) {
-        renderAdminItems(storefrontProducts);
-        return;
-      }
-      const filtered = storefrontProducts.filter(item => {
-        return (item.name + " " + (item.category || "") + " " + (item.desc || "")).toLowerCase().includes(q);
+      const q = (document.getElementById("admin-search")?.value || "").trim();
+      const clearBtn = document.getElementById("clear-search-btn");
+      if (clearBtn) clearBtn.style.display = q ? "block" : "none";
+      renderAdminItems();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById("admin-search");
+      if (input) input.value = "";
+      filterAdminItems();
+    }
+
+    function filterByAdminCat(cat) {
+      currentAdminFilterCat = cat;
+      document.querySelectorAll(".admin-cat-pill").forEach(p => {
+        p.classList.toggle("active", p.getAttribute("data-cat") === cat);
       });
-      renderAdminItems(filtered);
+      renderAdminItems();
     }
 
     // ── STATS UPDATE ──
     function updateAdminStats() {
       document.getElementById("stat-total").textContent = storefrontProducts.length;
-      let posters = 0, singles = 0, sheets = 0;
+      let posters = 0, singles = 0, sheets = 0, offers = 0;
 
       storefrontProducts.forEach(item => {
         const cat = (item.category || "").toLowerCase();
         if (cat === "posters") posters++;
         else if (cat === "sticker sheet") sheets++;
         else singles++;
+
+        if (item.originalPrice || (item.badge && (item.badge.includes("off") || item.badge === "sale" || item.badge === "offer" || item.badge.includes("buy")))) {
+          offers++;
+        }
       });
 
       document.getElementById("stat-posters").textContent = posters;
       document.getElementById("stat-single").textContent = singles;
       document.getElementById("stat-sheets").textContent = sheets;
+      document.getElementById("stat-offers").textContent = offers;
+    }
+
+    // ── SELECTION & BULK DELETE SYSTEM ──
+    function handleItemCheckboxChange(id, isChecked) {
+      if (isChecked) {
+        selectedItemIds.add(id);
+      } else {
+        selectedItemIds.delete(id);
+      }
+      const card = document.getElementById(`card-${id}`);
+      if (card) card.classList.toggle("is-selected", isChecked);
+      updateSelectionUI();
+    }
+
+    function handleSelectAllChange(isChecked) {
+      const visible = getFilteredItems();
+      visible.forEach(item => {
+        if (isChecked) {
+          selectedItemIds.add(item.id);
+        } else {
+          selectedItemIds.delete(item.id);
+        }
+        const card = document.getElementById(`card-${item.id}`);
+        if (card) card.classList.toggle("is-selected", isChecked);
+        const cb = card?.querySelector(".item-select-cb");
+        if (cb) cb.checked = isChecked;
+      });
+      updateSelectionUI();
+    }
+
+    function deselectAllItems() {
+      selectedItemIds.clear();
+      document.querySelectorAll(".item-select-cb").forEach(cb => cb.checked = false);
+      document.querySelectorAll(".admin-item-card").forEach(c => c.classList.remove("is-selected"));
+      updateSelectionUI();
+    }
+
+    function updateSelectionUI() {
+      const count = selectedItemIds.size;
+      const totalVisible = getFilteredItems().length;
+      const countBadge = document.getElementById("selection-count-badge");
+      const selectAllCb = document.getElementById("select-all-cb");
+
+      if (countBadge) {
+        countBadge.textContent = `${count} of ${totalVisible} selected`;
+      }
+      if (selectAllCb) {
+        selectAllCb.checked = totalVisible > 0 && count === totalVisible;
+        selectAllCb.indeterminate = count > 0 && count < totalVisible;
+      }
+    }
+
+    async function deleteSelectedProducts() {
+      const count = selectedItemIds.size;
+      if (count === 0) {
+        showToast("Please select at least 1 product to delete");
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to delete ${count} selected products from the storefront?`)) {
+        return;
+      }
+
+      storefrontProducts = storefrontProducts.filter(p => !selectedItemIds.has(p.id));
+      selectedItemIds.clear();
+
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
+
+      renderAdminItems();
+      updateAdminStats();
+      showToast(`${count} products deleted successfully ✦`, 3500);
+    }
+
+    // ── BATCH APPLY OFFER TO SELECTED ──
+    function openBatchOfferModal() {
+      if (selectedItemIds.size === 0) {
+        showToast("Please select products first using the checkboxes");
+        return;
+      }
+      document.getElementById("batch-offer-subtitle").textContent = `Applying offer to ${selectedItemIds.size} selected products.`;
+      const modal = document.getElementById("batch-offer-modal");
+      if (modal) modal.classList.add("open");
+      renderIcons();
+    }
+
+    function closeBatchOfferModal() {
+      const modal = document.getElementById("batch-offer-modal");
+      if (modal) modal.classList.remove("open");
+    }
+
+    async function executeBatchOffer() {
+      const badge = document.getElementById("batch-badge-select").value;
+      const percentStr = document.getElementById("batch-discount-percent").value;
+      const fixedStr = document.getElementById("batch-fixed-price").value;
+
+      const percent = percentStr ? parseFloat(percentStr) : null;
+      const fixed = fixedStr ? parseFloat(fixedStr) : null;
+
+      selectedItemIds.forEach(id => {
+        const item = storefrontProducts.find(p => p.id === id);
+        if (!item) return;
+
+        if (badge !== undefined) item.badge = badge;
+
+        if (percent && percent > 0 && percent < 100) {
+          if (!item.originalPrice) item.originalPrice = item.price;
+          item.price = Math.round(item.originalPrice * (1 - percent / 100));
+        } else if (fixed !== null && fixed >= 0) {
+          if (!item.originalPrice) item.originalPrice = item.price;
+          item.price = fixed;
+        }
+      });
+
+      closeBatchOfferModal();
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
+
+      renderAdminItems();
+      updateAdminStats();
+      showToast(`Offer applied to ${selectedItemIds.size} products! ✦`, 4000);
     }
 
     // ── PRESET & URL HANDLING ──
@@ -1137,7 +1628,8 @@
         img: "images/sticker-cats.jpg",
         category: "single stickers",
         price: defaultStock ? defaultStock.price : 15,
-        qty: 1, // default 1 in stock
+        qty: 1,
+        originalPrice: null,
         fit: "contain",
         badge: "new",
         desc: "Handmade die-cut vinyl sticker from STATIC.",
@@ -1156,14 +1648,25 @@
       showToast("New product card added! Edit the title & photo, then click Save ✦");
     }
 
-    // ── SET ALL PRODUCTS FIT (ZOOMED OUT / FULL STICKER) ──
-    async function setAllProductsFit(fitMode = "contain") {
+    // ── FIT TOGGLE ──
+    async function toggleAllProductsFit() {
+      currentFitMode = currentFitMode === "contain" ? "cover" : "contain";
       storefrontProducts.forEach(item => {
-        item.fit = fitMode;
+        item.fit = currentFitMode;
       });
+      const btn = document.getElementById("fit-toggle-btn");
+      if (btn) {
+        btn.innerHTML = currentFitMode === "contain"
+          ? `<i data-lucide="zoom-out" class="icon-xs"></i> fit: full sticker`
+          : `<i data-lucide="maximize" class="icon-xs"></i> fit: cover / fill`;
+      }
       renderAdminItems();
-      await saveStorefrontPictureMap({ items: storefrontProducts });
-      showToast(`All products set to ${fitMode === "contain" ? "Zoomed Out (Full Sticker)" : "Fill"}! ✦`);
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
+      showToast(`All products set to ${currentFitMode === "contain" ? "Zoomed Out (Full Sticker)" : "Cover"}! ✦`);
     }
 
     // ── BULK ADD MODAL CONTROLS ──
@@ -1189,12 +1692,12 @@
 
     function setBulkCount(n) {
       document.getElementById("bulk-count").value = n;
-      document.querySelectorAll(".quick-qty-btn").forEach(btn => {
+      document.querySelectorAll(".quick-qty-pills .quick-qty-btn").forEach(btn => {
         btn.classList.toggle("active", btn.textContent === "+" + n);
       });
     }
 
-    // ── EXECUTE BULK GENERATOR (e.g. 60 items) ──
+    // ── EXECUTE BULK GENERATOR ──
     async function executeBulkGenerator() {
       const count = parseInt(document.getElementById("bulk-count").value, 10) || 60;
       const baseName = (document.getElementById("bulk-base-name").value || "Sticker").trim();
@@ -1215,7 +1718,8 @@
           img: img,
           category: category,
           price: price,
-          qty: 1, // default 1 in stock
+          qty: 1,
+          originalPrice: null,
           fit: fit,
           badge: i <= 5 ? "new" : "",
           desc: `Handmade ${category} design from STATIC. Waterproof vinyl, die-cut.`,
@@ -1227,8 +1731,11 @@
       renderAdminItems();
       updateAdminStats();
 
-      // Automatically sync to cloud database
-      await saveStorefrontPictureMap({ items: storefrontProducts });
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
       showToast(`${count} products generated & synced to shop live!`, 4000);
     }
 
@@ -1265,7 +1772,8 @@
           img: img,
           category: category,
           price: 15,
-          qty: 1, // default 1 in stock
+          qty: 1,
+          originalPrice: null,
           fit: fit,
           badge: idx < 3 ? "new" : "",
           desc: `Handmade ${category} from STATIC. Waterproof vinyl, die-cut.`,
@@ -1277,11 +1785,15 @@
       renderAdminItems();
       updateAdminStats();
 
-      await saveStorefrontPictureMap({ items: storefrontProducts });
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
       showToast(`${newItems.length} products imported & synced to shop!`, 4000);
     }
 
-    // ── CLONE / DUPLICATE PRODUCT ──
+    // ── CLONE PRODUCT ──
     function cloneItem(itemId) {
       const original = storefrontProducts.find(p => p.id === itemId);
       if (!original) return;
@@ -1300,10 +1812,10 @@
 
       renderAdminItems();
       updateAdminStats();
-      showToast(`Duplicated "${original.name}"! Linked to the same stock pool ✦`);
+      showToast(`Duplicated "${original.name}"! ✦`);
     }
 
-    // ── DELETE PRODUCT ──
+    // ── DELETE SINGLE PRODUCT ──
     function deleteProduct(itemId) {
       const item = storefrontProducts.find(p => p.id === itemId);
       const name = item ? item.name : "this product";
@@ -1311,6 +1823,7 @@
       if (!confirm(`Delete "${name}" from the storefront?`)) return;
 
       storefrontProducts = storefrontProducts.filter(p => p.id !== itemId);
+      selectedItemIds.delete(itemId);
       saveAllItems();
       renderAdminItems();
       updateAdminStats();
@@ -1320,7 +1833,11 @@
     // ── SAVE SINGLE ITEM ──
     async function saveSingleItem(itemId) {
       collectItemDataFromDOM(itemId);
-      await saveStorefrontPictureMap({ items: storefrontProducts });
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
       updateAdminStats();
 
       const btn = document.getElementById(`save-btn-${itemId}`);
@@ -1344,6 +1861,10 @@
       item.name = (document.getElementById(`name-${itemId}`)?.value || item.name).trim();
       item.stockId = document.getElementById(`stockId-${itemId}`)?.value || item.stockId;
       item.price = parseFloat(document.getElementById(`price-${itemId}`)?.value) || item.price || 0;
+      
+      const origVal = document.getElementById(`orig-price-${itemId}`)?.value;
+      item.originalPrice = origVal && parseFloat(origVal) > 0 ? parseFloat(origVal) : null;
+
       const parsedQty = parseInt(document.getElementById(`qty-${itemId}`)?.value, 10);
       item.qty = (isNaN(parsedQty) || parsedQty < 0) ? 1 : parsedQty;
       item.img = (document.getElementById(`url-${itemId}`)?.value || item.img).trim();
@@ -1359,19 +1880,173 @@
         collectItemDataFromDOM(item.id);
       });
 
-      await saveStorefrontPictureMap({ items: storefrontProducts });
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
       updateAdminStats();
       showToast("All products synced live to all devices ✦");
     }
 
+    // ── OFFERS & PROMOS MODAL CONTROLS ──
+    function openOffersModal() {
+      renderPromoCodesList();
+      const bText = document.getElementById("banner-text-input");
+      const bActive = document.getElementById("banner-active-cb");
+      if (bText) bText.value = storefrontBanner.text || "";
+      if (bActive) bActive.checked = storefrontBanner.active !== false;
+
+      const modal = document.getElementById("offers-modal");
+      if (modal) modal.classList.add("open");
+      renderIcons();
+    }
+
+    function closeOffersModal() {
+      const modal = document.getElementById("offers-modal");
+      if (modal) modal.classList.remove("open");
+    }
+
+    function switchOffersTab(tab) {
+      document.getElementById("offers-tab-coupons").style.display = tab === "coupons" ? "block" : "none";
+      document.getElementById("offers-tab-banner").style.display = tab === "banner" ? "block" : "none";
+      document.getElementById("tab-btn-coupons").classList.toggle("active", tab === "coupons");
+      document.getElementById("tab-btn-banner").classList.toggle("active", tab === "banner");
+      renderIcons();
+    }
+
+    function renderPromoCodesList() {
+      const container = document.getElementById("promo-codes-list");
+      if (!container) return;
+
+      if (!storefrontOffers.length) {
+        container.innerHTML = `<p style="color:var(--coffee-500);font-size:0.85rem;">No promo codes created yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <table class="offers-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Discount</th>
+              <th>Min. Order</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${storefrontOffers.map((o, idx) => {
+              const typeLabel = o.type === "percentage" ? `${o.value}% OFF` : o.type === "fixed" ? `${o.value} EGP OFF` : "FREE SHIPPING";
+              return `
+                <tr>
+                  <td><span class="offer-code-pill">${escapeHtml(o.code)}</span></td>
+                  <td><strong>${typeLabel}</strong> ${o.desc ? `<br><small style="color:var(--coffee-500);">${escapeHtml(o.desc)}</small>` : ''}</td>
+                  <td>${o.minOrder > 0 ? `${o.minOrder} EGP` : 'None'}</td>
+                  <td>
+                    <button type="button" class="btn btn-outline" style="padding:4px 8px;font-size:0.72rem;background:${o.active ? '#d4edda' : '#f8d7da'};color:${o.active ? '#155724' : '#721c24'};border-color:${o.active ? '#c3e6cb' : '#f5c6cb'};" onclick="toggleOfferActive(${idx})">
+                      ${o.active ? 'Active' : 'Disabled'}
+                    </button>
+                  </td>
+                  <td>
+                    <button type="button" class="delete-item-btn" onclick="deleteOffer(${idx})">
+                      <i data-lucide="trash-2" class="icon-xs"></i>
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+      renderIcons();
+    }
+
+    async function handleCreatePromo(e) {
+      e.preventDefault();
+      const code = (document.getElementById("new-promo-code")?.value || "").trim().toUpperCase();
+      const type = document.getElementById("new-promo-type")?.value || "percentage";
+      const val = parseFloat(document.getElementById("new-promo-val")?.value) || 10;
+      const min = parseFloat(document.getElementById("new-promo-min")?.value) || 0;
+      const desc = (document.getElementById("new-promo-desc")?.value || "").trim();
+
+      if (!code) {
+        showToast("Please provide a promo code");
+        return;
+      }
+
+      storefrontOffers = storefrontOffers.filter(o => o.code !== code);
+      storefrontOffers.unshift({
+        code,
+        type,
+        value: val,
+        minOrder: min,
+        desc: desc || (type === "percentage" ? `${val}% OFF` : type === "fixed" ? `${val} EGP OFF` : "Free Alexandria Shipping"),
+        active: true,
+      });
+
+      renderPromoCodesList();
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
+      document.getElementById("create-promo-form")?.reset();
+      showToast(`Promo code "${code}" added live ✦`);
+    }
+
+    async function toggleOfferActive(idx) {
+      if (storefrontOffers[idx]) {
+        storefrontOffers[idx].active = !storefrontOffers[idx].active;
+        renderPromoCodesList();
+        await saveStorefrontPictureMap({
+          items: storefrontProducts,
+          offers: storefrontOffers,
+          banner: storefrontBanner
+        });
+      }
+    }
+
+    async function deleteOffer(idx) {
+      if (storefrontOffers[idx]) {
+        const code = storefrontOffers[idx].code;
+        storefrontOffers.splice(idx, 1);
+        renderPromoCodesList();
+        await saveStorefrontPictureMap({
+          items: storefrontProducts,
+          offers: storefrontOffers,
+          banner: storefrontBanner
+        });
+        showToast(`Promo code "${code}" removed`);
+      }
+    }
+
+    async function saveBannerSettings() {
+      const text = (document.getElementById("banner-text-input")?.value || "").trim();
+      const active = document.getElementById("banner-active-cb")?.checked || false;
+
+      storefrontBanner = { text, active };
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
+      showToast("Announcement banner saved & synced to storefront ✦");
+    }
+
     // ── EXPORT & IMPORT JSON ──
     function exportPictureConfig() {
-      const blob = new Blob([JSON.stringify({ items: storefrontProducts }, null, 2)], { type: "application/json" });
+      const payload = {
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = `static-storefront-catalog-${new Date().toISOString().slice(0,10)}.json`;
       a.click();
-      showToast("Catalog exported ✦");
+      showToast("Catalog & offers exported ✦");
     }
 
     function importPictureConfig(e) {
@@ -1384,12 +2059,19 @@
           const parsed = JSON.parse(event.target.result);
           if (parsed && Array.isArray(parsed.items)) {
             storefrontProducts = parsed.items;
+            if (parsed.offers) storefrontOffers = parsed.offers;
+            if (parsed.banner) storefrontBanner = parsed.banner;
           } else if (Array.isArray(parsed)) {
             storefrontProducts = parsed;
           }
-          await saveStorefrontPictureMap({ items: storefrontProducts });
+          await saveStorefrontPictureMap({
+            items: storefrontProducts,
+            offers: storefrontOffers,
+            banner: storefrontBanner
+          });
           renderAdminItems();
           updateAdminStats();
+          renderPromoCodesList();
           showToast("Catalog imported & synced successfully ✦");
         } catch (_) {
           showToast("Invalid JSON file format");

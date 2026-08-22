@@ -745,10 +745,34 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   margin-top: auto;
   padding-top: 12px;
 }
+.card-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
 .card-price {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--coffee-800);
+}
+.card-old-price {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: line-through;
+  color: var(--coffee-400);
+}
+.modal-old-price {
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: line-through;
+  color: var(--coffee-400);
+  margin-left: 8px;
+}
+.card-badge.badge-offer,
+.card-badge.badge-sale {
+  background: #c0392b !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px rgba(192, 57, 43, 0.35);
 }
 .card-add-btn {
   width: 36px; height: 36px;
@@ -1621,13 +1645,60 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 }
 .review-total-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--coffee-600); }
 .review-total-row.grand { font-size: 1.15rem; font-weight: 800; color: var(--coffee-800); padding-top: 8px; border-top: 1px solid var(--beige-300); }
-.review-customer {
-  background: var(--beige-200);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
+/* Promo Code in Checkout */
+.promo-box {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 6px;
+}
+.promo-box input {
+  flex: 1;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--beige-300);
+  background: var(--beige-100);
   font-size: 0.85rem;
-  line-height: 1.6;
-  margin-bottom: 24px;
+  color: var(--coffee-800);
+  outline: none;
+}
+.promo-box input:focus {
+  border-color: var(--coffee-800);
+}
+.promo-apply-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.promo-feedback {
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+.promo-feedback.success {
+  background: #e8f8f5;
+  color: #117864;
+  border: 1px solid #a3e4d7;
+}
+.promo-remove-btn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  padding: 2px 4px;
+}
+.review-total-row.discount-row {
+  color: #27ae60;
+  font-weight: 700;
 }
 .checkout-actions { display: flex; gap: 12px; justify-content: flex-end; }
 .checkout-step.hidden { display: none; }

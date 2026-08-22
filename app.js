@@ -595,11 +595,43 @@ window.reorderItems = function (itemsJsonStr) {
 // ══════════════════════════════════════════════════════
 // PRODUCTS & SHOP (3 Categories: posters, single stickers, sticker sheet)
 // ══════════════════════════════════════════════════════
+let STORE_OFFERS = [
+  { code: "STATIC10", type: "percentage", value: 10, minOrder: 0, desc: "10% off entire order", active: true },
+  { code: "FREESHIP", type: "freeship", value: 50, minOrder: 150, desc: "Free Alexandria delivery over 150 EGP", active: true },
+  { code: "STATIC20", type: "percentage", value: 20, minOrder: 200, desc: "20% off orders over 200 EGP", active: true },
+];
+let STORE_BANNER = null;
+let appliedPromo = null;
+
 function inferProductCategory(name, sku) {
   const n = (name + " " + (sku || "")).toLowerCase();
   if (n.includes("poster") || n.includes("print")) return "posters";
   if (n.includes("sheet") || n.includes("pack") || n.includes("bundle") || n.includes("set")) return "sticker sheet";
   return "single stickers";
+}
+
+function updateAnnouncementBanner(bannerObj) {
+  if (!bannerObj) return;
+  const marqueeInner = document.querySelector(".announcement-inner");
+  const marqueeBar = document.querySelector(".announcement-bar");
+  if (!marqueeInner || !marqueeBar) return;
+
+  if (bannerObj.active === false) {
+    marqueeBar.style.display = "none";
+  } else {
+    marqueeBar.style.display = "block";
+    if (bannerObj.text) {
+      const escaped = escapeHtml(bannerObj.text);
+      marqueeInner.innerHTML = `
+        <span>${escaped}</span>
+        <span class="sep">✦</span>
+        <span>${escaped}</span>
+        <span class="sep">✦</span>
+        <span>${escaped}</span>
+        <span class="sep">✦</span>
+      `;
+    }
+  }
 }
 
 async function loadProducts(forceRefresh = false) {
@@ -642,6 +674,14 @@ async function loadProducts(forceRefresh = false) {
 
     const safeMap = customMap || {};
 
+    if (safeMap.offers && Array.isArray(safeMap.offers)) {
+      STORE_OFFERS = safeMap.offers;
+    }
+    if (safeMap.banner) {
+      STORE_BANNER = safeMap.banner;
+      updateAnnouncementBanner(STORE_BANNER);
+    }
+
     if (safeMap && Array.isArray(safeMap.items) && safeMap.items.length > 0) {
       PRODUCTS = safeMap.items.map(item => {
         const linkedStock = stock.find(s => String(s.id) === String(item.stockId));
@@ -652,6 +692,9 @@ async function loadProducts(forceRefresh = false) {
         const stockPrice = (item.price !== undefined && item.price !== null && item.price !== "")
           ? Number(item.price)
           : (linkedStock ? Number(linkedStock.price) : 15);
+        const originalPrice = (item.originalPrice && Number(item.originalPrice) > stockPrice)
+          ? Number(item.originalPrice)
+          : null;
         const category = item.category || inferProductCategory(item.name, linkedStock?.sku);
         const img = item.img || getProductImage(item.name, linkedStock?.sku);
         const badge = item.badge !== undefined && item.badge !== ""
@@ -667,6 +710,7 @@ async function loadProducts(forceRefresh = false) {
           sku: linkedStock ? (linkedStock.sku || "") : "",
           desc: item.desc || `${item.name} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Alexandria.`,
           price: stockPrice,
+          originalPrice: originalPrice,
           qty: stockQty,
           category: category,
           img: img,
@@ -687,6 +731,8 @@ async function loadProducts(forceRefresh = false) {
           ? custom.badge
           : (stockQty === 0 ? "sold out" : null);
         const fit = custom.fit || (category === "posters" ? "cover" : "contain");
+        const price = custom.price !== undefined && custom.price !== "" ? Number(custom.price) : (item.price || 15);
+        const originalPrice = custom.originalPrice && Number(custom.originalPrice) > price ? Number(custom.originalPrice) : null;
 
         return {
           id: item.id,
@@ -694,7 +740,8 @@ async function loadProducts(forceRefresh = false) {
           name: custom.name || item.itemName,
           sku: item.sku || "",
           desc: custom.desc || `${custom.name || item.itemName} — a handmade ${category} from STATIC. Waterproof vinyl, die-cut, shipped from Alexandria.`,
-          price: custom.price !== undefined && custom.price !== "" ? Number(custom.price) : (item.price || 15),
+          price: price,
+          originalPrice: originalPrice,
           qty: stockQty,
           category: category,
           img: img,
@@ -865,16 +912,24 @@ function renderProducts() {
     const isCover = p.fit === "cover";
     const fitClass = isCover ? "fit-cover" : "fit-contain zoomed-out";
 
+    const hasOffer = p.originalPrice && Number(p.originalPrice) > Number(p.price);
+    const priceDisplay = hasOffer
+      ? `<span class="card-price-wrap"><span class="card-price">${p.price} EGP</span><span class="card-old-price">${p.originalPrice} EGP</span></span>`
+      : `<span class="card-price">${p.price > 0 ? p.price + " EGP" : "Price TBD"}</span>`;
+
+    const isOfferBadge = p.badge && (p.badge.includes("off") || p.badge === "sale" || p.badge === "offer" || p.badge.includes("buy"));
+    const badgeClass = p.badge === "sold out" ? "badge-sold" : isOfferBadge ? "badge-offer" : "";
+
     card.innerHTML = `
       <div class="card-img-wrap ${fitClass}">
         <canvas class="card-canvas" width="280" height="280" role="img" aria-label="${p.name}"></canvas>
-        ${p.badge ? `<span class="card-badge ${p.badge === "sold out" ? "badge-sold" : ""}">${p.badge}</span>` : ""}
+        ${p.badge ? `<span class="card-badge ${badgeClass}">${p.badge}</span>` : ""}
       </div>
       <div class="card-body">
         <div class="card-name">${p.name}</div>
         <div class="card-pieces">${p.qty > 0 ? `${p.qty} in stock` : "out of stock"}</div>
         <div class="card-bottom">
-          <span class="card-price">${p.price > 0 ? p.price + " EGP" : "Price TBD"}</span>
+          ${priceDisplay}
           <button type="button" class="card-add-btn ${p.outOfStock ? "disabled" : ""}" aria-label="Quick add ${p.name}" data-id="${p.id}" ${p.outOfStock ? "disabled" : ""}>
             <i data-lucide="plus" class="icon-sm"></i>
           </button>
@@ -989,7 +1044,15 @@ function openProductModal(productId) {
 
   if (nameEl) nameEl.textContent = p.name;
   if (descEl) descEl.textContent = p.desc;
-  if (priceEl) priceEl.textContent = p.price > 0 ? p.price + " EGP" : "Price TBD";
+  
+  if (priceEl) {
+    if (p.originalPrice && Number(p.originalPrice) > Number(p.price)) {
+      priceEl.innerHTML = `${p.price} EGP <span class="modal-old-price">${p.originalPrice} EGP</span>`;
+    } else {
+      priceEl.textContent = p.price > 0 ? p.price + " EGP" : "Price TBD";
+    }
+  }
+
   if (piecesEl) piecesEl.textContent = p.qty > 0 ? `${p.qty} in stock · ${p.category}` : "Out of stock";
   if (qtyInput) qtyInput.value = 1;
 
@@ -1353,6 +1416,64 @@ function goToReview() {
   setCheckoutStep(3);
 }
 
+function applyPromoCode(code) {
+  if (!code) return;
+  code = code.trim().toUpperCase();
+  const defaultOffers = [
+    { code: "STATIC10", type: "percentage", value: 10, minOrder: 0, desc: "10% off entire order" },
+    { code: "FREESHIP", type: "freeship", value: 50, minOrder: 150, desc: "Free Alexandria shipping over 150 EGP" },
+    { code: "STATIC20", type: "percentage", value: 20, minOrder: 200, desc: "20% off orders over 200 EGP" },
+    { code: "STATIC5", type: "fixed", value: 5, minOrder: 0, desc: "5 EGP off order" }
+  ];
+  const allOffers = [...(STORE_OFFERS.filter(o => o.active !== false)), ...defaultOffers];
+  const match = allOffers.find(o => o.code.toUpperCase() === code);
+  const subtotal = cart.reduce((s, i) => s + ((Number(i.price) || 0) * (i.qty || 1)), 0);
+
+  if (!match) {
+    showToast("Invalid promo code");
+    return;
+  }
+  if (match.minOrder && subtotal < match.minOrder) {
+    showToast(`Minimum order for ${match.code} is ${match.minOrder} EGP`);
+    return;
+  }
+
+  let discountAmount = 0;
+  if (match.type === "percentage") {
+    discountAmount = Math.round((subtotal * match.value) / 100);
+  } else if (match.type === "fixed") {
+    discountAmount = match.value;
+  } else if (match.type === "freeship") {
+    discountAmount = 50; // flat Alexandria shipping fee
+  }
+
+  appliedPromo = {
+    code: match.code,
+    type: match.type,
+    value: match.value,
+    discountAmount: discountAmount,
+    desc: match.desc,
+  };
+
+  populateReview();
+  showToast(`Promo code "${match.code}" applied (-${discountAmount} EGP)! ✦`);
+}
+
+function removePromoCode() {
+  appliedPromo = null;
+  populateReview();
+  showToast("Promo code removed");
+}
+
+function handleApplyPromoClick() {
+  const input = document.getElementById("co-promo-input");
+  if (input && input.value) {
+    applyPromoCode(input.value);
+  } else {
+    showToast("Please enter a promo code");
+  }
+}
+
 function populateReview() {
   const itemsEl = document.getElementById("review-items");
   if (itemsEl) {
@@ -1367,16 +1488,48 @@ function populateReview() {
     `).join("");
   }
 
-  const subtotal = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
-  const shippingFee = 50; // Flat 50 EGP to Alexandria
-  const total = subtotal + shippingFee;
+  const subtotal = cart.reduce((s, i) => s + (Number(i.price) || 0) * (i.qty || 1), 0);
+  const baseShipping = 50; // Flat 50 EGP to Alexandria
+  let shippingFee = baseShipping;
+  let discountAmount = 0;
+
+  if (appliedPromo) {
+    if (appliedPromo.type === "percentage") {
+      discountAmount = Math.round((subtotal * appliedPromo.value) / 100);
+    } else if (appliedPromo.type === "fixed") {
+      discountAmount = appliedPromo.value;
+    } else if (appliedPromo.type === "freeship") {
+      discountAmount = 50;
+      shippingFee = 0;
+    }
+    appliedPromo.discountAmount = discountAmount;
+  }
+
+  const total = Math.max(0, subtotal + (appliedPromo?.type === "freeship" ? 0 : shippingFee) - (appliedPromo?.type === "freeship" ? 0 : discountAmount));
   const methodLabel = currentPaymentMethod === "vodafone" ? "Vodafone Cash" : "Card Payment";
 
   const totalsEl = document.getElementById("review-totals");
   if (totalsEl) {
     totalsEl.innerHTML = `
+      <!-- Promo Code Input Box -->
+      <div class="promo-box">
+        <input type="text" id="co-promo-input" placeholder="Promo code (e.g. STATIC10)" value="${appliedPromo ? appliedPromo.code : ''}" />
+        <button type="button" class="btn btn-outline promo-apply-btn" onclick="handleApplyPromoClick()">
+          ${appliedPromo ? 'applied ✓' : 'apply'}
+        </button>
+      </div>
+      ${appliedPromo ? `
+        <div class="promo-feedback success">
+          <span><i data-lucide="tag" class="icon-xs" style="vertical-align:middle;margin-right:4px;"></i> <strong>${appliedPromo.code}</strong>: -${discountAmount} EGP (${appliedPromo.desc || ''})</span>
+          <button type="button" class="promo-remove-btn" onclick="removePromoCode()">remove</button>
+        </div>
+      ` : ''}
+
       <div class="review-total-row"><span>subtotal</span><span>${subtotal > 0 ? subtotal + " EGP" : "0 EGP"}</span></div>
-      <div class="review-total-row"><span>shipping (alexandria only)</span><span>${shippingFee} EGP</span></div>
+      ${discountAmount > 0 ? `
+        <div class="review-total-row discount-row"><span>promo discount (${appliedPromo.code})</span><span>-${discountAmount} EGP</span></div>
+      ` : ''}
+      <div class="review-total-row"><span>shipping (alexandria only)</span><span>${appliedPromo?.type === "freeship" ? '<strong style="color:#27ae60;">FREE</strong>' : shippingFee + " EGP"}</span></div>
       <div class="review-total-row"><span>payment method</span><span>${methodLabel}</span></div>
       <div class="review-total-row grand"><span>total</span><span>${total} EGP</span></div>
     `;
@@ -1391,6 +1544,8 @@ function populateReview() {
       ${customerData.note ? `<br/><em style="color:var(--coffee-400);font-size:.82rem">Note: ${customerData.note}</em>` : ""}
     `;
   }
+
+  renderIcons();
 }
 
 async function placeOrder() {
@@ -1408,15 +1563,19 @@ async function placeOrder() {
     sku: i.sku || "",
   }));
 
+  const promoInfo = appliedPromo ? ` [Promo: ${appliedPromo.code} (-${appliedPromo.discountAmount} EGP)]` : "";
+
   const payload = {
     customerName: customerData.name,
     phone: customerData.phone,
     email: customerData.email || null,
     address: customerData.address,
     items,
-    shippingPrice: 50,
+    shippingPrice: appliedPromo?.type === "freeship" ? 0 : 50,
     paymentMethod: currentPaymentMethod === "vodafone" ? "Vodafone Cash" : "Card",
-    note: customerData.note || null,
+    note: (customerData.note ? customerData.note : "") + promoInfo || null,
+    promoCode: appliedPromo?.code || null,
+    discount: appliedPromo?.discountAmount || 0,
   };
 
   let orderId = null;
