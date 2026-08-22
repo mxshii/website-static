@@ -92,28 +92,34 @@ function renderIcons() {
 }
 
 // ── INIT ──────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
-  createToastContainer();
-  initImageProtection();
-  loadCartFromStorage();
-  loadCurrentUser();
-  initNavbar();
-  initMobileMenu();
-  initProductModal();
-  initCartDrawer();
-  initCheckout();
-  initAccountModal();
-  initShopControls();
-  initContactForm();
+function initApp() {
+  try { createToastContainer(); } catch (e) { console.warn("createToastContainer error:", e); }
+  try { initImageProtection(); } catch (e) { console.warn("initImageProtection error:", e); }
+  try { loadCartFromStorage(); } catch (e) { console.warn("loadCartFromStorage error:", e); }
+  try { loadCurrentUser(); } catch (e) { console.warn("loadCurrentUser error:", e); }
+  try { initNavbar(); } catch (e) { console.warn("initNavbar error:", e); }
+  try { initMobileMenu(); } catch (e) { console.warn("initMobileMenu error:", e); }
+  try { initProductModal(); } catch (e) { console.warn("initProductModal error:", e); }
+  try { initCartDrawer(); } catch (e) { console.warn("initCartDrawer error:", e); }
+  try { initCheckout(); } catch (e) { console.warn("initCheckout error:", e); }
+  try { initAccountModal(); } catch (e) { console.warn("initAccountModal error:", e); }
+  try { initShopControls(); } catch (e) { console.warn("initShopControls error:", e); }
+  try { initContactForm(); } catch (e) { console.warn("initContactForm error:", e); }
 
   // Load products if grid is present
   if (document.getElementById("products-grid")) {
     loadProducts();
   }
 
-  highlightActiveNavLink();
+  try { highlightActiveNavLink(); } catch (_) {}
   renderIcons();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
 
 // ── ARTWORK ANTI-THEFT PROTECTION ──
 function initImageProtection() {
@@ -817,6 +823,27 @@ function getFallbackProducts() {
 
 function initShopControls() {
   initShopFilters();
+}
+
+function initShopFilters() {
+  const filterPills = document.querySelectorAll(".filter-pill");
+  const searchInput = document.getElementById("shop-search-input");
+
+  filterPills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      filterPills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      activeCategory = (pill.getAttribute("data-category") || "all").toLowerCase().trim();
+      renderProducts();
+    });
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value.toLowerCase().trim();
+      renderProducts();
+    });
+  }
 }
 
 // ── PROTECTED IN-MEMORY CANVAS RENDERER (Hides image links from DOM / Inspect Tab) ──
