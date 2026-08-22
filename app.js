@@ -19,6 +19,15 @@ let activePriceRange = "all";    // "all", "under-25", "25-50", "over-50", "on-s
 let activeSortOption = "default"; // "default", "low-high", "high-low", "name-az"
 let searchQuery = "";
 let _stockCacheTime = 0;
+const _imgCache = new Map();
+
+let STORE_OFFERS = [
+  { code: "STATIC10", type: "percentage", value: 10, minOrder: 0, desc: "10% off entire order", active: true },
+  { code: "FREESHIP", type: "freeship", value: 50, minOrder: 150, desc: "Free Alexandria delivery over 150 EGP", active: true },
+  { code: "STATIC20", type: "percentage", value: 20, minOrder: 200, desc: "20% off orders over 200 EGP", active: true },
+];
+let STORE_BANNER = null;
+let appliedPromo = null;
 
 window.filterByStock = function(stockVal) {
   activeStockFilter = stockVal;
@@ -631,14 +640,6 @@ window.reorderItems = function (itemsJsonStr) {
 // ══════════════════════════════════════════════════════
 // PRODUCTS & SHOP (3 Categories: posters, single stickers, sticker sheet)
 // ══════════════════════════════════════════════════════
-let STORE_OFFERS = [
-  { code: "STATIC10", type: "percentage", value: 10, minOrder: 0, desc: "10% off entire order", active: true },
-  { code: "FREESHIP", type: "freeship", value: 50, minOrder: 150, desc: "Free Alexandria delivery over 150 EGP", active: true },
-  { code: "STATIC20", type: "percentage", value: 20, minOrder: 200, desc: "20% off orders over 200 EGP", active: true },
-];
-let STORE_BANNER = null;
-let appliedPromo = null;
-
 function inferProductCategory(name, sku) {
   const n = (name + " " + (sku || "")).toLowerCase();
   if (n.includes("poster") || n.includes("print")) return "posters";
@@ -1214,13 +1215,14 @@ function openCart() {
   renderIcons();
 }
 
-window.closeCart = function () {
+function closeCart() {
   const drawer = document.getElementById("cart-drawer");
   const overlay = document.getElementById("cart-overlay");
   if (drawer) drawer.classList.remove("open");
   if (overlay) overlay.classList.remove("open");
   updateBodyScrollLock();
-};
+}
+window.closeCart = closeCart;
 
 function quickAddToCart(productId) {
   const p = PRODUCTS.find(x => String(x.id) === String(productId)) || getFallbackProducts().find(x => String(x.id) === String(productId));
