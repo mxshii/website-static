@@ -13,24 +13,33 @@
   <link rel="stylesheet" href="style.css" />
   <style>
     /* Dedicated Admin Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
     .admin-page {
       background: var(--beige-200);
       min-height: 100vh;
       padding-bottom: 90px;
     }
+
+    /* Natural scrolling header - never covers content */
     .admin-header {
       background: var(--coffee-900);
       color: var(--beige-100);
-      padding: 14px 28px;
+      padding: 16px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--shadow-md);
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 10;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+      gap: 12px;
     }
     .admin-brand {
       display: flex;
@@ -59,19 +68,22 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
     .admin-container {
-      max-width: 1280px;
-      margin: 22px auto;
-      padding: 0 20px;
+      max-width: 1240px;
+      margin: 20px auto;
+      padding: 0 16px;
+      width: 100%;
     }
     .admin-card {
       background: var(--beige-100);
       border-radius: var(--radius-xl);
       border: 1.5px solid var(--beige-300);
-      padding: 24px;
+      padding: 22px;
       box-shadow: var(--shadow-sm);
       margin-bottom: 20px;
+      width: 100%;
     }
 
     /* Lock Screen */
@@ -104,7 +116,7 @@
     /* Stats Row */
     .admin-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 12px;
       margin-bottom: 18px;
     }
@@ -112,14 +124,14 @@
       background: var(--beige-100);
       border: 1.5px solid var(--beige-300);
       border-radius: var(--radius-lg);
-      padding: 14px 18px;
+      padding: 14px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
     }
     .stat-icon {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: var(--radius-md);
       background: var(--coffee-100);
       color: var(--coffee-800);
@@ -129,7 +141,7 @@
       flex-shrink: 0;
     }
     .stat-info .stat-val {
-      font-size: 1.45rem;
+      font-size: 1.4rem;
       font-weight: 800;
       color: var(--coffee-800);
       line-height: 1;
@@ -148,7 +160,7 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       padding-bottom: 16px;
       border-bottom: 1.5px solid var(--beige-300);
     }
@@ -156,14 +168,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .admin-search-wrap {
       position: relative;
       flex: 1;
-      min-width: 260px;
-      max-width: 420px;
+      min-width: 240px;
+      max-width: 440px;
     }
     .admin-search-wrap input {
       width: 100%;
@@ -228,7 +240,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
     .toolbar-left-actions,
@@ -244,11 +256,11 @@
       background: var(--coffee-100);
       border: 1.5px solid var(--coffee-300);
       border-radius: var(--radius-lg);
-      padding: 12px 18px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
       margin-bottom: 16px;
       animation: fadeIn 0.2s ease;
@@ -260,12 +272,17 @@
     .selection-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     .selection-count-badge {
       font-size: 0.85rem;
       font-weight: 700;
       color: var(--coffee-900);
+      background: var(--beige-100);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--coffee-300);
     }
     .selection-actions {
       display: flex;
@@ -274,24 +291,28 @@
       flex-wrap: wrap;
     }
 
-    /* Product Item Editor Cards */
+    /* ══════════════════════════════════════════════
+       PRODUCT ITEM EDITOR CARDS (RESPONSIVE 100% FIT)
+       ══════════════════════════════════════════════ */
     .admin-items-grid {
-      display: grid;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 16px;
+      width: 100%;
     }
     .admin-item-card {
       background: var(--beige-100);
       border: 1.5px solid var(--beige-300);
       border-radius: var(--radius-xl);
-      padding: 22px 24px;
-      display: grid;
-      grid-template-columns: 36px 140px 1fr auto;
-      gap: 20px;
-      align-items: start;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
       box-shadow: var(--shadow-sm);
       transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
       position: relative;
+      width: 100%;
+      box-sizing: border-box;
     }
     .admin-item-card:hover {
       border-color: var(--coffee-400);
@@ -303,76 +324,104 @@
       box-shadow: 0 0 0 2px rgba(44, 24, 16, 0.15);
     }
 
-    /* Checkbox Column */
-    .admin-select-col {
+    /* Card Top Bar: Checkbox, Thumbnail, Title & Actions */
+    .admin-card-top-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding-top: 10px;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--beige-300);
+      padding-bottom: 12px;
+    }
+    .card-top-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 260px;
+    }
+    .admin-img-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      background: var(--beige-200);
+      border: 1px solid var(--beige-300);
+      flex-shrink: 0;
     }
     .item-select-cb {
       width: 20px;
       height: 20px;
       accent-color: var(--coffee-800);
       cursor: pointer;
-    }
-
-    /* Image Preview Column */
-    .admin-img-col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-    .admin-img-preview {
-      width: 130px;
-      height: 130px;
-      border-radius: var(--radius-lg);
-      object-fit: cover;
-      background: var(--beige-200);
-      border: 1.5px solid var(--beige-300);
-      box-shadow: var(--shadow-xs);
-    }
-
-    /* Form Fields Column */
-    .admin-fields-col {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      flex-shrink: 0;
     }
     .item-title-input {
       font-family: var(--font-display);
-      font-size: 1.2rem !important;
+      font-size: 1.15rem !important;
       font-weight: 700 !important;
       color: var(--coffee-800) !important;
-      padding: 7px 12px !important;
+      padding: 6px 12px !important;
       background: var(--beige-200) !important;
       border: 1.5px solid var(--beige-300) !important;
       border-radius: var(--radius-md) !important;
+      flex: 1;
+      min-width: 180px;
+    }
+    .admin-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .save-item-btn {
+      padding: 7px 14px;
+      font-size: 0.82rem;
+    }
+    .clone-item-btn {
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      background: var(--beige-200);
+      border: 1px solid var(--beige-300);
+      color: var(--coffee-700);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .clone-item-btn:hover { background: var(--beige-300); }
+    .delete-item-btn {
+      font-size: 0.76rem;
+      color: #c0392b;
+      background: none;
+      border: 1px solid #f5c6cb;
+      background: #fff0f0;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      padding: 5px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .delete-item-btn:hover { background: #ffe0e0; }
+
+    /* Card Form Grid */
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
       width: 100%;
-    }
-    .admin-form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .admin-form-row-3 {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr;
-      gap: 12px;
-    }
-    .admin-form-row-4 {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr 1fr;
-      gap: 12px;
     }
     .admin-input-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
+      min-width: 0;
     }
     .admin-input-group label {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: lowercase;
@@ -384,13 +433,14 @@
     .admin-input-group input,
     .admin-input-group select,
     .admin-input-group textarea {
-      padding: 9px 12px;
+      padding: 8px 10px;
       border-radius: var(--radius-sm);
       border: 1.5px solid var(--beige-300);
       background: var(--beige-100);
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       color: var(--coffee-800);
       outline: none;
+      width: 100%;
       transition: border-color var(--transition);
     }
     .admin-input-group input:focus,
@@ -398,17 +448,20 @@
     .admin-input-group textarea:focus {
       border-color: var(--coffee-700);
     }
+    .full-grid-span {
+      grid-column: 1 / -1;
+    }
     .preset-pills {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 4px;
+      gap: 4px;
+      margin-top: 3px;
       flex-wrap: wrap;
     }
     .preset-btn {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      padding: 3px 8px;
+      padding: 2px 7px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--beige-300);
       background: var(--beige-200);
@@ -418,48 +471,6 @@
     .preset-btn:hover {
       background: var(--beige-300);
     }
-
-    /* Actions Column */
-    .admin-actions-col {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: stretch;
-      min-width: 100px;
-    }
-    .save-item-btn {
-      padding: 9px 14px;
-      font-size: 0.85rem;
-      white-space: nowrap;
-    }
-    .clone-item-btn {
-      padding: 7px 12px;
-      font-size: 0.78rem;
-      background: var(--beige-200);
-      border: 1px solid var(--beige-300);
-      color: var(--coffee-700);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-    .clone-item-btn:hover { background: var(--beige-300); }
-    .delete-item-btn {
-      font-size: 0.75rem;
-      color: #c0392b;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      text-align: center;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-    .delete-item-btn:hover { text-decoration: underline; }
 
     /* Modals */
     .modal-tab-btns {
@@ -538,64 +549,30 @@
     /* ══════════════════════════════
        ADMIN RESPONSIVE SYSTEM
        ══════════════════════════════ */
-    @media (max-width: 992px) {
-      .admin-item-card {
-        grid-template-columns: 32px 110px 1fr auto;
-        gap: 14px;
-        padding: 16px;
-      }
-      .admin-img-preview {
-        width: 110px;
-        height: 110px;
-      }
-      .admin-form-row-4 {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
     @media (max-width: 768px) {
-      .admin-item-card {
-        grid-template-columns: 1fr;
-        gap: 14px;
-        padding: 16px;
-      }
-      .admin-select-col {
-        justify-content: flex-start;
-        padding-top: 0;
-      }
-      .admin-img-col {
-        flex-direction: row;
-        align-items: center;
-        gap: 12px;
-        width: 100%;
-      }
-      .admin-img-preview {
-        width: 80px;
-        height: 80px;
-      }
-      .admin-form-row,
-      .admin-form-row-3,
-      .admin-form-row-4 {
-        grid-template-columns: 1fr;
+      .admin-card-top-row {
+        flex-direction: column;
+        align-items: stretch;
         gap: 10px;
       }
-      .admin-actions-col {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
+      .card-top-left {
         width: 100%;
-        padding-top: 12px;
-        border-top: 1px solid var(--beige-300);
       }
-      .save-item-btn {
-        grid-column: span 2;
-        height: 44px;
-        justify-content: center;
+      .admin-card-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr;
+        gap: 6px;
       }
+      .save-item-btn,
       .clone-item-btn,
       .delete-item-btn {
-        height: 38px;
+        width: 100%;
         justify-content: center;
+        padding: 8px 6px;
+      }
+      .admin-form-grid {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -612,40 +589,18 @@
       .admin-title-wrap p {
         display: none;
       }
-      .admin-header-actions {
-        gap: 6px;
-      }
-      .admin-header-actions .btn {
-        padding: 6px 10px;
-        font-size: 0.75rem;
-      }
       .admin-container {
         margin: 12px auto;
         padding: 0 10px;
       }
       .admin-card {
-        padding: 16px 12px;
+        padding: 14px 12px;
         border-radius: var(--radius-lg);
         margin-bottom: 14px;
       }
       .admin-stats {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
-        margin-bottom: 14px;
-      }
-      .stat-card {
-        padding: 10px 12px;
-        gap: 10px;
-      }
-      .stat-icon {
-        width: 34px;
-        height: 34px;
-      }
-      .stat-info .stat-val {
-        font-size: 1.2rem;
-      }
-      .stat-info .stat-label {
-        font-size: 0.65rem;
       }
       .toolbar-row-top {
         flex-direction: column;
@@ -657,7 +612,6 @@
       }
       .admin-search-wrap input {
         font-size: 16px !important;
-        padding: 10px 14px 10px 36px;
       }
       .toolbar-left-actions,
       .toolbar-right-actions {
@@ -671,14 +625,13 @@
       .toolbar-right-actions label.btn {
         width: 100%;
         justify-content: center;
-        padding: 9px 6px;
+        padding: 8px 6px;
         font-size: 0.76rem;
       }
       .toolbar-right-actions button[onclick="saveAllItems()"] {
         grid-column: span 2;
-        padding: 11px 14px;
+        padding: 10px 12px;
         font-weight: 700;
-        font-size: 0.85rem;
       }
       .admin-input-group input,
       .admin-input-group select,
@@ -691,7 +644,7 @@
 </head>
 <body class="admin-page">
 
-  <!-- ADMIN HEADER -->
+  <!-- ADMIN HEADER (NATURAL SCROLLING - NEVER COVERS CONTENT) -->
   <header class="admin-header">
     <div class="admin-brand">
       <img src="images/1111-removebg-preview.png" alt="STATIC Logo" />
@@ -829,7 +782,7 @@
         <div class="selection-left">
           <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:0.88rem;color:var(--coffee-900);">
             <input type="checkbox" id="select-all-cb" class="item-select-cb" onchange="handleSelectAllChange(this.checked)" />
-            <span>Select All Visible</span>
+            <span>Select All</span>
           </label>
           <span class="selection-count-badge" id="selection-count-badge">0 selected</span>
         </div>
@@ -859,7 +812,7 @@
 
   <!-- BULK ADD PRODUCTS MODAL -->
   <div class="modal-overlay" id="bulk-add-modal">
-    <div class="modal-box" style="max-width:680px;max-height:90vh;overflow-y:auto;padding:32px;">
+    <div class="modal-box" style="max-width:680px;max-height:90vh;overflow-y:auto;padding:28px;">
       <button type="button" class="modal-close" onclick="closeBulkAddModal()"><i data-lucide="x" class="icon-sm"></i></button>
       
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
@@ -896,7 +849,7 @@
           <input type="text" id="bulk-base-name" value="Sticker Design" placeholder="e.g. Spider-Man Sticker, Vinyl Sticker, Poster" />
         </div>
 
-        <div class="admin-form-row" style="margin-bottom:16px;">
+        <div class="admin-form-grid" style="margin-bottom:16px;">
           <div class="admin-input-group">
             <label>linked expense stock pool</label>
             <select id="bulk-stock-id"></select>
@@ -909,9 +862,6 @@
               <option value="posters">Posters</option>
             </select>
           </div>
-        </div>
-
-        <div class="admin-form-row" style="margin-bottom:16px;">
           <div class="admin-input-group">
             <label>default price (egp)</label>
             <input type="number" id="bulk-price" value="15" min="0" />
@@ -919,7 +869,7 @@
           <div class="admin-input-group">
             <label>photo display fit</label>
             <select id="bulk-fit">
-              <option value="contain" selected>Zoomed Out (Full Sticker — Recommended)</option>
+              <option value="contain" selected>Zoomed Out (Full Sticker)</option>
               <option value="cover">Fill / Cover (Zoomed In)</option>
             </select>
           </div>
@@ -948,7 +898,7 @@
           <textarea id="bulk-paste-text" rows="8" placeholder="Spider-Man Die-Cut | https://i.ibb.co/spiderman.jpg&#10;Batman Dark Knight | https://i.ibb.co/batman.jpg&#10;Iron Man Retro&#10;Cat Moods Vinyl Sheet | https://i.ibb.co/cats.jpg" style="font-family:monospace;font-size:0.82rem;"></textarea>
         </div>
 
-        <div class="admin-form-row-3" style="margin-bottom:24px;">
+        <div class="admin-form-grid" style="margin-bottom:24px;">
           <div class="admin-input-group">
             <label>linked stock pool</label>
             <select id="bulk-paster-stock-id"></select>
@@ -980,7 +930,7 @@
 
   <!-- OFFERS & PROMOS MANAGER MODAL -->
   <div class="modal-overlay" id="offers-modal">
-    <div class="modal-box" style="max-width:760px;max-height:92vh;overflow-y:auto;padding:32px;">
+    <div class="modal-box" style="max-width:720px;max-height:92vh;overflow-y:auto;padding:28px;">
       <button type="button" class="modal-close" onclick="closeOffersModal()"><i data-lucide="x" class="icon-sm"></i></button>
       
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
@@ -1000,10 +950,10 @@
 
       <!-- OFFERS TAB 1: COUPONS -->
       <div id="offers-tab-coupons">
-        <div style="background:var(--beige-200);border:1px solid var(--beige-300);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;">
+        <div style="background:var(--beige-200);border:1px solid var(--beige-300);border-radius:var(--radius-lg);padding:16px;margin-bottom:20px;">
           <h4 style="font-size:0.95rem;margin:0 0 12px;color:var(--coffee-800);"><i data-lucide="plus-circle" class="icon-xs"></i> Create New Promo Code</h4>
           <form id="create-promo-form" onsubmit="handleCreatePromo(event)">
-            <div class="admin-form-row-3" style="margin-bottom:12px;">
+            <div class="admin-form-grid" style="margin-bottom:12px;">
               <div class="admin-input-group">
                 <label>promo code (e.g. STATIC10)</label>
                 <input type="text" id="new-promo-code" placeholder="STATIC10" style="text-transform:uppercase;font-weight:700;" required />
@@ -1020,16 +970,14 @@
                 <label>discount value</label>
                 <input type="number" id="new-promo-val" value="10" min="0" step="1" required />
               </div>
-            </div>
-            <div class="admin-form-row" style="margin-bottom:14px;">
               <div class="admin-input-group">
-                <label>minimum order amount (egp, optional)</label>
+                <label>minimum order (egp)</label>
                 <input type="number" id="new-promo-min" value="0" min="0" placeholder="0 = no minimum" />
               </div>
-              <div class="admin-input-group">
-                <label>offer note / description</label>
-                <input type="text" id="new-promo-desc" placeholder="e.g. 10% off your entire sticker haul!" />
-              </div>
+            </div>
+            <div class="admin-input-group" style="margin-bottom:14px;">
+              <label>offer note / description</label>
+              <input type="text" id="new-promo-desc" placeholder="e.g. 10% off your entire sticker haul!" />
             </div>
             <button type="submit" class="btn btn-primary">
               <i data-lucide="plus" class="icon-xs"></i> add promo code
@@ -1043,7 +991,7 @@
 
       <!-- OFFERS TAB 2: BANNER -->
       <div id="offers-tab-banner" style="display:none;">
-        <div style="background:var(--beige-200);border:1px solid var(--beige-300);border-radius:var(--radius-lg);padding:18px;">
+        <div style="background:var(--beige-200);border:1px solid var(--beige-300);border-radius:var(--radius-lg);padding:16px;">
           <div class="admin-input-group" style="margin-bottom:16px;">
             <label style="font-size:0.85rem;">announcement marquee banner text</label>
             <textarea id="banner-text-input" rows="3" placeholder="✦ SPECIAL OFFER: Use code STATIC10 for 10% OFF all stickers! · Free Alexandria delivery on orders over 150 EGP ✦" style="font-size:0.9rem;"></textarea>
@@ -1062,7 +1010,7 @@
 
   <!-- BATCH APPLY OFFER MODAL -->
   <div class="modal-overlay" id="batch-offer-modal">
-    <div class="modal-box" style="max-width:520px;padding:28px;">
+    <div class="modal-box" style="max-width:480px;padding:26px;">
       <button type="button" class="modal-close" onclick="closeBatchOfferModal()"><i data-lucide="x" class="icon-sm"></i></button>
       <h3 style="margin:0 0 8px;font-size:1.3rem;">Apply Offer to Selected Items</h3>
       <p style="color:var(--coffee-500);font-size:0.85rem;margin-bottom:18px;" id="batch-offer-subtitle">Apply discount or offer badge to selected products.</p>
@@ -1241,7 +1189,7 @@
       if (sel2) sel2.innerHTML = optionsHtml;
     }
 
-    // ── RENDER ADMIN ITEMS ──
+    // ── RENDER ADMIN ITEMS (CLEAN & NON-OVERFLOWING) ──
     function renderAdminItems(itemsToRender = null) {
       const container = document.getElementById("admin-items-list");
       if (!container) return;
@@ -1266,56 +1214,101 @@
 
         return `
           <div class="admin-item-card ${isSelected ? 'is-selected' : ''}" id="card-${item.id}">
-            <!-- Selection Checkbox -->
-            <div class="admin-select-col">
-              <input type="checkbox" class="item-select-cb" data-id="${item.id}" ${isSelected ? 'checked' : ''} onchange="handleItemCheckboxChange('${item.id}', this.checked)" title="Select product" />
+            
+            <!-- TOP ROW: Checkbox, Thumbnail, Title & Action Buttons -->
+            <div class="admin-card-top-row">
+              <div class="card-top-left">
+                <input type="checkbox" class="item-select-cb" data-id="${item.id}" ${isSelected ? 'checked' : ''} onchange="handleItemCheckboxChange('${item.id}', this.checked)" title="Select product" />
+                <img src="${currentImg}" alt="${item.name}" class="admin-img-thumb" id="img-preview-${item.id}" />
+                <input type="text" class="item-title-input" id="name-${item.id}" value="${escapeHtml(item.name || "")}" placeholder="Product Display Name" />
+              </div>
+              <div class="admin-card-actions">
+                <button type="button" class="btn btn-primary save-item-btn" id="save-btn-${item.id}" onclick="saveSingleItem('${item.id}')">
+                  <i data-lucide="check" class="icon-xs"></i> save
+                </button>
+                <button type="button" class="clone-item-btn" onclick="cloneItem('${item.id}')" title="Duplicate this product">
+                  <i data-lucide="copy" class="icon-xs"></i> duplicate
+                </button>
+                <button type="button" class="delete-item-btn" onclick="deleteProduct('${item.id}')" title="Delete product">
+                  <i data-lucide="trash-2" class="icon-xs"></i> delete
+                </button>
+              </div>
             </div>
 
-            <!-- Photo Preview -->
-            <div class="admin-img-col">
-              <img src="${currentImg}" alt="${item.name}" class="admin-img-preview" id="img-preview-${item.id}" />
-              <span style="font-size:0.75rem;color:var(--coffee-500);font-weight:600;" id="stock-badge-${item.id}">
-                <i data-lucide="package" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> ${itemQty} in stock
-              </span>
-            </div>
-
-            <!-- Fields -->
-            <div class="admin-fields-col">
-              <!-- Display Name -->
+            <!-- FORM GRID: 2 to 4 responsive columns with full visibility -->
+            <div class="admin-form-grid">
+              
+              <!-- Linked Expense Stock Pool -->
               <div class="admin-input-group">
-                <label>product display name (visible in shop)</label>
-                <input type="text" class="item-title-input" id="name-${item.id}" value="${escapeHtml(item.name || "")}" placeholder="e.g. Spider-Man Vinyl Sticker" />
+                <label>linked expense stock pool</label>
+                <select id="stockId-${item.id}">
+                  ${expenseStockItems.map(stk => `
+                    <option value="${stk.id}" ${String(item.stockId) === String(stk.id) ? "selected" : ""}>
+                      ${escapeHtml(stk.itemName)} (${stk.sku || "no SKU"})
+                    </option>
+                  `).join("")}
+                  ${!expenseStockItems.length ? `<option value="">No stock in expense tracker</option>` : ""}
+                </select>
               </div>
 
-              <!-- Stock, Price & Original (Offer) Price & Quantity -->
-              <div class="admin-form-row-4">
-                <div class="admin-input-group">
-                  <label>linked expense stock pool</label>
-                  <select id="stockId-${item.id}">
-                    ${expenseStockItems.map(stk => `
-                      <option value="${stk.id}" ${String(item.stockId) === String(stk.id) ? "selected" : ""}>
-                        ${escapeHtml(stk.itemName)} (${stk.sku || "no SKU"})
-                      </option>
-                    `).join("")}
-                    ${!expenseStockItems.length ? `<option value="">No stock items in expense tracker</option>` : ""}
-                  </select>
-                </div>
-                <div class="admin-input-group">
-                  <label>sale price (egp) *</label>
-                  <input type="number" id="price-${item.id}" value="${item.price !== undefined ? item.price : (linkedStock ? linkedStock.price : 15)}" min="0" step="1" placeholder="Price (EGP)" />
-                </div>
-                <div class="admin-input-group">
-                  <label>original price (was, optional)</label>
-                  <input type="number" id="orig-price-${item.id}" value="${origPrice}" min="0" step="1" placeholder="e.g. 25 EGP (strikethrough)" />
-                </div>
-                <div class="admin-input-group">
-                  <label>stock quantity</label>
-                  <input type="number" id="qty-${item.id}" value="${itemQty}" min="0" step="1" placeholder="Stock Qty" oninput="updateStockBadge('${item.id}', this.value)" />
-                </div>
+              <!-- Category -->
+              <div class="admin-input-group">
+                <label>category</label>
+                <select id="cat-${item.id}">
+                  <option value="posters" ${item.category === "posters" ? "selected" : ""}>Posters</option>
+                  <option value="single stickers" ${item.category === "single stickers" ? "selected" : ""}>Single Stickers</option>
+                  <option value="sticker sheet" ${item.category === "sticker sheet" ? "selected" : ""}>Sticker Sheet</option>
+                </select>
               </div>
 
-              <!-- Photo URL & Presets -->
+              <!-- Sale Price in EGP -->
               <div class="admin-input-group">
+                <label>sale price in egp *</label>
+                <input type="number" id="price-${item.id}" value="${item.price !== undefined ? item.price : (linkedStock ? linkedStock.price : 15)}" min="0" step="1" placeholder="Price (EGP)" />
+              </div>
+
+              <!-- Original Price (Was / Strikethrough) -->
+              <div class="admin-input-group">
+                <label>original price (was, optional)</label>
+                <input type="number" id="orig-price-${item.id}" value="${origPrice}" min="0" step="1" placeholder="e.g. 25 EGP (strikethrough)" />
+              </div>
+
+              <!-- Stock Quantity -->
+              <div class="admin-input-group">
+                <label>stock quantity (in stock)</label>
+                <input type="number" id="qty-${item.id}" value="${itemQty}" min="0" step="1" placeholder="Stock Qty" />
+              </div>
+
+              <!-- Badge / Offer Tag -->
+              <div class="admin-input-group">
+                <label>badge / offer tag</label>
+                <select id="badge-${item.id}">
+                  <option value="" ${!item.badge ? "selected" : ""}>No Badge (Default)</option>
+                  <option value="sale" ${item.badge === "sale" ? "selected" : ""}>SALE</option>
+                  <option value="offer" ${item.badge === "offer" ? "selected" : ""}>SPECIAL OFFER</option>
+                  <option value="10% off" ${item.badge === "10% off" ? "selected" : ""}>10% OFF</option>
+                  <option value="20% off" ${item.badge === "20% off" ? "selected" : ""}>20% OFF</option>
+                  <option value="30% off" ${item.badge === "30% off" ? "selected" : ""}>30% OFF</option>
+                  <option value="50% off" ${item.badge === "50% off" ? "selected" : ""}>50% OFF</option>
+                  <option value="buy 2 get 1" ${item.badge === "buy 2 get 1" ? "selected" : ""}>BUY 2 GET 1</option>
+                  <option value="new" ${item.badge === "new" ? "selected" : ""}>NEW DROP</option>
+                  <option value="bestseller" ${item.badge === "bestseller" ? "selected" : ""}>BESTSELLER</option>
+                  <option value="low stock" ${item.badge === "low stock" ? "selected" : ""}>LOW STOCK</option>
+                  <option value="sold out" ${item.badge === "sold out" ? "selected" : ""}>SOLD OUT</option>
+                </select>
+              </div>
+
+              <!-- Photo Display Fit -->
+              <div class="admin-input-group">
+                <label>photo display fit</label>
+                <select id="fit-${item.id}">
+                  <option value="contain" ${item.fit !== "cover" ? "selected" : ""}>Zoomed Out (Full Sticker)</option>
+                  <option value="cover" ${item.fit === "cover" ? "selected" : ""}>Fill / Cover (Zoomed In)</option>
+                </select>
+              </div>
+
+              <!-- Photo URL & Presets (Full Row) -->
+              <div class="admin-input-group full-grid-span">
                 <label>image url (from imgbb / postimages / discord)</label>
                 <input type="text" id="url-${item.id}" value="${escapeHtml(item.img || "")}" placeholder="https://i.ibb.co/..." oninput="handleUrlInput('${item.id}', this.value)" />
                 <div class="preset-pills">
@@ -1328,59 +1321,12 @@
                 </div>
               </div>
 
-              <!-- Category, Badge & Fit -->
-              <div class="admin-form-row-3">
-                <div class="admin-input-group">
-                  <label>category</label>
-                  <select id="cat-${item.id}">
-                    <option value="posters" ${item.category === "posters" ? "selected" : ""}>Posters</option>
-                    <option value="single stickers" ${item.category === "single stickers" ? "selected" : ""}>Single Stickers</option>
-                    <option value="sticker sheet" ${item.category === "sticker sheet" ? "selected" : ""}>Sticker Sheet</option>
-                  </select>
-                </div>
-                <div class="admin-input-group">
-                  <label>badge / offer tag</label>
-                  <select id="badge-${item.id}">
-                    <option value="" ${!item.badge ? "selected" : ""}>No Badge (Default)</option>
-                    <option value="sale" ${item.badge === "sale" ? "selected" : ""}>SALE</option>
-                    <option value="offer" ${item.badge === "offer" ? "selected" : ""}>SPECIAL OFFER</option>
-                    <option value="10% off" ${item.badge === "10% off" ? "selected" : ""}>10% OFF</option>
-                    <option value="20% off" ${item.badge === "20% off" ? "selected" : ""}>20% OFF</option>
-                    <option value="30% off" ${item.badge === "30% off" ? "selected" : ""}>30% OFF</option>
-                    <option value="50% off" ${item.badge === "50% off" ? "selected" : ""}>50% OFF</option>
-                    <option value="buy 2 get 1" ${item.badge === "buy 2 get 1" ? "selected" : ""}>BUY 2 GET 1</option>
-                    <option value="new" ${item.badge === "new" ? "selected" : ""}>NEW DROP</option>
-                    <option value="bestseller" ${item.badge === "bestseller" ? "selected" : ""}>BESTSELLER</option>
-                    <option value="low stock" ${item.badge === "low stock" ? "selected" : ""}>LOW STOCK</option>
-                    <option value="sold out" ${item.badge === "sold out" ? "selected" : ""}>SOLD OUT</option>
-                  </select>
-                </div>
-                <div class="admin-input-group">
-                  <label>photo display fit</label>
-                  <select id="fit-${item.id}">
-                    <option value="contain" ${item.fit !== "cover" ? "selected" : ""}>Zoomed Out (Full Sticker)</option>
-                    <option value="cover" ${item.fit === "cover" ? "selected" : ""}>Fill / Cover (Zoomed In)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="admin-input-group">
+              <!-- Custom Description (Full Row) -->
+              <div class="admin-input-group full-grid-span">
                 <label>custom description (optional)</label>
                 <input type="text" id="desc-${item.id}" value="${escapeHtml(item.desc || "")}" placeholder="Leave blank for default description" />
               </div>
-            </div>
 
-            <!-- Actions -->
-            <div class="admin-actions-col">
-              <button type="button" class="btn btn-primary save-item-btn" id="save-btn-${item.id}" onclick="saveSingleItem('${item.id}')">
-                <i data-lucide="check" class="icon-xs"></i> save
-              </button>
-              <button type="button" class="clone-item-btn" onclick="cloneItem('${item.id}')" title="Duplicate this product">
-                <i data-lucide="copy" class="icon-xs"></i> duplicate
-              </button>
-              <button type="button" class="delete-item-btn" onclick="deleteProduct('${item.id}')">
-                <i data-lucide="trash-2" class="icon-xs"></i> delete
-              </button>
             </div>
           </div>
         `;
@@ -1388,14 +1334,6 @@
 
       updateSelectionUI();
       renderIcons();
-    }
-
-    function updateStockBadge(id, val) {
-      const b = document.getElementById(`stock-badge-${id}`);
-      if (b) {
-        b.innerHTML = `<i data-lucide="package" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> ${(val || 0)} in stock`;
-        renderIcons();
-      }
     }
 
     function escapeHtml(str) {
