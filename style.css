@@ -2495,31 +2495,33 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 
   /* Shared Modals on Mobile */
   .modal-overlay {
-    padding: 10px 8px;
+    padding: 10px 8px 0;
     align-items: flex-end;
   }
   .modal-box {
-    padding: 22px 16px calc(22px + env(safe-area-inset-bottom, 0px)) !important;
-    border-radius: 24px 24px 0 0 !important;
-    max-height: 94vh !important;
+    padding: 28px 18px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+    border-radius: 28px 28px 0 0 !important;
+    max-height: 90vh !important;
     width: 100% !important;
     max-width: 100% !important;
+    position: relative !important;
   }
   .modal-close {
     position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    width: 38px !important;
-    height: 38px !important;
-    z-index: 100 !important;
+    top: 18px !important;
+    right: 18px !important;
+    width: 36px !important;
+    height: 36px !important;
+    z-index: 150 !important;
     background: var(--coffee-800) !important;
     color: var(--beige-100) !important;
     border: 2px solid var(--beige-100) !important;
-    box-shadow: 0 4px 14px rgba(44, 24, 16, 0.3) !important;
+    box-shadow: 0 4px 14px rgba(44, 24, 16, 0.35) !important;
   }
   .modal-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+    margin-top: 10px;
   }
   .modal-main-canvas,
   .modal-main-img {
