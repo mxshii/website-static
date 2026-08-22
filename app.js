@@ -106,8 +106,17 @@ function initApp() {
   try { initShopControls(); } catch (e) { console.warn("initShopControls error:", e); }
   try { initContactForm(); } catch (e) { console.warn("initContactForm error:", e); }
 
-  // Load products if grid is present
+  // Load products immediately if grid is present
   if (document.getElementById("products-grid")) {
+    if (!PRODUCTS || PRODUCTS.length === 0) {
+      const cached = getStorefrontPictureMap();
+      if (cached && Array.isArray(cached.items) && cached.items.length > 0) {
+        PRODUCTS = cached.items;
+      } else {
+        PRODUCTS = getFallbackProducts();
+      }
+    }
+    renderProducts();
     loadProducts();
   }
 
@@ -963,68 +972,74 @@ function renderProducts() {
   }
 
   filtered.forEach(p => {
-    const isSoldOut = p.outOfStock || p.qty <= 0 || (p.badge || "").toLowerCase() === "sold out";
-    const card = document.createElement("div");
-    card.className = "product-card" + (isSoldOut ? " sold-out" : "");
-    card.setAttribute("data-id", p.id);
-    card.setAttribute("role", "button");
-    card.setAttribute("tabindex", "0");
-    card.setAttribute("aria-label", `View ${p.name}`);
-    const isCover = p.fit === "cover";
-    const fitClass = isCover ? "fit-cover" : "fit-contain zoomed-out";
+    try {
+      if (!p) return;
+      const isSoldOut = p.outOfStock || p.qty <= 0 || String(p.badge || "").toLowerCase().trim() === "sold out";
+      const card = document.createElement("div");
+      card.className = "product-card" + (isSoldOut ? " sold-out" : "");
+      card.setAttribute("data-id", p.id);
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("aria-label", `View ${p.name || 'item'}`);
+      const isCover = p.fit === "cover";
+      const fitClass = isCover ? "fit-cover" : "fit-contain zoomed-out";
 
-    const hasOffer = p.originalPrice && Number(p.originalPrice) > Number(p.price);
-    const priceDisplay = hasOffer
-      ? `<span class="card-price-wrap"><span class="card-price">${p.price} EGP</span><span class="card-old-price">${p.originalPrice} EGP</span></span>`
-      : `<span class="card-price">${p.price > 0 ? p.price + " EGP" : "Price TBD"}</span>`;
+      const hasOffer = p.originalPrice && Number(p.originalPrice) > Number(p.price);
+      const priceDisplay = hasOffer
+        ? `<span class="card-price-wrap"><span class="card-price">${p.price} EGP</span><span class="card-old-price">${p.originalPrice} EGP</span></span>`
+        : `<span class="card-price">${p.price > 0 ? p.price + " EGP" : "Price TBD"}</span>`;
 
-    const isOfferBadge = p.badge && (p.badge.includes("off") || p.badge === "sale" || p.badge === "offer" || p.badge.includes("buy"));
-    const badgeClass = isSoldOut ? "badge-sold" : isOfferBadge ? "badge-offer" : "";
-    const badgeText = isSoldOut ? "sold out" : p.badge;
+      const badgeStr = String(p.badge || "").toLowerCase().trim();
+      const isOfferBadge = badgeStr.includes("off") || badgeStr === "sale" || badgeStr === "offer" || badgeStr.includes("buy");
+      const badgeClass = isSoldOut ? "badge-sold" : isOfferBadge ? "badge-offer" : "";
+      const badgeText = isSoldOut ? "sold out" : (p.badge || "");
 
-    card.innerHTML = `
-      <div class="card-img-wrap ${fitClass}">
-        <canvas class="card-canvas" width="280" height="280" role="img" aria-label="${p.name}"></canvas>
-        ${badgeText ? `<span class="card-badge ${badgeClass}">${badgeText}</span>` : ""}
-      </div>
-      <div class="card-body">
-        <div class="card-name">${p.name}</div>
-        <div class="card-pieces">${!isSoldOut && p.qty > 0 ? `${p.qty} in stock` : "out of stock"}</div>
-        <div class="card-bottom">
-          ${priceDisplay}
-          <button type="button" class="card-add-btn ${isSoldOut ? "disabled" : ""}" aria-label="Quick add ${p.name}" data-id="${p.id}" ${isSoldOut ? "disabled" : ""}>
-            <i data-lucide="${isSoldOut ? 'slash' : 'plus'}" class="icon-sm"></i>
-          </button>
+      card.innerHTML = `
+        <div class="card-img-wrap ${fitClass}">
+          <canvas class="card-canvas" width="280" height="280" role="img" aria-label="${escapeHtml(p.name || 'item')}"></canvas>
+          ${badgeText ? `<span class="card-badge ${badgeClass}">${escapeHtml(badgeText)}</span>` : ""}
         </div>
-      </div>
-    `;
+        <div class="card-body">
+          <div class="card-name">${escapeHtml(p.name || 'Sticker Item')}</div>
+          <div class="card-pieces">${!isSoldOut && p.qty > 0 ? `${p.qty} in stock` : "out of stock"}</div>
+          <div class="card-bottom">
+            ${priceDisplay}
+            <button type="button" class="card-add-btn ${isSoldOut ? "disabled" : ""}" aria-label="Quick add ${escapeHtml(p.name || 'item')}" data-id="${p.id}" ${isSoldOut ? "disabled" : ""}>
+              <i data-lucide="${isSoldOut ? 'slash' : 'plus'}" class="icon-sm"></i>
+            </button>
+          </div>
+        </div>
+      `;
 
-    const canvas = card.querySelector(".card-canvas");
-    if (canvas) {
-      renderProtectedGraphic(canvas, p.img, isCover ? "cover" : "contain");
-    }
+      const canvas = card.querySelector(".card-canvas");
+      if (canvas && p.img) {
+        renderProtectedGraphic(canvas, p.img, isCover ? "cover" : "contain");
+      }
 
-    card.addEventListener("click", (e) => {
-      if (e.target.closest(".card-add-btn")) {
-        e.stopPropagation();
-        if (!isSoldOut) {
-          quickAddToCart(p.id);
-        } else {
-          showToast("Sorry, this item is sold out!");
+      card.addEventListener("click", (e) => {
+        if (e.target.closest(".card-add-btn")) {
+          e.stopPropagation();
+          if (!isSoldOut) {
+            quickAddToCart(p.id);
+          } else {
+            showToast("Sorry, this item is sold out!");
+          }
+          return;
         }
-        return;
-      }
-      openProductModal(p.id);
-    });
-
-    card.addEventListener("keydown", e => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
         openProductModal(p.id);
-      }
-    });
+      });
 
-    grid.appendChild(card);
+      card.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openProductModal(p.id);
+        }
+      });
+
+      grid.appendChild(card);
+    } catch (err) {
+      console.warn("Card render error:", err);
+    }
   });
 
   renderIcons();
