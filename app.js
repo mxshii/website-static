@@ -14,8 +14,29 @@ let customerData = {};
 let currentPaymentMethod = null; // "vodafone" | "card"
 let currentUser = null;          // logged-in customer
 let activeCategory = "all";
+let activeStockFilter = "all";   // "all", "in-stock", "sold-out"
+let activePriceRange = "all";    // "all", "under-25", "25-50", "over-50", "on-sale"
+let activeSortOption = "default"; // "default", "low-high", "high-low", "name-az"
 let searchQuery = "";
 let _stockCacheTime = 0;
+
+window.filterByStock = function(stockVal) {
+  activeStockFilter = stockVal;
+  document.querySelectorAll(".stock-pill").forEach(p => {
+    p.classList.toggle("active", p.getAttribute("data-stock") === stockVal);
+  });
+  renderProducts();
+};
+
+window.handlePriceRangeChange = function(rangeVal) {
+  activePriceRange = rangeVal;
+  renderProducts();
+};
+
+window.handleSortChange = function(sortVal) {
+  activeSortOption = sortVal;
+  renderProducts();
+};
 
 // ── DEDICATED STOREFRONT PICTURE & METADATA DATABASE (SYNCED ACROSS ALL DEVICES) ──
 async function fetchStorefrontPictureMap() {

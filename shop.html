@@ -117,18 +117,18 @@
 
         <div class="shop-sort-group">
           <div class="sort-select-wrap">
-            <label for="shop-price-range" class="sort-label">price:</label>
+            <label for="shop-price-range" class="sort-label"><i data-lucide="tag" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> price:</label>
             <select id="shop-price-range" class="shop-dropdown" onchange="handlePriceRangeChange(this.value)">
               <option value="all">all prices</option>
               <option value="under-25">under 25 EGP</option>
               <option value="25-50">25 to 50 EGP</option>
               <option value="over-50">50+ EGP</option>
-              <option value="on-sale">🔥 on sale / offers</option>
+              <option value="on-sale">on sale / offers</option>
             </select>
           </div>
 
           <div class="sort-select-wrap">
-            <label for="shop-sort-select" class="sort-label">sort by:</label>
+            <label for="shop-sort-select" class="sort-label"><i data-lucide="arrow-down-up" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> sort by:</label>
             <select id="shop-sort-select" class="shop-dropdown" onchange="handleSortChange(this.value)">
               <option value="default">featured</option>
               <option value="low-high">price: low to high</option>
