@@ -787,8 +787,29 @@
           <span class="selection-count-badge" id="selection-count-badge">0 selected</span>
         </div>
         <div class="selection-actions">
+          <div class="batch-badge-wrapper" style="display:inline-flex;align-items:center;gap:6px;">
+            <span style="font-size:0.8rem;font-weight:700;color:var(--coffee-700);white-space:nowrap;">
+              <i data-lucide="tag" class="icon-xs" style="vertical-align:middle;margin-right:2px;"></i> status:
+            </span>
+            <select id="batch-quick-badge-select" class="shop-dropdown" style="font-size:0.82rem;padding:6px 12px;border-radius:var(--radius-full);background:var(--beige-100);border:1.5px solid var(--beige-400);font-weight:700;color:var(--coffee-900);" onchange="applyBadgeToSelected(this.value); this.value='';">
+              <option value="" disabled selected>change badge / status...</option>
+              <option value="">(None / Clear Badge)</option>
+              <option value="new">NEW DROP</option>
+              <option value="bestseller">BESTSELLER</option>
+              <option value="sold out">SOLD OUT</option>
+              <option value="low stock">LOW STOCK</option>
+              <option value="sale">SALE</option>
+              <option value="10% off">10% OFF</option>
+              <option value="20% off">20% OFF</option>
+              <option value="30% off">30% OFF</option>
+              <option value="50% off">50% OFF</option>
+              <option value="buy 2 get 1">BUY 2 GET 1</option>
+              <option value="special offer">SPECIAL OFFER</option>
+            </select>
+          </div>
+
           <button type="button" class="btn btn-outline" style="background:#fff;" onclick="openBatchOfferModal()">
-            <i data-lucide="percent" class="icon-xs"></i> apply offer to selected
+            <i data-lucide="percent" class="icon-xs"></i> discounts &amp; prices
           </button>
           <button type="button" class="btn btn-outline" style="background:#fff0f0;border-color:#f5c6cb;color:#c0392b;" onclick="deleteSelectedProducts()">
             <i data-lucide="trash-2" class="icon-xs"></i> delete selected
@@ -1019,6 +1040,10 @@
         <label>offer badge to apply</label>
         <select id="batch-badge-select">
           <option value="">No Badge (Clear)</option>
+          <option value="new">NEW DROP</option>
+          <option value="bestseller">BESTSELLER</option>
+          <option value="sold out">SOLD OUT</option>
+          <option value="low stock">LOW STOCK</option>
           <option value="sale" selected>SALE</option>
           <option value="offer">SPECIAL OFFER</option>
           <option value="10% off">10% OFF</option>
@@ -1026,8 +1051,6 @@
           <option value="30% off">30% OFF</option>
           <option value="50% off">50% OFF</option>
           <option value="buy 2 get 1">BUY 2 GET 1</option>
-          <option value="new">NEW DROP</option>
-          <option value="bestseller">BESTSELLER</option>
         </select>
       </div>
 
@@ -1047,7 +1070,7 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3.1"></script>
   <script>
     /* ══════════════════════════════════════════════════════
        STOREFRONT ADMIN, SELECTION & OFFERS MANAGER
@@ -1472,6 +1495,38 @@
         selectAllCb.checked = totalVisible > 0 && count === totalVisible;
         selectAllCb.indeterminate = count > 0 && count < totalVisible;
       }
+    }
+
+    async function applyBadgeToSelected(badgeVal) {
+      const count = selectedItemIds.size;
+      if (count === 0) {
+        showToast("Please select products first using the checkboxes");
+        return;
+      }
+
+      const formattedBadge = (badgeVal || "").toLowerCase().trim();
+      const badgeDisplay = formattedBadge ? formattedBadge.toUpperCase() : "CLEARED";
+
+      selectedItemIds.forEach(id => {
+        const item = storefrontProducts.find(p => p.id === id);
+        if (!item) return;
+        item.badge = formattedBadge;
+        if (formattedBadge === "sold out") {
+          item.qty = 0;
+        } else if (item.qty === 0 && formattedBadge !== "sold out") {
+          item.qty = 1;
+        }
+      });
+
+      await saveStorefrontPictureMap({
+        items: storefrontProducts,
+        offers: storefrontOffers,
+        banner: storefrontBanner
+      });
+
+      renderAdminItems();
+      updateAdminStats();
+      showToast(`Updated status to "${badgeDisplay}" for ${count} products ✦`, 3500);
     }
 
     async function deleteSelectedProducts() {
