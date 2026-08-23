@@ -1611,7 +1611,7 @@ function populateReview() {
     totalsEl.innerHTML = `
       <!-- Promo Code Input Box -->
       <div class="promo-box">
-        <input type="text" id="co-promo-input" placeholder="Promo code (e.g. STATIC10)" value="${appliedPromo ? appliedPromo.code : ''}" />
+        <input type="text" id="co-promo-input" placeholder="Promo code" value="${appliedPromo ? appliedPromo.code : ''}" />
         <button type="button" class="btn btn-outline promo-apply-btn" onclick="handleApplyPromoClick()">
           ${appliedPromo ? 'applied ✓' : 'apply'}
         </button>
