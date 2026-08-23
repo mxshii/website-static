@@ -1120,8 +1120,12 @@
           storefrontProducts = safeMap.items.map(item => {
             const linkedStock = expenseStockItems.find(s => String(s.id) === String(item.stockId));
             let currentQty = (item.qty !== undefined && item.qty !== null && item.qty !== "") ? Number(item.qty) : 1;
-            if (linkedStock && linkedStock.quantity !== undefined && linkedStock.quantity !== null) {
-              currentQty = Number(linkedStock.quantity);
+            if (linkedStock && Number(linkedStock.quantity) === 0) {
+              currentQty = 0;
+            } else if (item.qty === undefined || item.qty === null || item.qty === "") {
+              if (linkedStock && linkedStock.quantity !== undefined) {
+                currentQty = Number(linkedStock.quantity);
+              }
             }
             return {
               ...item,

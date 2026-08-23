@@ -732,11 +732,16 @@ async function loadProducts(forceRefresh = false) {
         const isBadgeSoldOut = (item.badge || "").toLowerCase().trim() === "sold out";
         let stockQty = 1;
 
-        // LIVE STOCK SYNC: If linked to an expense stock item, the live expense quantity takes precedence
-        if (linkedStock && linkedStock.quantity !== undefined && linkedStock.quantity !== null) {
-          stockQty = Number(linkedStock.quantity);
-        } else if (item.qty !== undefined && item.qty !== null && item.qty !== "") {
+        // 1. Use custom item qty configured in Admin if set
+        if (item.qty !== undefined && item.qty !== null && item.qty !== "") {
           stockQty = Number(item.qty);
+        } else if (linkedStock && linkedStock.quantity !== undefined && linkedStock.quantity !== null) {
+          stockQty = Number(linkedStock.quantity);
+        }
+
+        // 2. Zero-stock enforcement: If linked expense stock is 0, the item is out of stock
+        if (linkedStock && Number(linkedStock.quantity) === 0) {
+          stockQty = 0;
         }
 
         if (isNaN(stockQty) || stockQty <= 0 || isBadgeSoldOut) {
