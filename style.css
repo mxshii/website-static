@@ -801,6 +801,16 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 .card-badge.badge-sold {
   background: var(--coffee-600) !important;
 }
+.card-badge.badge-originals {
+  background: var(--coffee-900) !important;
+  color: var(--beige-100) !important;
+  border: 1px solid var(--beige-400);
+  letter-spacing: 0.1em;
+}
+.card-badge.badge-offer {
+  background: #c0392b !important;
+  color: #fff !important;
+}
 .card-explore {
   display: none !important;
 }
@@ -2495,33 +2505,42 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 
   /* Shared Modals on Mobile */
   .modal-overlay {
-    padding: 10px 8px 0;
+    padding: 16px 8px 0;
     align-items: flex-end;
   }
   .modal-box {
-    padding: 28px 18px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
-    border-radius: 28px 28px 0 0 !important;
-    max-height: 90vh !important;
+    padding: 14px 16px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+    border-radius: 24px 24px 0 0 !important;
+    max-height: 88vh !important;
     width: 100% !important;
     max-width: 100% !important;
     position: relative !important;
   }
+  .modal-box::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--beige-400);
+    margin: 0 auto 10px auto;
+  }
   .modal-close {
     position: absolute !important;
-    top: 18px !important;
-    right: 18px !important;
-    width: 36px !important;
-    height: 36px !important;
+    top: 12px !important;
+    right: 14px !important;
+    width: 32px !important;
+    height: 32px !important;
     z-index: 150 !important;
     background: var(--coffee-800) !important;
     color: var(--beige-100) !important;
     border: 2px solid var(--beige-100) !important;
-    box-shadow: 0 4px 14px rgba(44, 24, 16, 0.35) !important;
+    box-shadow: 0 4px 12px rgba(44, 24, 16, 0.3) !important;
   }
   .modal-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
-    margin-top: 10px;
+    gap: 14px;
+    margin-top: 6px;
   }
   .modal-main-canvas,
   .modal-main-img {

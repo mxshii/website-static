@@ -997,8 +997,9 @@ function renderProducts() {
 
       const badgeStr = String(p.badge || "").toLowerCase().trim();
       const isOfferBadge = badgeStr.includes("off") || badgeStr === "sale" || badgeStr === "offer" || badgeStr.includes("buy");
-      const badgeClass = isSoldOut ? "badge-sold" : isOfferBadge ? "badge-offer" : "";
-      const badgeText = isSoldOut ? "sold out" : (p.badge || "");
+      const isOriginalsBadge = badgeStr === "originals" || badgeStr === "original";
+      const badgeClass = isSoldOut ? "badge-sold" : isOfferBadge ? "badge-offer" : isOriginalsBadge ? "badge-originals" : "";
+      const badgeText = isSoldOut ? "sold out" : (isOriginalsBadge ? "ORIGINALS" : (p.badge || ""));
 
       card.innerHTML = `
         <div class="card-img-wrap ${fitClass}">

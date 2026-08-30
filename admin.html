@@ -794,6 +794,7 @@
             <select id="batch-quick-badge-select" class="shop-dropdown" style="font-size:0.82rem;padding:6px 12px;border-radius:var(--radius-full);background:var(--beige-100);border:1.5px solid var(--beige-400);font-weight:700;color:var(--coffee-900);" onchange="applyBadgeToSelected(this.value); this.value='';">
               <option value="" disabled selected>change badge / status...</option>
               <option value="">(None / Clear Badge)</option>
+              <option value="originals">ORIGINALS</option>
               <option value="new">NEW DROP</option>
               <option value="bestseller">BESTSELLER</option>
               <option value="sold out">SOLD OUT</option>
@@ -1040,6 +1041,7 @@
         <label>offer badge to apply</label>
         <select id="batch-badge-select">
           <option value="">No Badge (Clear)</option>
+          <option value="originals">ORIGINALS</option>
           <option value="new">NEW DROP</option>
           <option value="bestseller">BESTSELLER</option>
           <option value="sold out">SOLD OUT</option>
@@ -1318,6 +1320,7 @@
                 <label>badge / offer tag</label>
                 <select id="badge-${item.id}">
                   <option value="" ${!item.badge ? "selected" : ""}>No Badge (Default)</option>
+                  <option value="originals" ${item.badge === "originals" ? "selected" : ""}>ORIGINALS</option>
                   <option value="sale" ${item.badge === "sale" ? "selected" : ""}>SALE</option>
                   <option value="offer" ${item.badge === "offer" ? "selected" : ""}>SPECIAL OFFER</option>
                   <option value="10% off" ${item.badge === "10% off" ? "selected" : ""}>10% OFF</option>
