@@ -1830,6 +1830,7 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 }
 .vodafone-icon { background: #e8003d14; color: #e8003d; }
 .card-icon { background: var(--beige-300); color: var(--coffee-700); }
+.cod-icon { background: #27ae6018; color: #27ae60; }
 .payment-option-text {
   flex: 1;
   display: flex;
@@ -1854,7 +1855,7 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   border: 1px solid var(--beige-300);
 }
 .payment-panel.hidden { display: none; }
-.vodafone-instructions, .card-instructions {
+.vodafone-instructions, .card-instructions, .cod-instructions {
   display: flex;
   gap: 12px;
   font-size: 0.875rem;
@@ -1919,6 +1920,11 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   background: var(--beige-100);
   border: 1.5px solid var(--beige-300);
   color: var(--coffee-700);
+}
+.cod-box {
+  background: #eafaf1;
+  border: 1.5px solid #a3e4d7;
+  color: #145a32;
 }
 
 /* ══════════════════════════════

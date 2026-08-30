@@ -280,6 +280,14 @@
             </div>
             <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
           </div>
+          <div class="payment-option" data-method="cod" id="pay-cod">
+            <div class="payment-option-icon cod-icon"><i data-lucide="banknote" class="icon-lg"></i></div>
+            <div class="payment-option-text">
+              <strong>Cash on Delivery (COD)</strong>
+              <span>Pay cash when your order arrives</span>
+            </div>
+            <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
+          </div>
           <div class="payment-option" data-method="card" id="pay-card">
             <div class="payment-option-icon card-icon"><i data-lucide="credit-card" class="icon-lg"></i></div>
             <div class="payment-option-text">
@@ -301,6 +309,13 @@
                 <li>Click Review Order below to finalize</li>
               </ol>
             </div>
+          </div>
+        </div>
+
+        <div class="payment-panel hidden" id="cod-panel">
+          <div class="cod-instructions">
+            <i data-lucide="info" class="icon-sm"></i>
+            <p>Pay cash directly to the courier upon delivery anywhere across Alexandria. Please have the total amount ready in cash.</p>
           </div>
         </div>
 
@@ -417,6 +432,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3.3"></script>
 </body>
 </html>

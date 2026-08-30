@@ -1436,8 +1436,10 @@ function initCheckout() {
 
       const vPanel = document.getElementById("vodafone-panel");
       const cPanel = document.getElementById("card-panel");
+      const codPanel = document.getElementById("cod-panel");
       if (vPanel) vPanel.classList.toggle("hidden", currentPaymentMethod !== "vodafone");
       if (cPanel) cPanel.classList.toggle("hidden", currentPaymentMethod !== "card");
+      if (codPanel) codPanel.classList.toggle("hidden", currentPaymentMethod !== "cod");
       renderIcons();
     });
   });
@@ -1471,11 +1473,6 @@ function openCheckout() {
 }
 
 function closeCheckout() {
-  if (checkoutStep === 4) {
-    cart = [];
-    saveCartToStorage();
-    updateCartUI();
-  }
   const modal = document.getElementById("checkout-modal");
   if (modal) modal.classList.remove("open");
   updateBodyScrollLock();
@@ -1619,7 +1616,11 @@ function populateReview() {
   }
 
   const total = Math.max(0, subtotal + (appliedPromo?.type === "freeship" ? 0 : shippingFee) - (appliedPromo?.type === "freeship" ? 0 : discountAmount));
-  const methodLabel = currentPaymentMethod === "vodafone" ? "Vodafone Cash" : "Card Payment";
+  
+  let methodLabel = "Cash on Delivery (COD)";
+  if (currentPaymentMethod === "vodafone") methodLabel = "Vodafone Cash";
+  else if (currentPaymentMethod === "card") methodLabel = "Card Payment";
+  else if (currentPaymentMethod === "cod") methodLabel = "Cash on Delivery (COD)";
 
   const totalsEl = document.getElementById("review-totals");
   if (totalsEl) {
@@ -1678,6 +1679,11 @@ async function placeOrder() {
 
   const promoInfo = appliedPromo ? ` [Promo: ${appliedPromo.code} (-${appliedPromo.discountAmount} EGP)]` : "";
 
+  let mappedPaymentMethod = "Cash on Delivery";
+  if (currentPaymentMethod === "vodafone") mappedPaymentMethod = "Vodafone Cash";
+  else if (currentPaymentMethod === "card") mappedPaymentMethod = "Card";
+  else if (currentPaymentMethod === "cod") mappedPaymentMethod = "Cash on Delivery";
+
   const payload = {
     customerName: customerData.name,
     phone: customerData.phone,
@@ -1685,7 +1691,7 @@ async function placeOrder() {
     address: customerData.address,
     items,
     shippingPrice: appliedPromo?.type === "freeship" ? 0 : 50,
-    paymentMethod: currentPaymentMethod === "vodafone" ? "Vodafone Cash" : "Card",
+    paymentMethod: mappedPaymentMethod,
     note: (customerData.note ? customerData.note : "") + promoInfo || null,
     promoCode: appliedPromo?.code || null,
     discount: appliedPromo?.discountAmount || 0,
@@ -1735,15 +1741,27 @@ function showConfirmation(orderId) {
           <p>Send the total to the number above and we'll confirm your order once received.</p>
         </div>
       `;
-    } else {
+    } else if (currentPaymentMethod === "card") {
       noteEl.innerHTML = `
         <div class="confirm-payment-box card-box">
           <strong>Card payment</strong>
           <p>Our team will contact you directly to complete your card payment securely.</p>
         </div>
       `;
+    } else {
+      noteEl.innerHTML = `
+        <div class="confirm-payment-box cod-box">
+          <strong>Cash on Delivery (Alexandria)</strong>
+          <p>Your order is confirmed! Please have the exact cash amount ready for the courier upon delivery.</p>
+        </div>
+      `;
     }
   }
+
+  // Clear cart on successful order confirmation
+  cart = [];
+  saveCartToStorage();
+  updateCartUI();
   renderIcons();
 }
 
