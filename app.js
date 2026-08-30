@@ -927,7 +927,21 @@ function renderProducts() {
   } else {
     if (activeCategory && activeCategory !== "all") {
       filtered = filtered.filter(p => {
-        const cat = (p.category || "").toLowerCase();
+        const cat = String(p.category || "").toLowerCase().trim();
+        const badge = String(p.badge || "").toLowerCase().trim();
+        const name = String(p.name || "").toLowerCase().trim();
+        const desc = String(p.desc || "").toLowerCase().trim();
+
+        if (activeCategory === "offers" || activeCategory === "sale" || activeCategory === "deals") {
+          return (p.originalPrice && Number(p.originalPrice) > Number(p.price)) ||
+                 badge.includes("off") || badge.includes("sale") || badge.includes("offer") || badge.includes("buy") || cat.includes("offer");
+        }
+        if (activeCategory === "new drops" || activeCategory === "new") {
+          return badge.includes("new") || badge.includes("drop") || name.includes("new") || desc.includes("new");
+        }
+        if (activeCategory === "originals" || activeCategory === "original") {
+          return cat.includes("original") || badge.includes("original") || name.includes("original") || desc.includes("original") || desc.includes("art") || desc.includes("exclusive");
+        }
         if (activeCategory === "posters") return cat.includes("poster");
         if (activeCategory === "single stickers" || activeCategory === "single") return cat.includes("single");
         if (activeCategory === "sticker sheet" || activeCategory === "sheet") return cat.includes("sheet") || cat.includes("pack");

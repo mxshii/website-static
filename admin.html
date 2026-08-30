@@ -740,6 +740,8 @@
           </div>
           <div class="admin-category-filters">
             <button type="button" class="admin-cat-pill active" data-cat="all" onclick="filterByAdminCat('all')">all</button>
+            <button type="button" class="admin-cat-pill" data-cat="offers" onclick="filterByAdminCat('offers')">offers &amp; sale</button>
+            <button type="button" class="admin-cat-pill" data-cat="originals" onclick="filterByAdminCat('originals')">originals</button>
             <button type="button" class="admin-cat-pill" data-cat="posters" onclick="filterByAdminCat('posters')">posters</button>
             <button type="button" class="admin-cat-pill" data-cat="single stickers" onclick="filterByAdminCat('single stickers')">single stickers</button>
             <button type="button" class="admin-cat-pill" data-cat="sticker sheet" onclick="filterByAdminCat('sticker sheet')">sticker sheets</button>
@@ -1390,7 +1392,18 @@
 
       if (currentAdminFilterCat && currentAdminFilterCat !== "all") {
         items = items.filter(item => {
-          const cat = (item.category || "").toLowerCase();
+          const cat = String(item.category || "").toLowerCase();
+          const badge = String(item.badge || "").toLowerCase();
+          const name = String(item.name || "").toLowerCase();
+          const desc = String(item.desc || "").toLowerCase();
+
+          if (currentAdminFilterCat === "offers" || currentAdminFilterCat === "sale") {
+            return (item.originalPrice && Number(item.originalPrice) > Number(item.price)) ||
+                   badge.includes("off") || badge.includes("sale") || badge.includes("offer") || badge.includes("buy") || cat.includes("offer");
+          }
+          if (currentAdminFilterCat === "originals" || currentAdminFilterCat === "original") {
+            return cat.includes("original") || badge.includes("original") || name.includes("original") || desc.includes("original") || desc.includes("art");
+          }
           if (currentAdminFilterCat === "posters") return cat.includes("poster");
           if (currentAdminFilterCat === "single stickers") return cat.includes("single");
           if (currentAdminFilterCat === "sticker sheet") return cat.includes("sheet") || cat.includes("pack");
