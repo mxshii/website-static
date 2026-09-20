@@ -11,7 +11,7 @@ let PRODUCTS = [];
 let cart = [];
 let currentProduct = null;
 let customerData = {};
-let currentPaymentMethod = null; // "vodafone" | "card"
+let currentPaymentMethod = null; // "vodafone" | "instapay" | "cod"
 let currentUser = null;          // logged-in customer
 let activeCategory = "all";
 let activeSubCategory = null;   // e.g. "alexandria", "animals", "anime", etc.
@@ -1259,14 +1259,58 @@ function drawToCanvas(ctx, canvasEl, img, fit) {
   }
 }
 
+function getOptimizedImageUrl(rawUrl, targetWidth = 400) {
+  if (!rawUrl || typeof rawUrl !== "string") return rawUrl;
+  let u = rawUrl.trim();
+
+  // If local file, base64 data, or relative path, return directly without proxying
+  if (u.startsWith("images/") || u.startsWith("./images/") || u.startsWith("data:") || u.startsWith("/")) {
+    return u;
+  }
+
+  if (u.startsWith("//")) u = "https:" + u;
+
+  if (u.startsWith("http://") || u.startsWith("https://")) {
+    // If already routed through wsrv.nl, return as is
+    if (u.includes("wsrv.nl/?url=")) return u;
+
+    // If ImageKit URL without transformations, apply auto WebP/AVIF format & width
+    if (u.includes("ik.imagekit.io") && !u.includes("/tr:")) {
+      const parts = u.split("ik.imagekit.io/");
+      if (parts.length === 2) {
+        const subParts = parts[1].split("/");
+        const id = subParts[0];
+        const rest = subParts.slice(1).join("/");
+        return `https://ik.imagekit.io/${id}/tr:w-${targetWidth},q-80,f-auto/${rest}`;
+      }
+    }
+
+    // If Cloudinary URL without transformations
+    if (u.includes("res.cloudinary.com") && u.includes("/upload/") && !u.includes("/w_")) {
+      return u.replace("/upload/", `/upload/w_${targetWidth},q_auto,f_auto/`);
+    }
+
+    // For ImgBB (i.ibb.co) and any external images:
+    // Route through Cloudflare edge optimizer (wsrv.nl).
+    // Automatically downscales to targetWidth, converts to high-compression WebP (~20KB),
+    // and caches at Cloudflare edge with Access-Control-Allow-Origin: * for zero-lag canvas rendering!
+    const cleanUrl = u.replace(/\s+/g, "");
+    return `https://wsrv.nl/?url=${encodeURIComponent(cleanUrl)}&w=${targetWidth}&q=82&output=webp`;
+  }
+
+  return u;
+}
+
 function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
   if (!canvasEl || !rawUrl) return;
   const ctx = canvasEl.getContext("2d", { alpha: true });
+  const optimalUrl = getOptimizedImageUrl(rawUrl, canvasEl.width || 400);
 
-  if (_imgCache.has(rawUrl)) {
-    const cached = _imgCache.get(rawUrl);
+  if (_imgCache.has(optimalUrl)) {
+    const cached = _imgCache.get(optimalUrl);
     if (cached.complete && cached.naturalWidth > 0) {
       drawToCanvas(ctx, canvasEl, cached, fit);
+      canvasEl.setAttribute("data-loaded", "true");
       return;
     }
   }
@@ -1276,18 +1320,43 @@ function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
   img.referrerPolicy = "no-referrer";
 
   img.onload = () => {
-    _imgCache.set(rawUrl, img);
+    _imgCache.set(optimalUrl, img);
     drawToCanvas(ctx, canvasEl, img, fit);
+    canvasEl.setAttribute("data-loaded", "true");
   };
 
+  // Dual-tier fallback: if proxy fails, try direct rawUrl
   img.onerror = () => {
-    canvasEl.style.backgroundImage = `url("${rawUrl}")`;
-    canvasEl.style.backgroundSize = fit === "contain" ? "contain" : "cover";
-    canvasEl.style.backgroundPosition = "center";
-    canvasEl.style.backgroundRepeat = "no-repeat";
+    if (optimalUrl !== rawUrl) {
+      const fallbackImg = new Image();
+      fallbackImg.crossOrigin = "anonymous";
+      fallbackImg.referrerPolicy = "no-referrer";
+
+      fallbackImg.onload = () => {
+        _imgCache.set(rawUrl, fallbackImg);
+        drawToCanvas(ctx, canvasEl, fallbackImg, fit);
+        canvasEl.setAttribute("data-loaded", "true");
+      };
+
+      fallbackImg.onerror = () => {
+        canvasEl.style.backgroundImage = `url("${rawUrl}")`;
+        canvasEl.style.backgroundSize = fit === "contain" ? "contain" : "cover";
+        canvasEl.style.backgroundPosition = "center";
+        canvasEl.style.backgroundRepeat = "no-repeat";
+        canvasEl.setAttribute("data-loaded", "true");
+      };
+
+      fallbackImg.src = rawUrl;
+    } else {
+      canvasEl.style.backgroundImage = `url("${rawUrl}")`;
+      canvasEl.style.backgroundSize = fit === "contain" ? "contain" : "cover";
+      canvasEl.style.backgroundPosition = "center";
+      canvasEl.style.backgroundRepeat = "no-repeat";
+      canvasEl.setAttribute("data-loaded", "true");
+    }
   };
 
-  img.src = rawUrl;
+  img.src = optimalUrl;
 }
 
 let _cardObserver = null;
@@ -1856,10 +1925,10 @@ function initCheckout() {
       currentPaymentMethod = opt.getAttribute("data-method");
 
       const vPanel = document.getElementById("vodafone-panel");
-      const cPanel = document.getElementById("card-panel");
+      const iPanel = document.getElementById("instapay-panel") || document.getElementById("card-panel");
       const codPanel = document.getElementById("cod-panel");
       if (vPanel) vPanel.classList.toggle("hidden", currentPaymentMethod !== "vodafone");
-      if (cPanel) cPanel.classList.toggle("hidden", currentPaymentMethod !== "card");
+      if (iPanel) iPanel.classList.toggle("hidden", currentPaymentMethod !== "instapay" && currentPaymentMethod !== "card");
       if (codPanel) codPanel.classList.toggle("hidden", currentPaymentMethod !== "cod");
       renderIcons();
     });
@@ -2040,7 +2109,7 @@ function populateReview() {
   
   let methodLabel = "Cash on Delivery (COD)";
   if (currentPaymentMethod === "vodafone") methodLabel = "Vodafone Cash";
-  else if (currentPaymentMethod === "card") methodLabel = "Card Payment";
+  else if (currentPaymentMethod === "instapay" || currentPaymentMethod === "card") methodLabel = "InstaPay";
   else if (currentPaymentMethod === "cod") methodLabel = "Cash on Delivery (COD)";
 
   const totalsEl = document.getElementById("review-totals");
@@ -2102,7 +2171,7 @@ async function placeOrder() {
 
   let mappedPaymentMethod = "Cash on Delivery";
   if (currentPaymentMethod === "vodafone") mappedPaymentMethod = "Vodafone Cash";
-  else if (currentPaymentMethod === "card") mappedPaymentMethod = "Card";
+  else if (currentPaymentMethod === "instapay" || currentPaymentMethod === "card") mappedPaymentMethod = "InstaPay";
   else if (currentPaymentMethod === "cod") mappedPaymentMethod = "Cash on Delivery";
 
   const payload = {
@@ -2162,11 +2231,13 @@ function showConfirmation(orderId) {
           <p>Send the total to the number above and we'll confirm your order once received.</p>
         </div>
       `;
-    } else if (currentPaymentMethod === "card") {
+    } else if (currentPaymentMethod === "instapay" || currentPaymentMethod === "card") {
       noteEl.innerHTML = `
-        <div class="confirm-payment-box card-box">
-          <strong>Card payment</strong>
-          <p>Our team will contact you directly to complete your card payment securely.</p>
+        <div class="confirm-payment-box instapay-box">
+          <strong>Send payment via InstaPay</strong>
+          <div class="instapay-number">01005792211</div>
+          <div class="instapay-ipa">IPA: omarsherif._.@instapay</div>
+          <p>Transfer the total to the mobile number or InstaPay address above and we'll confirm your order once received.</p>
         </div>
       `;
     } else {

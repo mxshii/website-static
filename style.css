@@ -1053,6 +1053,29 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   border-radius: var(--radius-md);
 }
 
+/* ── Progressive Image Skeleton Loading ── */
+.card-canvas:not([data-loaded="true"]),
+.modal-main-canvas:not([data-loaded="true"]) {
+  background: linear-gradient(90deg, var(--beige-200) 0%, var(--beige-300) 50%, var(--beige-200) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.card-canvas[data-loaded="true"],
+.modal-main-canvas[data-loaded="true"] {
+  animation: canvas-fade-in 0.25s ease-out;
+}
+
+@keyframes canvas-fade-in {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
 /* ── Sleek Non-Intrusive STATIC Watermark ── */
 .card-img-wrap,
 .modal-images {
@@ -2146,6 +2169,7 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   flex-shrink: 0;
 }
 .vodafone-icon { background: #e8003d14; color: #e8003d; }
+.instapay-icon { background: #8e44ad14; color: #8e44ad; }
 .card-icon { background: var(--beige-300); color: var(--coffee-700); }
 .cod-icon { background: #27ae6018; color: #27ae60; }
 .payment-option-text {
@@ -2157,6 +2181,7 @@ h3 { font-size: 1.4rem; font-weight: 700; }
 .payment-option-text strong { font-size: 0.95rem; color: var(--coffee-800); }
 .payment-option-text span { font-size: 0.8rem; color: var(--coffee-500); }
 .vcash-preview { font-weight: 700; color: #e8003d; }
+.instapay-preview { font-weight: 700; color: #8e44ad; }
 .payment-option-check {
   color: var(--coffee-300);
   opacity: 0;
@@ -2172,14 +2197,15 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   border: 1px solid var(--beige-300);
 }
 .payment-panel.hidden { display: none; }
-.vodafone-instructions, .card-instructions, .cod-instructions {
+.vodafone-instructions, .instapay-instructions, .card-instructions, .cod-instructions {
   display: flex;
   gap: 12px;
   font-size: 0.875rem;
   color: var(--coffee-700);
 }
-.vodafone-instructions ol { margin: 8px 0 0 16px; display: flex; flex-direction: column; gap: 6px; }
+.vodafone-instructions ol, .instapay-instructions ol { margin: 8px 0 0 16px; display: flex; flex-direction: column; gap: 6px; }
 .vcash-num { color: #e8003d; font-size: 1rem; }
+.instapay-num { color: #8e44ad; font-size: 1rem; }
 
 /* ── CONFIRMATION ── */
 .confirm-wrap {
@@ -2232,6 +2258,28 @@ h3 { font-size: 1.4rem; font-weight: 700; }
   font-weight: 800;
   letter-spacing: 2px;
   color: #e8003d;
+}
+.instapay-box {
+  background: #fbf5fc;
+  border: 1.5px solid #d8b4e2;
+  color: #5b2c6f;
+}
+.instapay-box .instapay-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #7928ca;
+}
+.instapay-box .instapay-ipa {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #5b2c6f;
+  background: #eed5f5;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-top: 2px;
+  word-break: break-all;
 }
 .card-box {
   background: var(--beige-100);

@@ -7,7 +7,10 @@
   <meta name="description" content="Get in touch with STATIC support. Questions about orders, Vodafone Cash payments, or delivery in Alexandria." />
   <link rel="icon" type="image/png" href="images/1111-removebg-preview.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://wsrv.nl" crossorigin />
+  <link rel="dns-prefetch" href="https://wsrv.nl" />
+  <link rel="preconnect" href="https://i.ibb.co" crossorigin />
+  <link rel="dns-prefetch" href="https://i.ibb.co" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>window.lucide || document.write('<script src="lucide.min.js"><\/script>')</script>
@@ -79,9 +82,10 @@
       <div class="contact-card">
         <div class="contact-card-icon"><i data-lucide="smartphone" class="icon-md"></i></div>
         <div class="contact-card-info">
-          <h3>Vodafone Cash &amp; Phone</h3>
+          <h3>Vodafone Cash &amp; InstaPay</h3>
           <p>Send payments or contact customer service directly:</p>
           <strong style="font-size:1.15rem;color:var(--coffee-800);display:block;margin-top:4px;">01005792211</strong>
+          <span style="font-size:0.85rem;color:var(--coffee-600);display:block;margin-top:2px;">InstaPay: <strong>omarsherif._.@instapay</strong></span>
         </div>
       </div>
 
@@ -281,11 +285,11 @@
             </div>
             <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
           </div>
-          <div class="payment-option" data-method="card" id="pay-card">
-            <div class="payment-option-icon card-icon"><i data-lucide="credit-card" class="icon-lg"></i></div>
+          <div class="payment-option" data-method="instapay" id="pay-instapay">
+            <div class="payment-option-icon instapay-icon"><i data-lucide="send" class="icon-lg"></i></div>
             <div class="payment-option-text">
-              <strong>Card Payment</strong>
-              <span>We'll contact you with payment link</span>
+              <strong>InstaPay</strong>
+              <span>Send to: <span class="instapay-preview">01005792211</span> or <span class="instapay-preview">omarsherif._.@instapay</span></span>
             </div>
             <div class="payment-option-check"><i data-lucide="check-circle" class="icon-sm"></i></div>
           </div>
@@ -305,17 +309,25 @@
           </div>
         </div>
 
+        <div class="payment-panel hidden" id="instapay-panel">
+          <div class="instapay-instructions">
+            <i data-lucide="info" class="icon-sm"></i>
+            <div>
+              <strong>How to pay with InstaPay:</strong>
+              <ol>
+                <li>Open your InstaPay app</li>
+                <li>Transfer amount to mobile: <strong class="instapay-num">01005792211</strong></li>
+                <li>Or transfer to IPA: <strong class="instapay-num">omarsherif._.@instapay</strong></li>
+                <li>Click Review Order below to finalize</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
         <div class="payment-panel hidden" id="cod-panel">
           <div class="cod-instructions">
             <i data-lucide="info" class="icon-sm"></i>
             <p>Pay cash directly to the courier upon delivery anywhere across Alexandria. Please have the total amount ready in cash.</p>
-          </div>
-        </div>
-
-        <div class="payment-panel hidden" id="card-panel">
-          <div class="card-instructions">
-            <i data-lucide="info" class="icon-sm"></i>
-            <p>After placing your order, our team will reach out with a secure card payment link.</p>
           </div>
         </div>
 

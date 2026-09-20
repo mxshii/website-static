@@ -7,6 +7,10 @@
   <link rel="icon" type="image/png" href="images/1111-removebg-preview.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://wsrv.nl" crossorigin />
+  <link rel="dns-prefetch" href="https://wsrv.nl" />
+  <link rel="preconnect" href="https://i.ibb.co" crossorigin />
+  <link rel="dns-prefetch" href="https://i.ibb.co" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>window.lucide || document.write('<script src="lucide.min.js"><\/script>')</script>
@@ -1951,7 +1955,7 @@
             <div class="admin-card-top-row">
               <div class="card-top-left">
                 <input type="checkbox" class="item-select-cb" data-id="${item.id}" ${isSelected ? 'checked' : ''} onchange="handleItemCheckboxChange('${item.id}', this.checked)" title="Select product" />
-                <img src="${currentImg}" alt="${item.name}" class="admin-img-thumb" id="img-preview-${item.id}" />
+                <img src="${getAdminOptimizedImageUrl(currentImg, 140)}" onerror="this.src='${currentImg}'" alt="${item.name}" class="admin-img-thumb" id="img-preview-${item.id}" />
                 <input type="text" class="item-title-input" id="name-${item.id}" value="${escapeHtml(item.name || "")}" placeholder="Product Display Name" />
               </div>
               <div class="admin-card-actions">
@@ -2050,7 +2054,12 @@
 
               <!-- Photo URL & Presets (Full Row) -->
               <div class="admin-input-group full-grid-span">
-                <label>image url (from imgbb / postimages / discord)</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
+                  <label style="margin:0;">imgbb or image url (accelerated automatically by cdn)</label>
+                  <a href="https://imgbb.com/upload" target="_blank" rel="noopener" class="btn btn-outline" style="padding:3px 10px;font-size:0.75rem;background:var(--coffee-100);color:var(--coffee-900);border-color:var(--coffee-300);" title="Open ImgBB in new tab to upload and copy direct link">
+                    <i data-lucide="external-link" class="icon-xs"></i> open imgbb uploader
+                  </a>
+                </div>
                 <input type="text" id="url-${item.id}" value="${escapeHtml(item.img || "")}" placeholder="https://i.ibb.co/..." oninput="handleUrlInput('${item.id}', this.value)" />
                 <div class="preset-pills">
                   <span style="font-size:0.7rem;color:var(--coffee-500);">presets:</span>
@@ -2329,10 +2338,27 @@
       showToast(`Offer applied to ${selectedItemIds.size} products! ✦`, 4000);
     }
 
+    function getAdminOptimizedImageUrl(rawUrl, targetWidth = 140) {
+      if (!rawUrl || typeof rawUrl !== "string") return rawUrl;
+      const u = rawUrl.trim();
+      if (u.startsWith("images/") || u.startsWith("data:") || u.startsWith("/")) return u;
+      if (u.startsWith("http://") || u.startsWith("https://")) {
+        return `https://wsrv.nl/?url=${encodeURIComponent(u)}&w=${targetWidth}&q=80&output=webp`;
+      }
+      return u;
+    }
+
     // ── PRESET & URL HANDLING ──
     function handleUrlInput(itemId, url) {
+      url = (url || "").trim();
+      if (url.includes("ibb.co/") && !url.includes("i.ibb.co/")) {
+        showToast("✦ Friendly tip: For fastest loading, copy the 'Direct link' (i.ibb.co/...) from ImgBB", 4000);
+      }
       const preview = document.getElementById(`img-preview-${itemId}`);
-      if (preview && url) preview.src = url;
+      if (preview && url) {
+        preview.src = getAdminOptimizedImageUrl(url, 140);
+        preview.onerror = () => { preview.src = url; };
+      }
     }
 
     function applyPreset(itemId, presetUrl) {
