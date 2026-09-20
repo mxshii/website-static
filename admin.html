@@ -1637,22 +1637,10 @@
 
         item.subcategory = targetSubcat;
 
-        // If variety is not originals and badge was originals, clear it!
-        if (targetSubcat && !isSubcategoryMatch(targetSubcat, "originals")) {
-          if (String(item.badge || "").toLowerCase().trim() === "originals") {
-            item.badge = "";
-          }
-        }
-
         const sel = document.getElementById(`subcat-${id}`);
         if (sel) {
           sel.innerHTML = renderSubcategoryOptions(item.category, targetSubcat);
           sel.value = targetSubcat;
-        }
-
-        const badgeSel = document.getElementById(`badge-${id}`);
-        if (badgeSel && !isSubcategoryMatch(targetSubcat, "originals") && badgeSel.value === "originals") {
-          badgeSel.value = "";
         }
       });
 
@@ -2101,10 +2089,6 @@
                    badge.includes("off") || badge.includes("sale") || badge.includes("offer") || badge.includes("buy") || cat.includes("offer");
           }
           if (currentAdminFilterCat === "originals" || currentAdminFilterCat === "original") {
-            // Guard: items with non-originals subcategory (e.g. quotes, gym, etc.) are NOT originals
-            if (item.subcategory && !isSubcategoryMatch(item.subcategory, "originals")) {
-              return false;
-            }
             return cat === "originals" || cat === "original" ||
                    badge === "originals" || badge === "original" ||
                    isSubcategoryMatch(item.subcategory, "originals") ||
@@ -2595,13 +2579,6 @@
 
       item.fit = document.getElementById(`fit-${itemId}`)?.value || item.fit || "contain";
       item.badge = document.getElementById(`badge-${itemId}`)?.value || "";
-
-      // If item has a variety other than originals, clear "originals" badge
-      if (item.subcategory && !isSubcategoryMatch(item.subcategory, "originals") && (item.badge === "originals" || item.badge === "original")) {
-        item.badge = "";
-        const badgeEl = document.getElementById(`badge-${itemId}`);
-        if (badgeEl) badgeEl.value = "";
-      }
 
       item.desc = (document.getElementById(`desc-${itemId}`)?.value || "").trim();
     }

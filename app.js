@@ -1341,10 +1341,6 @@ function renderProducts() {
           return badge.includes("new") || badge.includes("drop") || name.includes("new") || desc.includes("new");
         }
         if (activeCategory === "originals" || activeCategory === "original") {
-          // If item has explicit variety other than originals, it is NOT originals
-          if (p.subcategory && !isSubcategoryMatch(p.subcategory, "originals")) {
-            return false;
-          }
           return cat === "originals" || cat === "original" ||
                  badge === "originals" || badge === "original" ||
                  isSubcategoryMatch(p.subcategory, "originals") ||
