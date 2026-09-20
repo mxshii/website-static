@@ -1436,6 +1436,17 @@
       return false;
     }
 
+    function isCategoryMatch(cat1, cat2) {
+      const c1 = String(cat1 || "").toLowerCase().trim();
+      const c2 = String(cat2 || "").toLowerCase().trim();
+      if (!c1 || !c2) return false;
+      if (c1 === c2) return true;
+      if (c1.includes("single") && c2.includes("single")) return true;
+      if ((c1.includes("sheet") || c1.includes("pack")) && (c2.includes("sheet") || c2.includes("pack"))) return true;
+      if (c1.includes("poster") && c2.includes("poster")) return true;
+      return false;
+    }
+
     function getStorefrontPayload() {
       return {
         items: storefrontProducts,
@@ -1468,9 +1479,16 @@
     }
 
     function handleItemCategoryChange(itemId, newCategory) {
+      const item = storefrontProducts.find(p => p.id === itemId);
+      if (item) {
+        item.category = newCategory;
+      }
       const subcatSelect = document.getElementById(`subcat-${itemId}`);
       if (subcatSelect) {
-        subcatSelect.innerHTML = renderSubcategoryOptions(newCategory, "");
+        subcatSelect.innerHTML = renderSubcategoryOptions(newCategory, item ? item.subcategory : "");
+        if (item && item.subcategory) {
+          subcatSelect.value = item.subcategory;
+        }
       }
     }
 
@@ -1487,8 +1505,8 @@
       if (!select) return;
 
       let html = `
-        <option value="" disabled selected>assign variety / subcategory...</option>
-        <option value="">(None / Clear Variety)</option>
+        <option value="" disabled selected>assign category &amp; variety...</option>
+        <option value="__CLEAR__">(Clear Variety / General)</option>
       `;
 
       const cats = [
@@ -1500,9 +1518,9 @@
       cats.forEach(c => {
         const list = storefrontCategories[c.key] || [];
         if (list.length) {
-          html += `<optgroup label="${escapeHtml(c.label)}">`;
+          html += `<optgroup label="${escapeHtml(c.label)} Varieties">`;
           list.forEach(sub => {
-            html += `<option value="${escapeHtml(sub.key)}">${escapeHtml(sub.label)}</option>`;
+            html += `<option value="${escapeHtml(c.key)}:::${escapeHtml(sub.key)}">${escapeHtml(sub.label)} (${escapeHtml(c.label)})</option>`;
           });
           html += `</optgroup>`;
         }
@@ -1518,45 +1536,53 @@
       const currentVal = currentAdminFilterVariety || "all";
       let html = `<option value="all" ${currentVal === "all" ? "selected" : ""}>all varieties / subcategories</option>`;
 
-      const added = new Set();
-
       const cats = [
         { key: "single stickers", label: "Single Stickers" },
         { key: "sticker sheet", label: "Sticker Sheets" },
         { key: "posters", label: "Posters" }
       ];
 
-      cats.forEach(c => {
+      const activeCat = currentAdminFilterCat && currentAdminFilterCat !== "all" && currentAdminFilterCat !== "offers" && currentAdminFilterCat !== "originals"
+        ? currentAdminFilterCat
+        : null;
+
+      const catsToShow = activeCat ? cats.filter(c => isCategoryMatch(c.key, activeCat)) : cats;
+
+      catsToShow.forEach(c => {
         const list = storefrontCategories[c.key] || [];
         if (list.length) {
-          html += `<optgroup label="${escapeHtml(c.label)}">`;
+          html += `<optgroup label="${escapeHtml(c.label)} Varieties">`;
           list.forEach(sub => {
-            const norm = normalizeSubcategory(sub.key);
-            if (!added.has(norm)) {
-              added.add(norm);
-              const isSel = isSubcategoryMatch(currentVal, sub.key);
-              html += `<option value="${escapeHtml(sub.key)}" ${isSel ? "selected" : ""}>${escapeHtml(sub.label)}</option>`;
-            }
+            const compoundVal = `${c.key}:::${sub.key}`;
+            const isSel = currentVal === compoundVal || (activeCat && isSubcategoryMatch(currentVal, sub.key));
+            html += `<option value="${escapeHtml(compoundVal)}" ${isSel ? "selected" : ""}>${escapeHtml(sub.label)} (${escapeHtml(c.label)})</option>`;
           });
           html += `</optgroup>`;
         }
       });
 
-      // Also add any custom varieties present on existing items
+      // Also add custom varieties on existing items
       if (Array.isArray(storefrontProducts)) {
+        const seen = new Set();
         const extras = [];
         storefrontProducts.forEach(p => {
           const s = (p.subcategory || "").replace(/^["'“”‘’]+|["'“”‘’]+$/g, "").trim();
-          if (s && !added.has(normalizeSubcategory(s))) {
-            added.add(normalizeSubcategory(s));
-            extras.push(s);
+          const pCat = p.category || "single stickers";
+          const compoundVal = `${pCat}:::${s}`;
+          if (s && !seen.has(compoundVal)) {
+            const inCat = (storefrontCategories[pCat] || []).some(sub => isSubcategoryMatch(sub.key, s));
+            if (!inCat && (!activeCat || isCategoryMatch(pCat, activeCat))) {
+              seen.add(compoundVal);
+              extras.push({ cat: pCat, sub: s });
+            }
           }
         });
         if (extras.length) {
-          html += `<optgroup label="Other Varieties">`;
-          extras.forEach(sub => {
-            const isSel = isSubcategoryMatch(currentVal, sub);
-            html += `<option value="${escapeHtml(sub)}" ${isSel ? "selected" : ""}>${escapeHtml(sub.toUpperCase())}</option>`;
+          html += `<optgroup label="Other Custom Varieties">`;
+          extras.forEach(({ cat, sub }) => {
+            const compoundVal = `${cat}:::${sub}`;
+            const isSel = currentVal === compoundVal;
+            html += `<option value="${escapeHtml(compoundVal)}" ${isSel ? "selected" : ""}>${escapeHtml(sub.toUpperCase())} (${escapeHtml(cat)})</option>`;
           });
           html += `</optgroup>`;
         }
@@ -1574,23 +1600,45 @@
       renderAdminItems();
     }
 
-    async function applySubcategoryToSelected(subcatKey) {
+    async function applySubcategoryToSelected(rawVal) {
       const count = selectedItemIds.size;
       if (count === 0) {
         showToast("Please select products first using the checkboxes");
         return;
       }
 
-      const formattedSubcat = (subcatKey || "").replace(/^["'“”‘’]+|["'“”‘’]+$/g, "").trim();
-      const displayLabel = formattedSubcat ? formattedSubcat.toUpperCase() : "CLEARED";
+      if (!rawVal) return;
+
+      let targetCategory = null;
+      let targetSubcat = "";
+
+      if (rawVal === "__CLEAR__") {
+        targetSubcat = "";
+      } else if (rawVal.includes(":::")) {
+        const parts = rawVal.split(":::");
+        targetCategory = parts[0].trim();
+        targetSubcat = parts[1].replace(/^["'“”‘’]+|["'“”‘’]+$/g, "").trim();
+      } else {
+        targetSubcat = rawVal.replace(/^["'“”‘’]+|["'“”‘’]+$/g, "").trim();
+      }
+
+      const displayLabel = targetSubcat ? targetSubcat.toUpperCase() : "CLEARED";
+      const catLabel = targetCategory ? ` in ${targetCategory.toUpperCase()}` : "";
 
       selectedItemIds.forEach(id => {
         const item = storefrontProducts.find(p => p.id === id);
         if (!item) return;
-        item.subcategory = formattedSubcat;
+
+        if (targetCategory) {
+          item.category = targetCategory;
+          const catSel = document.getElementById(`cat-${id}`);
+          if (catSel) catSel.value = targetCategory;
+        }
+
+        item.subcategory = targetSubcat;
 
         // If variety is not originals and badge was originals, clear it!
-        if (formattedSubcat && !isSubcategoryMatch(formattedSubcat, "originals")) {
+        if (targetSubcat && !isSubcategoryMatch(targetSubcat, "originals")) {
           if (String(item.badge || "").toLowerCase().trim() === "originals") {
             item.badge = "";
           }
@@ -1598,20 +1646,12 @@
 
         const sel = document.getElementById(`subcat-${id}`);
         if (sel) {
-          let opt = Array.from(sel.options).find(o => isSubcategoryMatch(o.value, formattedSubcat));
-          if (!opt && formattedSubcat) {
-            opt = new Option(displayLabel, formattedSubcat);
-            sel.add(opt);
-          }
-          if (opt) {
-            sel.value = opt.value;
-          } else {
-            sel.value = formattedSubcat;
-          }
+          sel.innerHTML = renderSubcategoryOptions(item.category, targetSubcat);
+          sel.value = targetSubcat;
         }
 
         const badgeSel = document.getElementById(`badge-${id}`);
-        if (badgeSel && !isSubcategoryMatch(formattedSubcat, "originals") && badgeSel.value === "originals") {
+        if (badgeSel && !isSubcategoryMatch(targetSubcat, "originals") && badgeSel.value === "originals") {
           badgeSel.value = "";
         }
       });
@@ -1619,7 +1659,7 @@
       await saveStorefrontPictureMap(getStorefrontPayload());
       renderAdminItems();
       populateAdminVarietyFilterDropdown();
-      showToast(`Assigned variety "${displayLabel}" to ${count} products ✦`, 3500);
+      showToast(`Assigned "${displayLabel}"${catLabel} to ${count} products ✦`, 3500);
     }
 
     // ── PIN AUTH & STATE ──
@@ -2070,15 +2110,23 @@
                    isSubcategoryMatch(item.subcategory, "originals") ||
                    /\boriginals?\b/i.test(name);
           }
-          if (currentAdminFilterCat === "posters") return cat.includes("poster");
-          if (currentAdminFilterCat === "single stickers") return cat.includes("single");
-          if (currentAdminFilterCat === "sticker sheet") return cat.includes("sheet") || cat.includes("pack");
+          if (currentAdminFilterCat === "posters") return isCategoryMatch(cat, "posters");
+          if (currentAdminFilterCat === "single stickers") return isCategoryMatch(cat, "single stickers");
+          if (currentAdminFilterCat === "sticker sheet") return isCategoryMatch(cat, "sticker sheet");
           return cat === currentAdminFilterCat;
         });
       }
 
       if (currentAdminFilterVariety && currentAdminFilterVariety !== "all") {
-        items = items.filter(item => isSubcategoryMatch(item.subcategory, currentAdminFilterVariety));
+        if (currentAdminFilterVariety.includes(":::")) {
+          const [vCat, vSub] = currentAdminFilterVariety.split(":::");
+          items = items.filter(item => {
+            const itemCat = String(item.category || "single stickers").toLowerCase().trim();
+            return isCategoryMatch(itemCat, vCat) && isSubcategoryMatch(item.subcategory, vSub);
+          });
+        } else {
+          items = items.filter(item => isSubcategoryMatch(item.subcategory, currentAdminFilterVariety));
+        }
       }
 
       if (q) {
@@ -2105,9 +2153,11 @@
 
     function filterByAdminCat(cat) {
       currentAdminFilterCat = cat;
+      currentAdminFilterVariety = "all";
       document.querySelectorAll(".admin-cat-pill").forEach(p => {
         p.classList.toggle("active", p.getAttribute("data-cat") === cat);
       });
+      populateAdminVarietyFilterDropdown();
       renderAdminItems();
     }
 
@@ -2609,8 +2659,13 @@
 
       container.innerHTML = subcats.map((sub, idx) => {
         const assignedCount = storefrontProducts.filter(p => {
+          const itemCat = String(p.category || "single stickers").toLowerCase().trim();
+          if (!isCategoryMatch(itemCat, currentCatModalTab)) return false;
           return isSubcategoryMatch(p.subcategory, sub.key) || isSubcategoryMatch(p.subcategory, sub.label);
         }).length;
+
+        const catUnit = currentCatModalTab === "sticker sheet" ? "sheet" : currentCatModalTab === "posters" ? "poster" : "sticker";
+        const catUnitPlural = currentCatModalTab === "sticker sheet" ? "sheets" : currentCatModalTab === "posters" ? "posters" : "stickers";
 
         return `
           <div class="category-row">
@@ -2618,7 +2673,7 @@
               <span class="category-drag-num">${idx + 1}</span>
               <strong class="category-title-text">${escapeHtml(sub.label)}</strong>
               <span class="category-key-badge">${escapeHtml(sub.key)}</span>
-              <span class="category-count-badge">${assignedCount} ${assignedCount === 1 ? 'sticker' : 'stickers'}</span>
+              <span class="category-count-badge">${assignedCount} ${assignedCount === 1 ? catUnit : catUnitPlural}</span>
             </div>
             <div class="category-actions">
               <button type="button" class="cat-btn-sm" onclick="moveSubcategory(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity:0.35;cursor:default;"' : ''} title="Move Up">
@@ -2736,6 +2791,8 @@
       const target = subcats[idx];
 
       const assignedCount = storefrontProducts.filter(p => {
+        const itemCat = String(p.category || "single stickers").toLowerCase().trim();
+        if (!isCategoryMatch(itemCat, currentCatModalTab)) return false;
         const pSub = String(p.subcategory || "").toLowerCase().trim();
         return isSubcategoryMatch(pSub, target.key) || isSubcategoryMatch(pSub, target.label);
       }).length;

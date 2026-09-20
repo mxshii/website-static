@@ -70,6 +70,18 @@ function isSubcategoryMatch(sub1, sub2) {
 window.normalizeSubcategory = normalizeSubcategory;
 window.isSubcategoryMatch = isSubcategoryMatch;
 
+function isCategoryMatch(cat1, cat2) {
+  const c1 = String(cat1 || "").toLowerCase().trim();
+  const c2 = String(cat2 || "").toLowerCase().trim();
+  if (!c1 || !c2) return false;
+  if (c1 === c2) return true;
+  if (c1.includes("single") && c2.includes("single")) return true;
+  if ((c1.includes("sheet") || c1.includes("pack")) && (c2.includes("sheet") || c2.includes("pack"))) return true;
+  if (c1.includes("poster") && c2.includes("poster")) return true;
+  return false;
+}
+window.isCategoryMatch = isCategoryMatch;
+
 const SUBCATEGORY_KEYWORDS = {
   alexandria: ["alex", "alexandria", "iskandariya", "sea", "tram", "stanley", "gleem", "citadel", "corniche"],
   animals: ["cat", "dog", "pet", "animal", "bear", "feline", "kitten", "puppy", "fox", "frog", "bunny", "rabbit", "panda", "bird", "lion", "tiger", "fish"],
@@ -625,13 +637,14 @@ function checkUrlQueryParamsForFilters() {
       activeCategory = cat.toLowerCase().trim();
       document.querySelectorAll(".filter-pill").forEach(p => {
         const pillCat = (p.getAttribute("data-category") || "").toLowerCase().trim();
-        p.classList.toggle("active", pillCat === activeCategory);
+        p.classList.toggle("active", isCategoryMatch(pillCat, activeCategory));
       });
     }
     if (sub && sub !== "all") {
       activeSubCategory = sub.toLowerCase().trim();
       updateSubFilterUI(activeSubCategory.replace("-", " ").toUpperCase());
     }
+    renderProducts();
   }
 }
 
@@ -1337,9 +1350,9 @@ function renderProducts() {
                  isSubcategoryMatch(p.subcategory, "originals") ||
                  /\boriginals?\b/i.test(name);
         }
-        if (activeCategory === "posters") return cat.includes("poster");
-        if (activeCategory === "single stickers" || activeCategory === "single") return cat.includes("single");
-        if (activeCategory === "sticker sheet" || activeCategory === "sheet") return cat.includes("sheet") || cat.includes("pack");
+        if (activeCategory === "posters") return isCategoryMatch(cat, "posters");
+        if (activeCategory === "single stickers" || activeCategory === "single") return isCategoryMatch(cat, "single stickers");
+        if (activeCategory === "sticker sheet" || activeCategory === "sheet") return isCategoryMatch(cat, "sticker sheet");
         return cat === activeCategory;
       });
     }
@@ -1347,15 +1360,9 @@ function renderProducts() {
     if (activeSubCategory && activeSubCategory !== "all") {
       const targetSub = activeSubCategory.toLowerCase().trim();
       filtered = filtered.filter(p => {
-        if (p.subcategory) {
-          return isSubcategoryMatch(p.subcategory, targetSub);
-        }
-        // Fallback for older items with no variety set
-        const kwList = (typeof SUBCATEGORY_KEYWORDS !== "undefined" && SUBCATEGORY_KEYWORDS[activeSubCategory])
-          ? SUBCATEGORY_KEYWORDS[activeSubCategory]
-          : [targetSub.replace("-", " "), targetSub];
-        const text = (p.name + " " + (p.category || "") + " " + (p.desc || "") + " " + (p.sku || "")).toLowerCase();
-        return kwList.some(kw => text.includes(kw));
+        // STRICT VARIETY ASSIGNMENT: Only show items explicitly assigned this variety in admin
+        if (!p.subcategory) return false;
+        return isSubcategoryMatch(p.subcategory, targetSub);
       });
     }
 
