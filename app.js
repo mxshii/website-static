@@ -14,12 +14,64 @@ let customerData = {};
 let currentPaymentMethod = null; // "vodafone" | "card"
 let currentUser = null;          // logged-in customer
 let activeCategory = "all";
+let activeSubCategory = null;   // e.g. "alexandria", "animals", "anime", etc.
+let currentSidebarView = "main";
 let activeStockFilter = "all";   // "all", "in-stock", "sold-out"
 let activePriceRange = "all";    // "all", "under-25", "25-50", "over-50", "on-sale"
 let activeSortOption = "default"; // "default", "low-high", "high-low", "name-az"
 let searchQuery = "";
 let _stockCacheTime = 0;
 const _imgCache = new Map();
+
+const SUBCATEGORY_KEYWORDS = {
+  alexandria: ["alex", "alexandria", "iskandariya", "sea", "tram", "stanley", "gleem", "citadel", "corniche"],
+  animals: ["cat", "dog", "pet", "animal", "bear", "feline", "kitten", "puppy", "fox", "frog", "bunny", "rabbit", "panda", "bird", "lion", "tiger", "fish"],
+  anime: ["anime", "manga", "goku", "naruto", "luffy", "one piece", "jujutsu", "demon slayer", "titan", "hunter", "ghibli", "totoro", "zoro", "itachi", "gojo", "sukuna"],
+  cartoon: ["cartoon", "disney", "sponge", "patrick", "mickey", "scooby", "rick", "morty", "adventure time", "nostalgia", "simpsons", "cartoon network", "shrek", "looney"],
+  colors: ["color", "rainbow", "pink", "pastel", "blue", "purple", "neon", "gradient", "yellow", "aesthetic"],
+  comics: ["comic", "marvel", "dc", "batman", "spiderman", "spider-man", "iron man", "avengers", "joker", "superman", "deadpool", "hero"],
+  football: ["football", "soccer", "messi", "ronaldo", "ahly", "zamalek", "salah", "real madrid", "barcelona", "liverpool", "arsenal", "world cup"],
+  sports: ["sport", "gym", "workout", "fitness", "basketball", "tennis", "skate", "skater", "surf"],
+  faculty: ["faculty", "engineering", "medicine", "pharmacy", "dentistry", "science", "arts", "law", "business", "commerce", "computer", "cs", "ai", "study", "doctor", "engineer"],
+  hobbies: ["hobby", "music", "guitar", "gaming", "game", "reader", "reading", "book", "coffee", "art", "drawing", "photo", "camera", "baking", "plant", "coding", "code"],
+  "countries-cities": ["egypt", "cairo", "alexandria", "japan", "tokyo", "paris", "london", "palestine", "usa", "italy", "flag", "city", "country"],
+  quotes: ["quote", "text", "typography", "word", "lettering", "arabic", "mood", "funny", "sarcasm", "vibes", "mindset"],
+  cozy: ["cozy", "kawaii", "cute", "soft", "warm", "tea", "coffee", "daisy", "flower", "moon", "cloud"],
+  cats: ["cat", "feline", "kitten", "meow", "purr", "cat emotions"],
+  celestial: ["celestial", "moon", "star", "sun", "space", "galaxy", "astronomy", "planet", "zodiac", "botanical"],
+  food: ["food", "boba", "ramen", "coffee", "matcha", "pizza", "burger", "cookie", "cake", "sweet", "sushi", "tea"],
+  retro: ["retro", "vintage", "90s", "80s", "y2k", "cassette", "synthwave", "vaporwave"],
+};
+
+const DEFAULT_STORE_CATEGORIES = {
+  "single stickers": [
+    { key: "alexandria", label: "ALEXANDRIA" },
+    { key: "animals", label: "ANIMALS" },
+    { key: "anime", label: "ANIME" },
+    { key: "cartoon", label: "CARTOON" },
+    { key: "colors", label: "COLORS" },
+    { key: "comics", label: "COMICS" },
+    { key: "football", label: "FOOTBALL" },
+    { key: "sports", label: "SPORTS" },
+    { key: "faculty", label: "FACULTY" },
+    { key: "hobbies", label: "HOBBIES" },
+    { key: "countries-cities", label: "COUNTRIES & CITIES" },
+    { key: "quotes", label: "QUOTES" }
+  ],
+  "sticker sheet": [
+    { key: "cozy", label: "KAWAII & COZY" },
+    { key: "cats", label: "CAT MOODS" },
+    { key: "celestial", label: "CELESTIAL & STARS" },
+    { key: "food", label: "FOOD & DRINKS" },
+    { key: "retro", label: "RETRO VIBES" }
+  ],
+  "posters": [
+    { key: "art-prints", label: "A4 MATTE ART PRINTS" },
+    { key: "celestial", label: "BOTANICAL & CELESTIAL" },
+    { key: "retro", label: "RETRO & VINTAGE" }
+  ]
+};
+let STORE_CATEGORIES = JSON.parse(JSON.stringify(DEFAULT_STORE_CATEGORIES));
 
 let STORE_OFFERS = [
   { code: "STATIC10", type: "percentage", value: 10, minOrder: 0, desc: "10% off entire order", active: true },
@@ -89,6 +141,12 @@ async function saveStorefrontPictureMap(map) {
   }
 }
 
+if (typeof window !== "undefined") {
+  window.fetchStorefrontPictureMap = fetchStorefrontPictureMap;
+  window.saveStorefrontPictureMap = saveStorefrontPictureMap;
+  window.getStorefrontPictureMap = getStorefrontPictureMap;
+}
+
 // ── ICON HELPER ───────────────────────────────────────
 function renderIcons() {
   if (window.lucide && typeof window.lucide.createIcons === "function") {
@@ -98,6 +156,10 @@ function renderIcons() {
       console.warn("lucide render error:", e);
     }
   }
+}
+
+if (typeof window !== "undefined") {
+  window.renderIcons = renderIcons;
 }
 
 // ── INIT ──────────────────────────────────────────────
@@ -114,6 +176,8 @@ function initApp() {
   try { initAccountModal(); } catch (e) { console.warn("initAccountModal error:", e); }
   try { initShopControls(); } catch (e) { console.warn("initShopControls error:", e); }
   try { initContactForm(); } catch (e) { console.warn("initContactForm error:", e); }
+  try { initSidebarDrawer(); } catch (e) { console.warn("initSidebarDrawer error:", e); }
+  try { checkUrlQueryParamsForFilters(); } catch (e) { console.warn("checkUrlQueryParamsForFilters error:", e); }
 
   // Load products immediately if grid is present
   if (document.getElementById("products-grid")) {
@@ -179,7 +243,7 @@ function initNavbar() {
   if (!navbar) return;
   window.addEventListener("scroll", () => {
     navbar.classList.toggle("scrolled", window.scrollY > 30);
-  });
+  }, { passive: true });
 }
 
 function initMobileMenu() {
@@ -277,14 +341,244 @@ function highlightActiveNavLink() {
 function closeAllDrawersAndMenus() {
   closeCart();
   closeMobileMenu();
+  closeSidebar();
 }
 
 function updateBodyScrollLock() {
-  const hasOpen = document.querySelector(".modal-overlay.open, .cart-drawer.open");
+  const hasOpen = document.querySelector(".modal-overlay.open, .cart-drawer.open, .sidebar-drawer.open");
   if (hasOpen) {
     document.body.style.overflow = "hidden";
   } else {
     document.body.style.overflow = "";
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SIDEBAR DRAWER & DRILL-DOWN NAVIGATION
+// ══════════════════════════════════════════════════════
+function initSidebarDrawer() {
+  const drawer = document.getElementById("sidebar-drawer");
+  const overlay = document.getElementById("sidebar-overlay");
+  const closeBtn = document.getElementById("sidebar-close-btn");
+  const toggleBtns = document.querySelectorAll(".sidebar-toggle-btn");
+
+  if (!drawer) return;
+
+  toggleBtns.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openSidebar();
+    });
+  });
+
+  if (closeBtn) closeBtn.addEventListener("click", closeSidebar);
+  if (overlay) overlay.addEventListener("click", closeSidebar);
+
+  // Drill-down submenu forward navigation
+  drawer.querySelectorAll("[data-target-view]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetView = btn.getAttribute("data-target-view");
+      switchSidebarView(targetView);
+    });
+  });
+
+  // Drill-down back navigation
+  drawer.querySelectorAll(".sidebar-back-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const backTo = btn.getAttribute("data-back-to") || "main";
+      switchSidebarView(backTo);
+    });
+  });
+
+  // Render dynamic subcategory buttons and bind click handlers
+  renderDynamicSidebarViews();
+}
+
+function renderDynamicSidebarViews() {
+  const drawer = document.getElementById("sidebar-drawer");
+  if (!drawer) return;
+
+  const viewMap = [
+    { catKey: "single stickers", viewId: "sidebar-view-single-stickers", allLabel: "ALL SINGLE STICKERS" },
+    { catKey: "sticker sheet", viewId: "sidebar-view-sheet-stickers", allLabel: "ALL SHEET STICKERS" },
+    { catKey: "posters", viewId: "sidebar-view-posters", allLabel: "ALL POSTERS" },
+  ];
+
+  viewMap.forEach(({ catKey, viewId, allLabel }) => {
+    const viewEl = document.getElementById(viewId);
+    if (!viewEl) return;
+    const listEl = viewEl.querySelector(".sidebar-sub-list");
+    if (!listEl) return;
+
+    const subcats = (STORE_CATEGORIES && STORE_CATEGORIES[catKey]) ? STORE_CATEGORIES[catKey] : (DEFAULT_STORE_CATEGORIES[catKey] || []);
+    let html = `<button type="button" class="sidebar-sub-item" data-category="${escapeHtml(catKey)}" data-sub="all">${escapeHtml(allLabel)}</button>`;
+    subcats.forEach(sub => {
+      html += `\n<button type="button" class="sidebar-sub-item" data-category="${escapeHtml(catKey)}" data-sub="${escapeHtml(sub.key)}">${escapeHtml(sub.label)}</button>`;
+    });
+    listEl.innerHTML = html;
+  });
+
+  drawer.querySelectorAll(".sidebar-sub-item").forEach(btn => {
+    btn.onclick = () => {
+      const cat = btn.getAttribute("data-category");
+      const sub = btn.getAttribute("data-sub");
+      const label = btn.textContent.trim();
+      handleSidebarSubcategoryClick(cat, sub, label);
+    };
+  });
+}
+window.renderDynamicSidebarViews = renderDynamicSidebarViews;
+
+function openSidebar() {
+  closeCart();
+  closeMobileMenu();
+  const drawer = document.getElementById("sidebar-drawer");
+  const overlay = document.getElementById("sidebar-overlay");
+  if (!drawer) return;
+
+  switchSidebarView("main");
+  drawer.classList.add("open");
+  if (overlay) overlay.classList.add("open");
+  updateBodyScrollLock();
+  renderIcons();
+}
+window.openSidebar = openSidebar;
+
+function closeSidebar() {
+  const drawer = document.getElementById("sidebar-drawer");
+  const overlay = document.getElementById("sidebar-overlay");
+  if (drawer) drawer.classList.remove("open");
+  if (overlay) overlay.classList.remove("open");
+  updateBodyScrollLock();
+
+  setTimeout(() => {
+    switchSidebarView("main");
+  }, 320);
+}
+window.closeSidebar = closeSidebar;
+
+function switchSidebarView(viewId) {
+  currentSidebarView = viewId;
+  const mainView = document.getElementById("sidebar-view-main");
+  const allViews = document.querySelectorAll(".sidebar-view");
+
+  if (viewId === "main") {
+    allViews.forEach(v => {
+      if (v.id === "sidebar-view-main") {
+        v.classList.remove("slide-left");
+        v.classList.add("active");
+      } else {
+        v.classList.remove("active");
+      }
+    });
+  } else {
+    if (mainView) {
+      mainView.classList.remove("active");
+      mainView.classList.add("slide-left");
+    }
+    allViews.forEach(v => {
+      if (v.getAttribute("data-view") === viewId) {
+        v.classList.add("active");
+        v.scrollTop = 0;
+      } else if (v.id !== "sidebar-view-main") {
+        v.classList.remove("active");
+      }
+    });
+  }
+  renderIcons();
+}
+window.switchSidebarView = switchSidebarView;
+
+function handleSidebarSubcategoryClick(cat, subKey, subLabel) {
+  closeSidebar();
+  const isShopPage = window.location.pathname.toLowerCase().includes("shop");
+  if (!isShopPage) {
+    const params = new URLSearchParams();
+    if (cat) params.set("category", cat);
+    if (subKey && subKey !== "all") params.set("sub", subKey);
+    window.location.href = `shop.html?${params.toString()}`;
+    return;
+  }
+
+  applyShopFiltersFromSidebar(cat, subKey, subLabel);
+}
+window.handleSidebarSubcategoryClick = handleSidebarSubcategoryClick;
+
+function applyShopFiltersFromSidebar(cat, subKey, subLabel) {
+  activeCategory = (cat || "all").toLowerCase().trim();
+  activeSubCategory = (subKey && subKey !== "all") ? subKey.toLowerCase().trim() : null;
+
+  // Update category filter pills on shop page
+  document.querySelectorAll(".filter-pill").forEach(p => {
+    const pillCat = (p.getAttribute("data-category") || "").toLowerCase().trim();
+    p.classList.toggle("active", pillCat === activeCategory);
+  });
+
+  updateSubFilterUI(subLabel);
+  renderProducts();
+
+  const grid = document.getElementById("products-grid");
+  if (grid) {
+    grid.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function updateSubFilterUI(subLabel) {
+  let chipWrap = document.getElementById("active-sub-filter-wrap");
+  if (!chipWrap) {
+    const controlsSec = document.querySelector(".shop-controls-secondary") || document.querySelector(".shop-controls");
+    if (controlsSec) {
+      chipWrap = document.createElement("div");
+      chipWrap.className = "active-sub-filter-wrap";
+      chipWrap.id = "active-sub-filter-wrap";
+      chipWrap.style.display = "none";
+      controlsSec.parentNode.insertBefore(chipWrap, controlsSec);
+    }
+  }
+
+  if (!chipWrap) return;
+
+  if (activeSubCategory) {
+    const displayName = subLabel || activeSubCategory.replace("-", " ").toUpperCase();
+    chipWrap.innerHTML = `
+      <span class="active-sub-label">subcategory: <strong class="active-sub-name">${escapeHtml(displayName)}</strong></span>
+      <button type="button" class="clear-sub-filter-btn" onclick="clearSubcategoryFilter()" title="Clear subcategory filter">
+        <i data-lucide="x" class="icon-xs"></i> all ${escapeHtml(activeCategory)}
+      </button>
+    `;
+    chipWrap.style.display = "inline-flex";
+    renderIcons();
+  } else {
+    chipWrap.style.display = "none";
+  }
+}
+
+function clearSubcategoryFilter() {
+  activeSubCategory = null;
+  const chipWrap = document.getElementById("active-sub-filter-wrap");
+  if (chipWrap) chipWrap.style.display = "none";
+  renderProducts();
+}
+window.clearSubcategoryFilter = clearSubcategoryFilter;
+
+function checkUrlQueryParamsForFilters() {
+  if (!window.location.search) return;
+  const params = new URLSearchParams(window.location.search);
+  const cat = params.get("category");
+  const sub = params.get("sub") || params.get("subcat");
+
+  if (cat || sub) {
+    if (cat) {
+      activeCategory = cat.toLowerCase().trim();
+      document.querySelectorAll(".filter-pill").forEach(p => {
+        const pillCat = (p.getAttribute("data-category") || "").toLowerCase().trim();
+        p.classList.toggle("active", pillCat === activeCategory);
+      });
+    }
+    if (sub && sub !== "all") {
+      activeSubCategory = sub.toLowerCase().trim();
+      updateSubFilterUI(activeSubCategory.replace("-", " ").toUpperCase());
+    }
   }
 }
 
@@ -725,6 +1019,14 @@ async function loadProducts(forceRefresh = false) {
       STORE_BANNER = safeMap.banner;
       updateAnnouncementBanner(STORE_BANNER);
     }
+    if (safeMap.categories && typeof safeMap.categories === "object" && Object.keys(safeMap.categories).length > 0) {
+      STORE_CATEGORIES = {
+        "single stickers": safeMap.categories["single stickers"] || DEFAULT_STORE_CATEGORIES["single stickers"],
+        "sticker sheet": safeMap.categories["sticker sheet"] || DEFAULT_STORE_CATEGORIES["sticker sheet"],
+        "posters": safeMap.categories["posters"] || DEFAULT_STORE_CATEGORIES["posters"],
+      };
+      renderDynamicSidebarViews();
+    }
 
     if (safeMap && Array.isArray(safeMap.items) && safeMap.items.length > 0) {
       PRODUCTS = safeMap.items.map(item => {
@@ -770,6 +1072,7 @@ async function loadProducts(forceRefresh = false) {
           originalPrice: originalPrice,
           qty: stockQty,
           category: category,
+          subcategory: item.subcategory || "",
           img: img,
           badge: badge,
           fit: fit,
@@ -801,6 +1104,7 @@ async function loadProducts(forceRefresh = false) {
           originalPrice: originalPrice,
           qty: stockQty,
           category: category,
+          subcategory: custom.subcategory || "",
           img: img,
           badge: badge,
           fit: fit,
@@ -825,6 +1129,11 @@ function getProductImage(name, sku) {
   if (n.includes("celestial") || n.includes("botanical") || n.includes("moon") || n.includes("star")) return "images/sticker-celestial.jpg";
   if (n.includes("food") || n.includes("ramen") || n.includes("boba") || n.includes("foodi")) return "images/sticker-food.jpg";
   return "images/sticker-cozy.jpg";
+}
+
+if (typeof window !== "undefined") {
+  window.getProductImage = getProductImage;
+  window.inferProductCategory = inferProductCategory;
 }
 
 function getFallbackProducts() {
@@ -912,9 +1221,32 @@ function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
   img.src = rawUrl;
 }
 
+let _cardObserver = null;
+function getCardObserver() {
+  if (_cardObserver) return _cardObserver;
+  if (typeof IntersectionObserver !== "undefined") {
+    _cardObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const canvas = entry.target;
+          const url = canvas.getAttribute("data-src");
+          const fit = canvas.getAttribute("data-fit") || "contain";
+          if (url) {
+            renderProtectedGraphic(canvas, url, fit);
+            canvas.removeAttribute("data-src");
+          }
+          observer.unobserve(canvas);
+        }
+      });
+    }, { rootMargin: "300px 0px" });
+  }
+  return _cardObserver;
+}
+
 function renderProducts() {
   const grid = document.getElementById("products-grid");
   if (!grid) return;
+  if (_cardObserver) _cardObserver.disconnect();
 
   const isHomePage = document.getElementById("featured") !== null && !document.querySelector(".shop-controls");
 
@@ -946,6 +1278,21 @@ function renderProducts() {
         if (activeCategory === "single stickers" || activeCategory === "single") return cat.includes("single");
         if (activeCategory === "sticker sheet" || activeCategory === "sheet") return cat.includes("sheet") || cat.includes("pack");
         return cat === activeCategory;
+      });
+    }
+
+    if (activeSubCategory && activeSubCategory !== "all") {
+      const targetSub = activeSubCategory.toLowerCase().trim();
+      const kwList = (typeof SUBCATEGORY_KEYWORDS !== "undefined" && SUBCATEGORY_KEYWORDS[activeSubCategory])
+        ? SUBCATEGORY_KEYWORDS[activeSubCategory]
+        : [targetSub.replace("-", " "), targetSub];
+      filtered = filtered.filter(p => {
+        const pSub = String(p.subcategory || "").toLowerCase().trim();
+        if (pSub && (pSub === targetSub || pSub === targetSub.replace("-", " ") || pSub.replace("-", " ") === targetSub.replace("-", " "))) {
+          return true;
+        }
+        const text = (p.name + " " + (p.category || "") + " " + (p.desc || "") + " " + (p.sku || "") + " " + (p.badge || "")).toLowerCase();
+        return kwList.some(kw => text.includes(kw));
       });
     }
 
@@ -1034,7 +1381,14 @@ function renderProducts() {
 
       const canvas = card.querySelector(".card-canvas");
       if (canvas && p.img) {
-        renderProtectedGraphic(canvas, p.img, isCover ? "cover" : "contain");
+        const obs = getCardObserver();
+        if (obs) {
+          canvas.setAttribute("data-src", p.img);
+          canvas.setAttribute("data-fit", isCover ? "cover" : "contain");
+          obs.observe(canvas);
+        } else {
+          renderProtectedGraphic(canvas, p.img, isCover ? "cover" : "contain");
+        }
       }
 
       card.addEventListener("click", (e) => {
@@ -1115,6 +1469,7 @@ function initProductModal() {
 
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
+      closeSidebar();
       closeProductModal();
       closeCheckout();
       closeAccountModal();
@@ -1867,6 +2222,9 @@ function showToast(msg, duration = 2800) {
 
 // ── ANTI-THEFT: PREVENT DEVTOOLS / INSPECT SHORTCUTS ──
 document.addEventListener("keydown", e => {
+  if (typeof window !== "undefined" && window.location && window.location.pathname.toLowerCase().includes("admin")) {
+    return;
+  }
   if (
     e.key === "F12" ||
     (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i" || e.key === "J" || e.key === "j" || e.key === "C" || e.key === "c")) ||

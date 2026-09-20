@@ -36,6 +36,11 @@
   <!-- NAVBAR -->
   <header class="navbar" id="navbar">
     <div class="nav-inner">
+      <button type="button" class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="Open navigation menu" title="Browse sticker categories">
+        <i data-lucide="menu" class="icon-sm"></i>
+        <span class="sidebar-toggle-label">categories</span>
+      </button>
+
       <nav class="nav-links left">
         <a href="index.html">home</a>
         <a href="shop.html">shop</a>
@@ -58,18 +63,6 @@
           <span class="cart-count" id="cart-count">0</span>
         </button>
       </nav>
-
-      <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
-        <i data-lucide="menu" class="icon-md"></i>
-      </button>
-    </div>
-
-    <div class="mobile-menu" id="mobile-menu">
-      <a href="index.html">home</a>
-      <a href="shop.html">shop</a>
-      <a href="faq.html">faq</a>
-      <a href="contact.html" class="active">contact</a>
-      <a href="#" id="mob-account">sign in</a>
     </div>
   </header>
 
@@ -431,6 +424,120 @@
       </div>
     </div>
   </div>
+
+  <!-- SIDEBAR DRAWER & OVERLAY -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar-drawer" id="sidebar-drawer" role="dialog" aria-modal="true" aria-label="Collections and Categories">
+    <!-- Header with Circular Close Button -->
+    <div class="sidebar-header">
+      <button type="button" class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Close menu">
+        <i data-lucide="x" class="icon-sm"></i>
+      </button>
+    </div>
+
+    <!-- Sliding Views Track -->
+    <div class="sidebar-track" id="sidebar-track">
+      <!-- VIEW 1: ROOT / MAIN MENU -->
+      <div class="sidebar-view active" id="sidebar-view-main" data-view="main">
+        <nav class="sidebar-nav-list">
+          <a href="index.html" class="sidebar-nav-item">
+            <span>HOME</span>
+          </a>
+          <button type="button" class="sidebar-nav-item has-sub" data-target-view="single-stickers">
+            <span>SINGLE STICKERS</span>
+            <i data-lucide="chevron-right" class="icon-xs nav-arrow"></i>
+          </button>
+          <button type="button" class="sidebar-nav-item has-sub" data-target-view="sheet-stickers">
+            <span>SHEET STICKERS</span>
+            <i data-lucide="chevron-right" class="icon-xs nav-arrow"></i>
+          </button>
+          <button type="button" class="sidebar-nav-item has-sub" data-target-view="posters">
+            <span>POSTERS</span>
+            <i data-lucide="chevron-right" class="icon-xs nav-arrow"></i>
+          </button>
+          <a href="shop.html?category=offers" class="sidebar-nav-item">
+            <span>OFFERS &amp; SALE</span>
+            <span class="sidebar-pill-tag">SALE</span>
+          </a>
+          <a href="faq.html" class="sidebar-nav-item">
+            <span>FAQ &amp; INFO</span>
+          </a>
+          <a href="contact.html" class="sidebar-nav-item">
+            <span>CONTACT</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- VIEW 2: SINGLE STICKERS SUBMENU -->
+      <div class="sidebar-view" id="sidebar-view-single-stickers" data-view="single-stickers">
+        <button type="button" class="sidebar-back-btn" data-back-to="main">
+          <i data-lucide="chevron-left" class="icon-xs"></i>
+          <span>SINGLE STICKERS</span>
+        </button>
+        <div class="sidebar-sub-list">
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="all">ALL SINGLE STICKERS</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="alexandria">ALEXANDRIA</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="animals">ANIMALS</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="anime">ANIME</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="cartoon">CARTOON</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="colors">COLORS</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="comics">COMICS</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="football">FOOTBALL</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="sports">SPORTS</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="faculty">FACULTY</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="hobbies">HOBBIES</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="countries-cities">COUNTRIES &amp; CITIES</button>
+          <button type="button" class="sidebar-sub-item" data-category="single stickers" data-sub="quotes">QUOTES</button>
+        </div>
+      </div>
+
+      <!-- VIEW 3: SHEET STICKERS SUBMENU -->
+      <div class="sidebar-view" id="sidebar-view-sheet-stickers" data-view="sheet-stickers">
+        <button type="button" class="sidebar-back-btn" data-back-to="main">
+          <i data-lucide="chevron-left" class="icon-xs"></i>
+          <span>SHEET STICKERS</span>
+        </button>
+        <div class="sidebar-sub-list">
+          <button type="button" class="sidebar-sub-item" data-category="sticker sheet" data-sub="all">ALL SHEET STICKERS</button>
+          <button type="button" class="sidebar-sub-item" data-category="sticker sheet" data-sub="cozy">KAWAII &amp; COZY</button>
+          <button type="button" class="sidebar-sub-item" data-category="sticker sheet" data-sub="cats">CAT MOODS</button>
+          <button type="button" class="sidebar-sub-item" data-category="sticker sheet" data-sub="celestial">CELESTIAL &amp; STARS</button>
+          <button type="button" class="sidebar-sub-item" data-category="sticker sheet" data-sub="food">FOOD &amp; DRINKS</button>
+          <button type="button" class="sidebar-sub-item" data-category="sticker sheet" data-sub="retro">RETRO VIBES</button>
+        </div>
+      </div>
+
+      <!-- VIEW 4: POSTERS SUBMENU -->
+      <div class="sidebar-view" id="sidebar-view-posters" data-view="posters">
+        <button type="button" class="sidebar-back-btn" data-back-to="main">
+          <i data-lucide="chevron-left" class="icon-xs"></i>
+          <span>POSTERS</span>
+        </button>
+        <div class="sidebar-sub-list">
+          <button type="button" class="sidebar-sub-item" data-category="posters" data-sub="all">ALL POSTERS</button>
+          <button type="button" class="sidebar-sub-item" data-category="posters" data-sub="art-prints">A4 MATTE ART PRINTS</button>
+          <button type="button" class="sidebar-sub-item" data-category="posters" data-sub="celestial">BOTANICAL &amp; CELESTIAL</button>
+          <button type="button" class="sidebar-sub-item" data-category="posters" data-sub="retro">RETRO &amp; VINTAGE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="sidebar-footer">
+      <div class="sidebar-socials">
+        <a href="https://instagram.com/static._.eg" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@static._.eg" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.78 1.53V7.04a4.85 4.85 0 01-1.01-.35z"/></svg>
+        </a>
+        <a href="tel:01005792211" aria-label="Phone or WhatsApp">
+          <i data-lucide="smartphone" class="icon-sm"></i>
+        </a>
+      </div>
+      <p class="sidebar-delivery-tag">✦ Flat 50 EGP Delivery to Alexandria</p>
+    </div>
+  </aside>
 
   <script src="app.js?v=3.3"></script>
 </body>
