@@ -23,6 +23,53 @@ let searchQuery = "";
 let _stockCacheTime = 0;
 const _imgCache = new Map();
 
+function normalizeSubcategory(s) {
+  if (!s) return "";
+  return String(s)
+    .replace(/^["'“”‘’]+|["'“”‘’]+$/g, "") // strip surrounding quotes
+    .trim()
+    .toLowerCase()
+    .replace(/[-_]+/g, " ");
+}
+
+function isSubcategoryMatch(sub1, sub2) {
+  const s1 = normalizeSubcategory(sub1);
+  const s2 = normalizeSubcategory(sub2);
+  if (!s1 || !s2) return false;
+  if (s1 === s2) return true;
+
+  // Exact stem match (handle singular vs plural e.g. quote vs quotes, faculty vs faculties)
+  const stem = s => s.replace(/(ies|es|s)$/, "").replace(/y$/, "");
+  const stem1 = stem(s1);
+  const stem2 = stem(s2);
+  if (stem1 && stem1 === stem2) return true;
+
+  // Common synonym groups
+  const aliasGroups = [
+    ["quotes", "quote", "quote stickers"],
+    ["faculty", "faculties"],
+    ["alexandria", "alexandira", "alex"],
+    ["animals", "animal"],
+    ["cartoon", "cartoons"],
+    ["comic", "comics"],
+    ["sports", "sport"],
+    ["vintage", "retro"],
+    ["gym", "fitness", "workout"],
+    ["coding", "code", "developer", "programming"]
+  ];
+
+  for (const group of aliasGroups) {
+    const normGroup = group.map(normalizeSubcategory);
+    if (normGroup.includes(s1) && normGroup.includes(s2)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+window.normalizeSubcategory = normalizeSubcategory;
+window.isSubcategoryMatch = isSubcategoryMatch;
+
 const SUBCATEGORY_KEYWORDS = {
   alexandria: ["alex", "alexandria", "iskandariya", "sea", "tram", "stanley", "gleem", "citadel", "corniche"],
   animals: ["cat", "dog", "pet", "animal", "bear", "feline", "kitten", "puppy", "fox", "frog", "bunny", "rabbit", "panda", "bird", "lion", "tiger", "fish"],
@@ -31,11 +78,17 @@ const SUBCATEGORY_KEYWORDS = {
   colors: ["color", "rainbow", "pink", "pastel", "blue", "purple", "neon", "gradient", "yellow", "aesthetic"],
   comics: ["comic", "marvel", "dc", "batman", "spiderman", "spider-man", "iron man", "avengers", "joker", "superman", "deadpool", "hero"],
   football: ["football", "soccer", "messi", "ronaldo", "ahly", "zamalek", "salah", "real madrid", "barcelona", "liverpool", "arsenal", "world cup"],
-  sports: ["sport", "gym", "workout", "fitness", "basketball", "tennis", "skate", "skater", "surf"],
+  sports: ["sport", "basketball", "tennis", "skate", "skater", "surf"],
+  gym: ["gym", "fitness", "workout", "lifting", "bodybuilding", "dumbell", "barbell", "pump"],
   faculty: ["faculty", "engineering", "medicine", "pharmacy", "dentistry", "science", "arts", "law", "business", "commerce", "computer", "cs", "ai", "study", "doctor", "engineer"],
-  hobbies: ["hobby", "music", "guitar", "gaming", "game", "reader", "reading", "book", "coffee", "art", "drawing", "photo", "camera", "baking", "plant", "coding", "code"],
+  faculties: ["faculty", "engineering", "medicine", "pharmacy", "dentistry", "science", "arts", "law", "business", "commerce", "computer", "cs", "ai", "study", "doctor", "engineer"],
+  hobbies: ["hobby", "music", "guitar", "gaming", "game", "reader", "reading", "book", "coffee", "drawing", "photo", "camera", "baking", "plant"],
+  coding: ["code", "coding", "developer", "programmer", "python", "javascript", "bug", "terminal", "html", "css", "git"],
   "countries-cities": ["egypt", "cairo", "alexandria", "japan", "tokyo", "paris", "london", "palestine", "usa", "italy", "flag", "city", "country"],
   quotes: ["quote", "text", "typography", "word", "lettering", "arabic", "mood", "funny", "sarcasm", "vibes", "mindset"],
+  originals: ["original", "originals", "exclusive", "signature"],
+  vintage: ["vintage", "retro", "classic", "90s", "80s", "nostalgia", "y2k"],
+  goth: ["goth", "gothic", "dark", "grunge", "skull", "punk", "emo"],
   cozy: ["cozy", "kawaii", "cute", "soft", "warm", "tea", "coffee", "daisy", "flower", "moon", "cloud"],
   cats: ["cat", "feline", "kitten", "meow", "purr", "cat emotions"],
   celestial: ["celestial", "moon", "star", "sun", "space", "galaxy", "astronomy", "planet", "zodiac", "botanical"],
@@ -1158,6 +1211,9 @@ function initShopFilters() {
       filterPills.forEach(p => p.classList.remove("active"));
       pill.classList.add("active");
       activeCategory = (pill.getAttribute("data-category") || "all").toLowerCase().trim();
+      // Clear subcategory filter and chip when switching main category pills
+      activeSubCategory = null;
+      updateSubFilterUI(null);
       renderProducts();
     });
   });
@@ -1272,7 +1328,14 @@ function renderProducts() {
           return badge.includes("new") || badge.includes("drop") || name.includes("new") || desc.includes("new");
         }
         if (activeCategory === "originals" || activeCategory === "original") {
-          return cat.includes("original") || badge.includes("original") || name.includes("original") || desc.includes("original") || desc.includes("art") || desc.includes("exclusive");
+          // If item has explicit variety other than originals, it is NOT originals
+          if (p.subcategory && !isSubcategoryMatch(p.subcategory, "originals")) {
+            return false;
+          }
+          return cat === "originals" || cat === "original" ||
+                 badge === "originals" || badge === "original" ||
+                 isSubcategoryMatch(p.subcategory, "originals") ||
+                 /\boriginals?\b/i.test(name);
         }
         if (activeCategory === "posters") return cat.includes("poster");
         if (activeCategory === "single stickers" || activeCategory === "single") return cat.includes("single");
@@ -1283,15 +1346,15 @@ function renderProducts() {
 
     if (activeSubCategory && activeSubCategory !== "all") {
       const targetSub = activeSubCategory.toLowerCase().trim();
-      const kwList = (typeof SUBCATEGORY_KEYWORDS !== "undefined" && SUBCATEGORY_KEYWORDS[activeSubCategory])
-        ? SUBCATEGORY_KEYWORDS[activeSubCategory]
-        : [targetSub.replace("-", " "), targetSub];
       filtered = filtered.filter(p => {
-        const pSub = String(p.subcategory || "").toLowerCase().trim();
-        if (pSub && (pSub === targetSub || pSub === targetSub.replace("-", " ") || pSub.replace("-", " ") === targetSub.replace("-", " "))) {
-          return true;
+        if (p.subcategory) {
+          return isSubcategoryMatch(p.subcategory, targetSub);
         }
-        const text = (p.name + " " + (p.category || "") + " " + (p.desc || "") + " " + (p.sku || "") + " " + (p.badge || "")).toLowerCase();
+        // Fallback for older items with no variety set
+        const kwList = (typeof SUBCATEGORY_KEYWORDS !== "undefined" && SUBCATEGORY_KEYWORDS[activeSubCategory])
+          ? SUBCATEGORY_KEYWORDS[activeSubCategory]
+          : [targetSub.replace("-", " "), targetSub];
+        const text = (p.name + " " + (p.category || "") + " " + (p.desc || "") + " " + (p.sku || "")).toLowerCase();
         return kwList.some(kw => text.includes(kw));
       });
     }
