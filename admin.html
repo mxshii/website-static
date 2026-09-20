@@ -17,7 +17,7 @@
       box-sizing: border-box;
     }
     html, body {
-      overflow-x: hidden;
+      overflow-x: clip;
       max-width: 100vw;
     }
     .admin-page {
@@ -251,9 +251,14 @@
       flex-wrap: wrap;
     }
 
-    /* Bulk Selection Bar */
+    /* Bulk Selection Bar (Sticky at Top) */
     .admin-selection-bar {
-      background: var(--coffee-100);
+      position: sticky;
+      top: 12px;
+      z-index: 80;
+      background: rgba(246, 241, 232, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1.5px solid var(--coffee-300);
       border-radius: var(--radius-lg);
       padding: 12px 16px;
@@ -263,6 +268,8 @@
       gap: 12px;
       flex-wrap: wrap;
       margin-bottom: 16px;
+      box-shadow: 0 6px 20px rgba(44, 24, 16, 0.12);
+      transition: box-shadow var(--transition), border-color var(--transition);
       animation: fadeIn 0.2s ease;
     }
     @keyframes fadeIn {
@@ -718,6 +725,11 @@
         padding: 10px 12px;
         font-weight: 700;
       }
+      .admin-selection-bar {
+        top: 6px;
+        padding: 10px 12px;
+        gap: 8px;
+      }
       .admin-input-group input,
       .admin-input-group select,
       .admin-input-group textarea,
@@ -928,6 +940,9 @@
           </button>
           <button type="button" class="btn btn-outline" style="font-size:0.75rem;padding:6px 10px;" onclick="deselectAllItems()">
             deselect all
+          </button>
+          <button type="button" class="btn btn-dark" onclick="saveAllItems()" style="padding:7px 14px;font-size:0.82rem;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow-sm);" title="Save and sync all product changes live">
+            <i data-lucide="save" class="icon-xs"></i> save all changes
           </button>
         </div>
       </div>
