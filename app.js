@@ -1306,6 +1306,10 @@ function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
   const ctx = canvasEl.getContext("2d", { alpha: true });
   const optimalUrl = getOptimizedImageUrl(rawUrl, canvasEl.width || 400);
 
+  // Tag canvas with the exact URL it is currently expecting
+  canvasEl.dataset.currentSrc = optimalUrl;
+
+  // 1. If optimal URL is already cached, draw immediately
   if (_imgCache.has(optimalUrl)) {
     const cached = _imgCache.get(optimalUrl);
     if (cached.complete && cached.naturalWidth > 0) {
@@ -1315,11 +1319,29 @@ function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
     }
   }
 
+  // 2. Instant preview: If lower-res thumbnail (e.g. from card grid) is already cached,
+  // paint it immediately so the user sees the right item with zero delay!
+  const previewUrl = getOptimizedImageUrl(rawUrl, 280);
+  if (_imgCache.has(previewUrl)) {
+    const cachedPreview = _imgCache.get(previewUrl);
+    if (cachedPreview.complete && cachedPreview.naturalWidth > 0) {
+      drawToCanvas(ctx, canvasEl, cachedPreview, fit);
+      canvasEl.setAttribute("data-loaded", "true");
+    }
+  } else {
+    // Clear old pixels & remove data-loaded to trigger the skeleton shimmer
+    if (ctx) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+    canvasEl.style.backgroundImage = "";
+    canvasEl.removeAttribute("data-loaded");
+  }
+
   const img = new Image();
   img.crossOrigin = "anonymous";
   img.referrerPolicy = "no-referrer";
 
   img.onload = () => {
+    // Guard against stale async resolution if user clicked another product
+    if (canvasEl.dataset.currentSrc !== optimalUrl) return;
     _imgCache.set(optimalUrl, img);
     drawToCanvas(ctx, canvasEl, img, fit);
     canvasEl.setAttribute("data-loaded", "true");
@@ -1333,12 +1355,14 @@ function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
       fallbackImg.referrerPolicy = "no-referrer";
 
       fallbackImg.onload = () => {
+        if (canvasEl.dataset.currentSrc !== optimalUrl) return;
         _imgCache.set(rawUrl, fallbackImg);
         drawToCanvas(ctx, canvasEl, fallbackImg, fit);
         canvasEl.setAttribute("data-loaded", "true");
       };
 
       fallbackImg.onerror = () => {
+        if (canvasEl.dataset.currentSrc !== optimalUrl) return;
         canvasEl.style.backgroundImage = `url("${rawUrl}")`;
         canvasEl.style.backgroundSize = fit === "contain" ? "contain" : "cover";
         canvasEl.style.backgroundPosition = "center";
@@ -1348,6 +1372,7 @@ function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
 
       fallbackImg.src = rawUrl;
     } else {
+      if (canvasEl.dataset.currentSrc !== optimalUrl) return;
       canvasEl.style.backgroundImage = `url("${rawUrl}")`;
       canvasEl.style.backgroundSize = fit === "contain" ? "contain" : "cover";
       canvasEl.style.backgroundPosition = "center";
@@ -1632,9 +1657,16 @@ function openProductModal(productId) {
   const addBtn = document.getElementById("modal-add-btn");
 
   if (canvasEl) {
+    // Clear any previous product graphic and trigger clean loading skeleton
+    const ctx = canvasEl.getContext("2d", { alpha: true });
+    if (ctx) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+    canvasEl.style.backgroundImage = "";
+    canvasEl.removeAttribute("data-loaded");
     canvasEl.className = "modal-main-canvas " + (p.fit === "cover" ? "fit-cover" : "fit-contain");
     renderProtectedGraphic(canvasEl, p.img, p.fit === "cover" ? "cover" : "contain");
   } else if (imgEl) {
+    imgEl.src = "";
+    imgEl.removeAttribute("data-loaded");
     imgEl.src = p.img;
     imgEl.className = "modal-main-img " + (p.fit === "cover" ? "fit-cover" : "fit-contain");
   }
@@ -1671,6 +1703,21 @@ function closeProductModal() {
   if (modal) modal.classList.remove("open");
   currentProduct = null;
   updateBodyScrollLock();
+
+  // Reset modal canvas and image references so previous product never lingers
+  const canvasEl = document.getElementById("modal-main-canvas");
+  if (canvasEl) {
+    delete canvasEl.dataset.currentSrc;
+    const ctx = canvasEl.getContext("2d", { alpha: true });
+    if (ctx) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+    canvasEl.style.backgroundImage = "";
+    canvasEl.removeAttribute("data-loaded");
+  }
+  const imgEl = document.getElementById("modal-main-img");
+  if (imgEl) {
+    imgEl.src = "";
+    imgEl.removeAttribute("data-loaded");
+  }
 }
 
 // ══════════════════════════════════════════════════════
