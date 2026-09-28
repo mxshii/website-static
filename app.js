@@ -2829,6 +2829,7 @@ async function placeOrder() {
     qty: i.qty || 1,
     price: i.price || 0,
     sku: i.sku || "",
+    stockId: i.stockId || i.id,
   }));
 
   const bundleResult = evaluateCartBundles(cart);
