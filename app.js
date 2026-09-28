@@ -146,6 +146,428 @@ let STORE_OFFERS = [
 let STORE_BANNER = null;
 let appliedPromo = null;
 
+const DEFAULT_STORE_BUNDLES = [
+  {
+    id: "bundle_2",
+    minQty: 2,
+    target: "sticker sheet",
+    discountType: "item_fixed",
+    discountValue: 10,
+    label: "Buy 2 Sheets: 10 EGP OFF",
+    active: true
+  },
+  {
+    id: "bundle_3",
+    minQty: 3,
+    target: "sticker sheet",
+    discountType: "delivery_free",
+    discountValue: 50,
+    label: "Buy 3 Sheets: FREE Delivery",
+    active: true
+  }
+];
+let STORE_BUNDLES = JSON.parse(JSON.stringify(DEFAULT_STORE_BUNDLES));
+
+const DEFAULT_BUNDLE_BOX = {
+  enabled: true,
+  badge: "BUNDLE & SAVE DEALS",
+  title: "Buy 2 or More & Save Instantly",
+  subtitle: "Mix & match your favorite designs — discount or free delivery unlocks automatically in your cart!",
+  footnote: "",
+  showOnShop: true,
+  showOnHome: false,
+  showInModal: true,
+  showInAnnouncementBar: false
+};
+let STORE_BUNDLE_BOX = JSON.parse(JSON.stringify(DEFAULT_BUNDLE_BOX));
+
+// Immediate synchronous hydration from localStorage on script evaluation
+try {
+  const _savedLocal = typeof localStorage !== "undefined" ? localStorage.getItem(PICTURE_DB_KEY) : null;
+  if (_savedLocal) {
+    const _parsed = JSON.parse(_savedLocal);
+    if (_parsed && typeof _parsed === "object") {
+      if (_parsed.bundleBox && typeof _parsed.bundleBox === "object") {
+        STORE_BUNDLE_BOX = Object.assign({}, DEFAULT_BUNDLE_BOX, _parsed.bundleBox);
+      } else if (_parsed.bundlesConfig && typeof _parsed.bundlesConfig === "object") {
+        STORE_BUNDLE_BOX = Object.assign({}, DEFAULT_BUNDLE_BOX, _parsed.bundlesConfig);
+      }
+      if (Array.isArray(_parsed.bundles)) {
+        STORE_BUNDLES = _parsed.bundles;
+      }
+      if (_parsed.banner && typeof _parsed.banner === "object") {
+        STORE_BANNER = _parsed.banner;
+      }
+    }
+  }
+} catch (_) {}
+
+window.STORE_BUNDLE_BOX = STORE_BUNDLE_BOX;
+window.STORE_BUNDLES = STORE_BUNDLES;
+window.DEFAULT_BUNDLE_BOX = DEFAULT_BUNDLE_BOX;
+
+function evaluateCartBundles(cartItems) {
+  if (!Array.isArray(cartItems) || !cartItems.length) {
+    return { appliedBundle: null, itemDiscount: 0, shippingDiscount: 0, nextTierHint: null };
+  }
+
+  const activeBundles = (Array.isArray(STORE_BUNDLES) ? STORE_BUNDLES : DEFAULT_STORE_BUNDLES)
+    .filter(b => b.active !== false && Number(b.minQty) > 0);
+
+  if (!activeBundles.length) {
+    return { appliedBundle: null, itemDiscount: 0, shippingDiscount: 0, nextTierHint: null };
+  }
+
+  const qualifying = [];
+  const potentialNext = [];
+
+  activeBundles.forEach(bundle => {
+    const target = String(bundle.target || "sticker sheet").toLowerCase().trim();
+    const matching = cartItems.filter(item => {
+      const cat = String(item.category || "").toLowerCase().trim();
+      const name = String(item.name || "").toLowerCase().trim();
+      if (target === "all") return true;
+      if (target === "sticker sheet") {
+        return isCategoryMatch(cat, "sticker sheet") || name.includes("sheet");
+      }
+      if (target === "single stickers") {
+        return isCategoryMatch(cat, "single stickers") || name.includes("single");
+      }
+      if (target === "posters") {
+        return isCategoryMatch(cat, "posters") || name.includes("poster");
+      }
+      return isCategoryMatch(cat, target);
+    });
+
+    const matchingQty = matching.reduce((sum, i) => sum + (Number(i.qty) || 1), 0);
+    const matchingSubtotal = matching.reduce((sum, i) => sum + ((Number(i.price) || 0) * (Number(i.qty) || 1)), 0);
+
+    if (matchingQty >= Number(bundle.minQty)) {
+      let itemDiscount = 0;
+      let shippingDiscount = 0;
+
+      if (bundle.discountType === "item_fixed") {
+        itemDiscount = Math.min(matchingSubtotal, Number(bundle.discountValue) || 0);
+      } else if (bundle.discountType === "item_percent") {
+        itemDiscount = Math.round((matchingSubtotal * (Number(bundle.discountValue) || 0)) / 100);
+      } else if (bundle.discountType === "delivery_free") {
+        shippingDiscount = 50; // flat 50 EGP delivery in Alexandria
+      } else if (bundle.discountType === "delivery_fixed") {
+        shippingDiscount = Math.min(50, Number(bundle.discountValue) || 0);
+      }
+
+      qualifying.push({
+        bundle,
+        matchingQty,
+        matchingSubtotal,
+        itemDiscount,
+        shippingDiscount,
+        totalSavings: itemDiscount + shippingDiscount,
+      });
+    } else {
+      const diff = Number(bundle.minQty) - matchingQty;
+      if (diff > 0 && diff <= 3) {
+        potentialNext.push({
+          bundle,
+          matchingQty,
+          diff
+        });
+      }
+    }
+  });
+
+  let best = null;
+  if (qualifying.length > 0) {
+    qualifying.sort((a, b) => {
+      if (b.totalSavings !== a.totalSavings) return b.totalSavings - a.totalSavings;
+      return Number(b.bundle.minQty) - Number(a.bundle.minQty);
+    });
+    best = qualifying[0];
+  }
+
+  let nextTierHint = null;
+  if (potentialNext.length > 0) {
+    potentialNext.sort((a, b) => a.diff - b.diff);
+    const next = potentialNext[0];
+    const targetLabel = next.bundle.target === "sticker sheet" ? (next.diff === 1 ? "sheet" : "sheets") :
+                        next.bundle.target === "posters" ? (next.diff === 1 ? "poster" : "posters") :
+                        (next.diff === 1 ? "sticker" : "stickers");
+    
+    let rewardText = "";
+    if (next.bundle.discountType === "delivery_free") {
+      rewardText = "FREE Alexandria delivery!";
+    } else if (next.bundle.discountType === "delivery_fixed") {
+      rewardText = `${next.bundle.discountValue} EGP off delivery!`;
+    } else if (next.bundle.discountType === "item_fixed") {
+      rewardText = `${next.bundle.discountValue} EGP OFF!`;
+    } else if (next.bundle.discountType === "item_percent") {
+      rewardText = `${next.bundle.discountValue}% OFF!`;
+    }
+
+    nextTierHint = `✦ Add ${next.diff} more ${targetLabel} for ${rewardText}`;
+  }
+
+  return {
+    appliedBundle: best ? best.bundle : null,
+    itemDiscount: best ? best.itemDiscount : 0,
+    shippingDiscount: best ? best.shippingDiscount : 0,
+    nextTierHint
+  };
+}
+window.evaluateCartBundles = evaluateCartBundles;
+window.STORE_BUNDLES = STORE_BUNDLES;
+window.DEFAULT_STORE_BUNDLES = DEFAULT_STORE_BUNDLES;
+
+// ── BUNDLE STOREFRONT SHOWCASE & ELIGIBILITY HELPERS ──
+function getProductBundleEligibility(product) {
+  if (!product) return [];
+  const active = (Array.isArray(STORE_BUNDLES) ? STORE_BUNDLES : DEFAULT_STORE_BUNDLES)
+    .filter(b => b.active !== false && Number(b.minQty) > 0);
+  if (!active.length) return [];
+  const cat = String(product.category || "").toLowerCase().trim();
+  const name = String(product.name || "").toLowerCase().trim();
+  return active.filter(b => {
+    const t = String(b.target || "sticker sheet").toLowerCase().trim();
+    if (t === "all" || t === "all products" || t === "any") return true;
+    if (t === "sticker sheet" || t === "sheet") {
+      return isCategoryMatch(cat, "sticker sheet") || name.includes("sheet");
+    }
+    if (t === "single stickers" || t === "single") {
+      return isCategoryMatch(cat, "single stickers") || name.includes("single");
+    }
+    if (t === "posters" || t === "poster") {
+      return isCategoryMatch(cat, "posters") || name.includes("poster");
+    }
+    return isCategoryMatch(cat, t);
+  });
+}
+window.getProductBundleEligibility = getProductBundleEligibility;
+
+function getBundleRewardText(bundle) {
+  if (!bundle) return "";
+  const type = bundle.discountType || "item_fixed";
+  const val = Number(bundle.discountValue) || 0;
+  if (type === "item_fixed") return `${val} EGP OFF`;
+  if (type === "item_percent") return `${val}% OFF`;
+  if (type === "delivery_free") return `FREE Delivery`;
+  if (type === "delivery_fixed") return `${val} EGP OFF Delivery`;
+  return bundle.label || "Bundle Deal";
+}
+window.getBundleRewardText = getBundleRewardText;
+
+function getBundleTargetLabel(bundle) {
+  const t = String(bundle.target || "sticker sheet").toLowerCase().trim();
+  if (t === "all" || t === "all products") return "all items";
+  if (t === "sticker sheet" || t === "sheet") return "sticker sheets";
+  if (t === "single stickers" || t === "single") return "single stickers";
+  if (t === "posters" || t === "poster") return "posters";
+  return t;
+}
+window.getBundleTargetLabel = getBundleTargetLabel;
+
+function renderBundleDealsBanner() {
+  const heroContainers = document.querySelectorAll(".bundle-deals-hero");
+  if (!heroContainers.length) return;
+
+  const isShopPage = !!document.querySelector(".shop-controls");
+  const isHomePage = document.getElementById("featured") !== null && !isShopPage;
+
+  const boxConfig = (typeof window !== "undefined" && typeof window.STORE_BUNDLE_BOX === "object" && window.STORE_BUNDLE_BOX)
+    ? window.STORE_BUNDLE_BOX
+    : ((typeof STORE_BUNDLE_BOX === "object" && STORE_BUNDLE_BOX) ? STORE_BUNDLE_BOX : DEFAULT_BUNDLE_BOX);
+
+  // Check if banner is disabled globally or on this specific page
+  if (boxConfig.enabled === false) {
+    heroContainers.forEach(el => { el.style.display = "none"; el.innerHTML = ""; });
+    return;
+  }
+  if (isShopPage && boxConfig.showOnShop === false) {
+    heroContainers.forEach(el => { el.style.display = "none"; el.innerHTML = ""; });
+    return;
+  }
+  if (isHomePage && boxConfig.showOnHome === false) {
+    heroContainers.forEach(el => { el.style.display = "none"; el.innerHTML = ""; });
+    return;
+  }
+
+  const active = (Array.isArray(STORE_BUNDLES) ? STORE_BUNDLES : DEFAULT_STORE_BUNDLES)
+    .filter(b => b.active !== false && Number(b.minQty) > 0)
+    .sort((a, b) => Number(a.minQty || 0) - Number(b.minQty || 0));
+
+  if (!active.length) {
+    heroContainers.forEach(el => {
+      el.style.display = "none";
+      el.innerHTML = "";
+    });
+    return;
+  }
+
+  const cardsHtml = active.map(b => {
+    const reward = getBundleRewardText(b);
+    const targetLabel = getBundleTargetLabel(b);
+    const isFreeDeliv = b.discountType === "delivery_free";
+    const highlightClass = isFreeDeliv ? " highlight-free-ship" : "";
+    return `
+      <div class="bundle-hero-card${highlightClass}" onclick="handleBundleHeroClick('${escapeHtml(b.target || 'sticker sheet')}')" role="button" tabindex="0" title="Click to view eligible ${escapeHtml(targetLabel)}">
+        <div class="bundle-hero-qty">BUY ${b.minQty}</div>
+        <div class="bundle-hero-card-info">
+          <div class="bundle-hero-card-reward">${escapeHtml(reward)}</div>
+          <div class="bundle-hero-card-target">on ${escapeHtml(targetLabel)}</div>
+        </div>
+        <div class="bundle-hero-card-action">
+          <span>Shop <i data-lucide="arrow-right" class="icon-xs"></i></span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const badgeText = boxConfig.badge || "BUNDLE & SAVE DEALS";
+  const titleText = boxConfig.title || "Buy 2 or More & Save Instantly";
+  const subtitleText = boxConfig.subtitle !== undefined ? boxConfig.subtitle : "Mix & match your favorite designs — discount or free delivery unlocks automatically in your cart!";
+  const footnoteText = (boxConfig.footnote || "").trim();
+
+  const footnoteHtml = footnoteText ? `
+    <div class="bundle-hero-footnote">
+      <i data-lucide="info" class="icon-xs"></i>
+      <span>${escapeHtml(footnoteText)}</span>
+    </div>
+  ` : "";
+
+  heroContainers.forEach(container => {
+    container.innerHTML = `
+      <div class="bundle-deals-hero-inner">
+        <div class="bundle-deals-hero-header">
+          <span class="bundle-hero-badge">
+            <i data-lucide="gift" class="icon-xs"></i>
+            ${escapeHtml(badgeText)}
+          </span>
+          <h3 class="bundle-hero-title">${escapeHtml(titleText)}</h3>
+          ${subtitleText ? `<p class="bundle-hero-subtitle">${escapeHtml(subtitleText)}</p>` : ''}
+        </div>
+        <div class="bundle-hero-cards">${cardsHtml}</div>
+        ${footnoteHtml}
+      </div>
+    `;
+    container.style.display = "block";
+  });
+
+  renderIcons();
+}
+window.renderBundleDealsBanner = renderBundleDealsBanner;
+
+function handleBundleHeroClick(targetCategory) {
+  const isShopPage = !!document.querySelector(".shop-controls");
+  const target = (targetCategory || "sticker sheet").toLowerCase().trim();
+
+  if (!isShopPage) {
+    window.location.href = `shop.html?category=${encodeURIComponent(target === "all" ? "all" : target)}`;
+    return;
+  }
+
+  const pills = document.querySelectorAll(".filter-pill");
+  let found = false;
+  pills.forEach(pill => {
+    const cat = (pill.getAttribute("data-category") || "").toLowerCase().trim();
+    if (cat === target || (target === "all" && cat === "all") || (target === "sticker sheet" && (cat === "sticker sheet" || cat === "sticker sheets"))) {
+      pill.click();
+      found = true;
+    }
+  });
+
+  if (!found) {
+    activeCategory = target;
+    renderProducts();
+  }
+
+  const grid = document.getElementById("products-grid");
+  if (grid) grid.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+window.handleBundleHeroClick = handleBundleHeroClick;
+
+function updateModalBundleBox(product, qty = 1) {
+  const box = document.getElementById("modal-bundle-box");
+  if (!box) return;
+
+  const boxConfig = (typeof window !== "undefined" && typeof window.STORE_BUNDLE_BOX === "object" && window.STORE_BUNDLE_BOX)
+    ? window.STORE_BUNDLE_BOX
+    : ((typeof STORE_BUNDLE_BOX === "object" && STORE_BUNDLE_BOX) ? STORE_BUNDLE_BOX : DEFAULT_BUNDLE_BOX);
+  if (boxConfig.showInModal === false) {
+    box.style.display = "none";
+    box.innerHTML = "";
+    return;
+  }
+
+  const eligible = getProductBundleEligibility(product);
+  if (!eligible.length) {
+    box.style.display = "none";
+    box.innerHTML = "";
+    return;
+  }
+
+  const sorted = [...eligible].sort((a, b) => Number(a.minQty || 0) - Number(b.minQty || 0));
+  const currentQty = Math.max(1, parseInt(qty, 10) || 1);
+
+  let unlockedTier = null;
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    if (currentQty >= Number(sorted[i].minQty || 0)) {
+      unlockedTier = sorted[i];
+      break;
+    }
+  }
+
+  let nextTier = null;
+  for (let i = 0; i < sorted.length; i++) {
+    if (currentQty < Number(sorted[i].minQty || 0)) {
+      nextTier = sorted[i];
+      break;
+    }
+  }
+
+  const itemsHtml = sorted.map(b => {
+    const isUnlocked = currentQty >= Number(b.minQty || 0);
+    const reward = getBundleRewardText(b);
+    return `
+      <div class="modal-bundle-item ${isUnlocked ? 'active-deal' : ''}">
+        <div class="modal-bundle-item-left">
+          <span class="modal-bundle-item-qty">BUY ${b.minQty}</span>
+          <span>${escapeHtml(b.label || reward)}</span>
+        </div>
+        <span class="modal-bundle-item-reward">${escapeHtml(reward)}</span>
+      </div>
+    `;
+  }).join("");
+
+  let trackerHtml = "";
+  if (unlockedTier) {
+    const unlockedReward = getBundleRewardText(unlockedTier);
+    if (nextTier) {
+      const needed = Number(nextTier.minQty) - currentQty;
+      const nextReward = getBundleRewardText(nextTier);
+      trackerHtml = `<div class="modal-bundle-tracker unlocked"><i data-lucide="check-circle-2" class="icon-xs"></i> <span><strong>${unlockedReward} unlocked!</strong> Add ${needed} more for <strong>${nextReward}</strong>!</span></div>`;
+    } else {
+      trackerHtml = `<div class="modal-bundle-tracker unlocked"><i data-lucide="check-circle-2" class="icon-xs"></i> <span><strong>🎉 Maximum deal unlocked: ${unlockedReward}!</strong></span></div>`;
+    }
+  } else if (nextTier) {
+    const needed = Number(nextTier.minQty) - currentQty;
+    const nextReward = getBundleRewardText(nextTier);
+    trackerHtml = `<div class="modal-bundle-tracker"><i data-lucide="sparkles" class="icon-xs"></i> <span>Add <strong>${needed} more</strong> to unlock <strong>${nextReward}</strong>!</span></div>`;
+  }
+
+  const headerBadge = (typeof STORE_BUNDLE_BOX === "object" && STORE_BUNDLE_BOX && STORE_BUNDLE_BOX.badge) ? STORE_BUNDLE_BOX.badge : "Bundle & Save Deals";
+
+  box.innerHTML = `
+    <div class="modal-bundle-header">
+      <i data-lucide="gift" class="icon-xs"></i>
+      <span>${escapeHtml(headerBadge)}</span>
+    </div>
+    <div class="modal-bundle-list">${itemsHtml}</div>
+    ${trackerHtml}
+  `;
+  box.style.display = "flex";
+  renderIcons();
+}
+window.updateModalBundleBox = updateModalBundleBox;
+
 window.filterByStock = function(stockVal) {
   activeStockFilter = stockVal;
   document.querySelectorAll(".stock-pill").forEach(p => {
@@ -244,10 +666,28 @@ function initApp() {
   try { initSidebarDrawer(); } catch (e) { console.warn("initSidebarDrawer error:", e); }
   try { checkUrlQueryParamsForFilters(); } catch (e) { console.warn("checkUrlQueryParamsForFilters error:", e); }
 
+  // Synchronously ensure STORE_BUNDLE_BOX & STORE_BUNDLES are up to date from localStorage before any initial render
+  const cached = getStorefrontPictureMap();
+  if (cached && typeof cached === "object") {
+    if (cached.bundleBox && typeof cached.bundleBox === "object") {
+      STORE_BUNDLE_BOX = Object.assign({}, DEFAULT_BUNDLE_BOX, cached.bundleBox);
+      window.STORE_BUNDLE_BOX = STORE_BUNDLE_BOX;
+    } else if (cached.bundlesConfig && typeof cached.bundlesConfig === "object") {
+      STORE_BUNDLE_BOX = Object.assign({}, DEFAULT_BUNDLE_BOX, cached.bundlesConfig);
+      window.STORE_BUNDLE_BOX = STORE_BUNDLE_BOX;
+    }
+    if (Array.isArray(cached.bundles)) {
+      STORE_BUNDLES = cached.bundles;
+      window.STORE_BUNDLES = STORE_BUNDLES;
+    }
+    if (cached.banner) {
+      STORE_BANNER = cached.banner;
+    }
+  }
+
   // Load products immediately if grid is present
   if (document.getElementById("products-grid")) {
     if (!PRODUCTS || PRODUCTS.length === 0) {
-      const cached = getStorefrontPictureMap();
       if (cached && Array.isArray(cached.items) && cached.items.length > 0) {
         PRODUCTS = cached.items;
       } else {
@@ -259,6 +699,8 @@ function initApp() {
   }
 
   try { highlightActiveNavLink(); } catch (_) {}
+  try { renderBundleDealsBanner(); } catch (_) {}
+  try { updateAnnouncementBanner(STORE_BANNER); } catch (_) {}
   renderIcons();
 }
 
@@ -1018,26 +1460,80 @@ function escapeHtml(str) {
 }
 
 function updateAnnouncementBanner(bannerObj) {
-  if (!bannerObj) return;
   const marqueeInner = document.querySelector(".announcement-inner");
   const marqueeBar = document.querySelector(".announcement-bar");
   if (!marqueeInner || !marqueeBar) return;
 
-  if (bannerObj.active === false) {
+  if (bannerObj && bannerObj.active === false) {
     marqueeBar.style.display = "none";
-  } else {
-    marqueeBar.style.display = "block";
-    if (bannerObj.text) {
-      const escaped = escapeHtml(bannerObj.text);
-      marqueeInner.innerHTML = `
-        <span>${escaped}</span>
-        <span class="sep">✦</span>
-        <span>${escaped}</span>
-        <span class="sep">✦</span>
-        <span>${escaped}</span>
-        <span class="sep">✦</span>
-      `;
+    return;
+  }
+  marqueeBar.style.display = "";
+
+  const boxConfig = (typeof window !== "undefined" && typeof window.STORE_BUNDLE_BOX === "object" && window.STORE_BUNDLE_BOX)
+    ? window.STORE_BUNDLE_BOX
+    : ((typeof STORE_BUNDLE_BOX === "object" && STORE_BUNDLE_BOX) ? STORE_BUNDLE_BOX : DEFAULT_BUNDLE_BOX);
+
+  const showDeals = (bannerObj && bannerObj.includeDeals === true) || (boxConfig && boxConfig.showInAnnouncementBar === true);
+
+  let dealSnippet = "";
+  if (showDeals) {
+    const active = (Array.isArray(STORE_BUNDLES) ? STORE_BUNDLES : DEFAULT_STORE_BUNDLES)
+      .filter(b => b.active !== false && Number(b.minQty) > 0)
+      .sort((a, b) => Number(a.minQty) - Number(b.minQty));
+
+    if (active.length > 0) {
+      const dealParts = active.map(b => `BUY ${b.minQty}: ${getBundleRewardText(b)}`).join(" · ");
+      dealSnippet = `🎁 BUNDLE DEALS: ${dealParts.toUpperCase()}`;
     }
+  }
+
+  const baseText = (bannerObj && bannerObj.text && bannerObj.text.trim()) ? bannerObj.text.trim() : null;
+
+  // Build the list of items for one repeating announcement unit
+  const unitItems = [];
+  if (baseText) {
+    unitItems.push(`<span>${escapeHtml(baseText)}</span>`);
+    if (dealSnippet) {
+      unitItems.push(`<span class="marquee-deal-highlight" title="Click to view bundle deals">${escapeHtml(dealSnippet)}</span>`);
+    }
+    unitItems.push(`<span>✦ delivery to alexandria only (50 EGP)</span>`);
+    unitItems.push(`<span>waterproof vinyl stickers</span>`);
+    unitItems.push(`<span>made with love in egypt</span>`);
+  } else if (dealSnippet) {
+    unitItems.push(`<span>✦ delivery to alexandria only (50 EGP)</span>`);
+    unitItems.push(`<span class="marquee-deal-highlight" title="Click to view bundle deals">${escapeHtml(dealSnippet)}</span>`);
+    unitItems.push(`<span>made with love in egypt</span>`);
+    unitItems.push(`<span>waterproof vinyl stickers</span>`);
+    unitItems.push(`<span>die-cut glossy &amp; matte stickers</span>`);
+  } else {
+    unitItems.push(`<span>✦ delivery to alexandria only (50 EGP)</span>`);
+    unitItems.push(`<span>made with love in egypt</span>`);
+    unitItems.push(`<span>waterproof vinyl stickers</span>`);
+    unitItems.push(`<span>die-cut glossy &amp; matte stickers</span>`);
+  }
+
+  const sep = `<span class="sep">·</span>`;
+  const oneUnit = unitItems.map(item => `${item}${sep}`).join("");
+
+  // Repeat the unit 4 times in Half 1, and 4 times in Half 2.
+  // Each half is ~4,000px+ wide, completely filling any desktop or ultrawide screen
+  // with zero empty gaps, and looping seamlessly at -50% translateX.
+  const halfContent = oneUnit.repeat(4);
+  marqueeInner.innerHTML = halfContent + halfContent;
+
+  // Smooth scroll to bundle deals if clicking the deal pill
+  if (!marqueeBar._hasDealClickListener) {
+    marqueeBar._hasDealClickListener = true;
+    marqueeBar.addEventListener("click", (e) => {
+      const dealEl = e.target.closest(".marquee-deal-highlight");
+      if (dealEl) {
+        const hero = document.getElementById("bundle-deals-hero") || document.querySelector(".bundle-deals-hero");
+        if (hero) {
+          hero.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+    });
   }
 }
 
@@ -1072,6 +1568,17 @@ async function loadProducts(forceRefresh = false) {
     if (stockRes && stockRes.ok) {
       try {
         stock = await stockRes.json();
+        if (Array.isArray(stock) && stock.length > 0) {
+          try { localStorage.setItem("static_expense_stock_cache", JSON.stringify(stock)); } catch (_) {}
+        }
+      } catch (_) {}
+    } else {
+      try {
+        const cached = localStorage.getItem("static_expense_stock_cache");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) stock = parsed;
+        }
       } catch (_) {}
     }
     _stockCacheTime = Date.now();
@@ -1081,10 +1588,22 @@ async function loadProducts(forceRefresh = false) {
     if (safeMap.offers && Array.isArray(safeMap.offers)) {
       STORE_OFFERS = safeMap.offers;
     }
+    if (safeMap.bundles && Array.isArray(safeMap.bundles)) {
+      STORE_BUNDLES = safeMap.bundles;
+      window.STORE_BUNDLES = STORE_BUNDLES;
+    }
+    if (safeMap.bundleBox && typeof safeMap.bundleBox === "object") {
+      STORE_BUNDLE_BOX = Object.assign({}, DEFAULT_BUNDLE_BOX, safeMap.bundleBox);
+      window.STORE_BUNDLE_BOX = STORE_BUNDLE_BOX;
+    } else if (safeMap.bundlesConfig && typeof safeMap.bundlesConfig === "object") {
+      STORE_BUNDLE_BOX = Object.assign({}, DEFAULT_BUNDLE_BOX, safeMap.bundlesConfig);
+      window.STORE_BUNDLE_BOX = STORE_BUNDLE_BOX;
+    }
+    renderBundleDealsBanner();
     if (safeMap.banner) {
       STORE_BANNER = safeMap.banner;
-      updateAnnouncementBanner(STORE_BANNER);
     }
+    updateAnnouncementBanner(STORE_BANNER);
     if (safeMap.categories && typeof safeMap.categories === "object" && Object.keys(safeMap.categories).length > 0) {
       STORE_CATEGORIES = {
         "single stickers": safeMap.categories["single stickers"] || DEFAULT_STORE_CATEGORIES["single stickers"],
@@ -1259,7 +1778,7 @@ function drawToCanvas(ctx, canvasEl, img, fit) {
   }
 }
 
-function getOptimizedImageUrl(rawUrl, targetWidth = 400) {
+function getOptimizedImageUrl(rawUrl, targetWidth = 360) {
   if (!rawUrl || typeof rawUrl !== "string") return rawUrl;
   let u = rawUrl.trim();
 
@@ -1271,8 +1790,8 @@ function getOptimizedImageUrl(rawUrl, targetWidth = 400) {
   if (u.startsWith("//")) u = "https:" + u;
 
   if (u.startsWith("http://") || u.startsWith("https://")) {
-    // If already routed through wsrv.nl, return as is
-    if (u.includes("wsrv.nl/?url=")) return u;
+    // If already routed through wsrv.nl or weserv, return as is
+    if (u.includes("wsrv.nl/?url=") || u.includes("images.weserv.nl/?url=")) return u;
 
     // If ImageKit URL without transformations, apply auto WebP/AVIF format & width
     if (u.includes("ik.imagekit.io") && !u.includes("/tr:")) {
@@ -1291,11 +1810,16 @@ function getOptimizedImageUrl(rawUrl, targetWidth = 400) {
     }
 
     // For ImgBB (i.ibb.co) and any external images:
-    // Route through Cloudflare edge optimizer (wsrv.nl).
-    // Automatically downscales to targetWidth, converts to high-compression WebP (~20KB),
-    // and caches at Cloudflare edge with Access-Control-Allow-Origin: * for zero-lag canvas rendering!
+    // Route through Cloudflare edge optimizer (wsrv.nl / images.weserv.nl).
+    // Domain sharding alternates between wsrv.nl and images.weserv.nl for 12 parallel browser connections!
     const cleanUrl = u.replace(/\s+/g, "");
-    return `https://wsrv.nl/?url=${encodeURIComponent(cleanUrl)}&w=${targetWidth}&q=82&output=webp`;
+    let hash = 0;
+    for (let i = 0; i < cleanUrl.length; i++) hash = (hash + cleanUrl.charCodeAt(i)) & 0xff;
+    const cdnHost = hash % 2 === 0 ? "https://wsrv.nl" : "https://images.weserv.nl";
+
+    // Standardize unified target width of 360 for high cache-hit reuse
+    const width = targetWidth || 360;
+    return `${cdnHost}/?url=${encodeURIComponent(cleanUrl)}&w=${width}&q=80&output=webp`;
   }
 
   return u;
@@ -1304,12 +1828,13 @@ function getOptimizedImageUrl(rawUrl, targetWidth = 400) {
 function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
   if (!canvasEl || !rawUrl) return;
   const ctx = canvasEl.getContext("2d", { alpha: true });
-  const optimalUrl = getOptimizedImageUrl(rawUrl, canvasEl.width || 400);
+  // Standardize unified 360px resolution so card grids, modals, and previews share the exact same cached asset!
+  const optimalUrl = getOptimizedImageUrl(rawUrl, 360);
 
   // Tag canvas with the exact URL it is currently expecting
   canvasEl.dataset.currentSrc = optimalUrl;
 
-  // 1. If optimal URL is already cached, draw immediately
+  // 1. If optimal URL is already cached in memory, draw immediately!
   if (_imgCache.has(optimalUrl)) {
     const cached = _imgCache.get(optimalUrl);
     if (cached.complete && cached.naturalWidth > 0) {
@@ -1319,25 +1844,15 @@ function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
     }
   }
 
-  // 2. Instant preview: If lower-res thumbnail (e.g. from card grid) is already cached,
-  // paint it immediately so the user sees the right item with zero delay!
-  const previewUrl = getOptimizedImageUrl(rawUrl, 280);
-  if (_imgCache.has(previewUrl)) {
-    const cachedPreview = _imgCache.get(previewUrl);
-    if (cachedPreview.complete && cachedPreview.naturalWidth > 0) {
-      drawToCanvas(ctx, canvasEl, cachedPreview, fit);
-      canvasEl.setAttribute("data-loaded", "true");
-    }
-  } else {
-    // Clear old pixels & remove data-loaded to trigger the skeleton shimmer
-    if (ctx) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-    canvasEl.style.backgroundImage = "";
-    canvasEl.removeAttribute("data-loaded");
-  }
+  // Clear old pixels & remove data-loaded to trigger skeleton shimmer
+  if (ctx) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+  canvasEl.style.backgroundImage = "";
+  canvasEl.removeAttribute("data-loaded");
 
   const img = new Image();
   img.crossOrigin = "anonymous";
   img.referrerPolicy = "no-referrer";
+  img.decoding = "async";
 
   img.onload = () => {
     // Guard against stale async resolution if user clicked another product
@@ -1353,6 +1868,7 @@ function renderProtectedGraphic(canvasEl, rawUrl, fit = "contain") {
       const fallbackImg = new Image();
       fallbackImg.crossOrigin = "anonymous";
       fallbackImg.referrerPolicy = "no-referrer";
+      fallbackImg.decoding = "async";
 
       fallbackImg.onload = () => {
         if (canvasEl.dataset.currentSrc !== optimalUrl) return;
@@ -1429,7 +1945,8 @@ function renderProducts() {
 
         if (activeCategory === "offers" || activeCategory === "sale" || activeCategory === "deals") {
           return (p.originalPrice && Number(p.originalPrice) > Number(p.price)) ||
-                 badge.includes("off") || badge.includes("sale") || badge.includes("offer") || badge.includes("buy") || cat.includes("offer");
+                 badge.includes("off") || badge.includes("sale") || badge.includes("offer") || badge.includes("buy") || cat.includes("offer") ||
+                 getProductBundleEligibility(p).length > 0;
         }
         if (activeCategory === "new drops" || activeCategory === "new") {
           return badge.includes("new") || badge.includes("drop") || name.includes("new") || desc.includes("new");
@@ -1498,10 +2015,13 @@ function renderProducts() {
     return;
   }
 
-  filtered.forEach(p => {
+  filtered.forEach((p, idx) => {
     try {
       if (!p) return;
       const isSoldOut = p.outOfStock || p.qty <= 0 || String(p.badge || "").toLowerCase().trim() === "sold out";
+      const eligibleBundles = getProductBundleEligibility(p);
+      const hasBundles = !isSoldOut && eligibleBundles.length > 0;
+
       const card = document.createElement("div");
       card.className = "product-card" + (isSoldOut ? " sold-out" : "");
       card.setAttribute("data-id", p.id);
@@ -1522,14 +2042,31 @@ function renderProducts() {
       const badgeClass = isSoldOut ? "badge-sold" : isOfferBadge ? "badge-offer" : isOriginalsBadge ? "badge-originals" : "";
       const badgeText = isSoldOut ? "sold out" : (isOriginalsBadge ? "ORIGINALS" : (p.badge || ""));
 
+      let bundlePillHtml = "";
+      if (hasBundles) {
+        const minTier = eligibleBundles.reduce((min, b) => Math.min(min, Number(b.minQty || 2)), 99);
+        bundlePillHtml = `
+          <div class="card-bundle-deal-pill" title="${eligibleBundles.map(b => b.label).join(' • ')}">
+            <i data-lucide="gift" class="icon-xs"></i>
+            <span>Buy ${minTier}+ &amp; Save</span>
+          </div>
+        `;
+      }
+
+      const bundleTagOverlay = (hasBundles && !badgeText)
+        ? `<span class="card-bundle-tag-overlay"><i data-lucide="gift" class="icon-xs"></i> Deal</span>`
+        : "";
+
       card.innerHTML = `
         <div class="card-img-wrap ${fitClass}">
           <canvas class="card-canvas" width="280" height="280" role="img" aria-label="${escapeHtml(p.name || 'item')}"></canvas>
           ${badgeText ? `<span class="card-badge ${badgeClass}">${escapeHtml(badgeText)}</span>` : ""}
+          ${bundleTagOverlay}
         </div>
         <div class="card-body">
           <div class="card-name">${escapeHtml(p.name || 'Sticker Item')}</div>
           <div class="card-pieces">${!isSoldOut && p.qty > 0 ? `${p.qty} in stock` : "out of stock"}</div>
+          ${bundlePillHtml}
           <div class="card-bottom">
             ${priceDisplay}
             <button type="button" class="card-add-btn ${isSoldOut ? "disabled" : ""}" aria-label="Quick add ${escapeHtml(p.name || 'item')}" data-id="${p.id}" ${isSoldOut ? "disabled" : ""}>
@@ -1541,13 +2078,18 @@ function renderProducts() {
 
       const canvas = card.querySelector(".card-canvas");
       if (canvas && p.img) {
-        const obs = getCardObserver();
-        if (obs) {
-          canvas.setAttribute("data-src", p.img);
-          canvas.setAttribute("data-fit", isCover ? "cover" : "contain");
-          obs.observe(canvas);
-        } else {
+        if (idx < 6) {
+          // Priority loading for above-the-fold cards
           renderProtectedGraphic(canvas, p.img, isCover ? "cover" : "contain");
+        } else {
+          const obs = getCardObserver();
+          if (obs) {
+            canvas.setAttribute("data-src", p.img);
+            canvas.setAttribute("data-fit", isCover ? "cover" : "contain");
+            obs.observe(canvas);
+          } else {
+            renderProtectedGraphic(canvas, p.img, isCover ? "cover" : "contain");
+          }
         }
       }
 
@@ -1601,6 +2143,7 @@ function initProductModal() {
       const current = parseInt(qtyInput.value, 10) || 1;
       const next = Math.max(1, current - 1);
       qtyInput.value = next;
+      if (currentProduct) updateModalBundleBox(currentProduct, next);
     });
   }
 
@@ -1611,6 +2154,7 @@ function initProductModal() {
       const maxLimit = (currentProduct && currentProduct.qty > 0) ? currentProduct.qty : 99;
       const next = Math.min(maxLimit, current + 1);
       qtyInput.value = next;
+      if (currentProduct) updateModalBundleBox(currentProduct, next);
     });
   }
 
@@ -1657,11 +2201,6 @@ function openProductModal(productId) {
   const addBtn = document.getElementById("modal-add-btn");
 
   if (canvasEl) {
-    // Clear any previous product graphic and trigger clean loading skeleton
-    const ctx = canvasEl.getContext("2d", { alpha: true });
-    if (ctx) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-    canvasEl.style.backgroundImage = "";
-    canvasEl.removeAttribute("data-loaded");
     canvasEl.className = "modal-main-canvas " + (p.fit === "cover" ? "fit-cover" : "fit-contain");
     renderProtectedGraphic(canvasEl, p.img, p.fit === "cover" ? "cover" : "contain");
   } else if (imgEl) {
@@ -1684,6 +2223,7 @@ function openProductModal(productId) {
 
   if (piecesEl) piecesEl.textContent = !isOutOfStock && p.qty > 0 ? `${p.qty} in stock · ${p.category}` : "Out of stock";
   if (qtyInput) qtyInput.value = 1;
+  updateModalBundleBox(p, 1);
 
   if (addBtn) {
     addBtn.disabled = isOutOfStock;
@@ -1703,6 +2243,9 @@ function closeProductModal() {
   if (modal) modal.classList.remove("open");
   currentProduct = null;
   updateBodyScrollLock();
+
+  const box = document.getElementById("modal-bundle-box");
+  if (box) { box.style.display = "none"; box.innerHTML = ""; }
 
   // Reset modal canvas and image references so previous product never lingers
   const canvasEl = document.getElementById("modal-main-canvas");
@@ -1876,14 +2419,19 @@ function updateCartUI() {
   const footerEl = document.getElementById("cart-footer");
   const cartItemsContainer = document.getElementById("cart-items");
 
-  if (!listEl && cartItemsContainer) {
-    listEl = document.createElement("div");
-    listEl.className = "cart-list";
-    listEl.id = "cart-list";
-    cartItemsContainer.appendChild(listEl);
+  let bundleBanner = document.getElementById("cart-bundle-banner");
+  if (!bundleBanner && cartItemsContainer) {
+    bundleBanner = document.createElement("div");
+    bundleBanner.id = "cart-bundle-banner";
+    bundleBanner.className = "cart-bundle-banner";
+    cartItemsContainer.insertBefore(bundleBanner, listEl || cartItemsContainer.firstChild);
   }
 
   if (cart.length === 0) {
+    if (bundleBanner) {
+      bundleBanner.style.display = "none";
+      bundleBanner.innerHTML = "";
+    }
     if (emptyEl) emptyEl.classList.remove("hidden");
     if (listEl) listEl.innerHTML = "";
     if (footerEl) footerEl.style.display = "none";
@@ -1891,8 +2439,44 @@ function updateCartUI() {
     return;
   }
 
+  const bundleResult = evaluateCartBundles(cart);
+
+  if (bundleBanner) {
+    if (bundleResult.appliedBundle) {
+      bundleBanner.style.display = "block";
+      bundleBanner.innerHTML = `
+        <div class="cart-bundle-pill applied">
+          <i data-lucide="package-check" class="icon-xs"></i>
+          <div class="bundle-pill-text">
+            <strong>Bundle Deal Applied!</strong>
+            <span>${escapeHtml(bundleResult.appliedBundle.label)}</span>
+          </div>
+        </div>
+        ${bundleResult.nextTierHint ? `<div class="cart-bundle-hint"><i data-lucide="sparkles" class="icon-xs"></i> ${escapeHtml(bundleResult.nextTierHint)}</div>` : ''}
+      `;
+    } else if (bundleResult.nextTierHint) {
+      bundleBanner.style.display = "block";
+      bundleBanner.innerHTML = `
+        <div class="cart-bundle-pill incentive">
+          <i data-lucide="sparkles" class="icon-xs"></i>
+          <span>${escapeHtml(bundleResult.nextTierHint)}</span>
+        </div>
+      `;
+    } else {
+      bundleBanner.style.display = "none";
+      bundleBanner.innerHTML = "";
+    }
+  }
+
   if (emptyEl) emptyEl.classList.add("hidden");
   if (footerEl) footerEl.style.display = "block";
+
+  if (!listEl && cartItemsContainer) {
+    listEl = document.createElement("div");
+    listEl.className = "cart-list";
+    listEl.id = "cart-list";
+    cartItemsContainer.appendChild(listEl);
+  }
 
   if (listEl) {
     listEl.innerHTML = cart.map(item => {
@@ -1922,10 +2506,27 @@ function updateCartUI() {
     }).join("");
   }
 
-  const subtotal = cart.reduce((s, i) => s + ((Number(i.price) || 0) * (i.qty || 1)), 0);
+  const rawSubtotal = cart.reduce((s, i) => s + ((Number(i.price) || 0) * (i.qty || 1)), 0);
+  const subtotalAfterBundle = Math.max(0, rawSubtotal - bundleResult.itemDiscount);
   const subtotalEl = document.getElementById("cart-subtotal");
   if (subtotalEl) {
-    subtotalEl.textContent = subtotal > 0 ? subtotal + " EGP" : "0 EGP";
+    if (bundleResult.itemDiscount > 0) {
+      subtotalEl.innerHTML = `${subtotalAfterBundle} EGP <span class="cart-raw-subtotal">${rawSubtotal} EGP</span>`;
+    } else {
+      subtotalEl.textContent = rawSubtotal > 0 ? rawSubtotal + " EGP" : "0 EGP";
+    }
+  }
+
+  // Live delivery note in cart footer
+  const cartNote = footerEl ? footerEl.querySelector(".cart-note") : null;
+  if (cartNote) {
+    if (bundleResult.shippingDiscount >= 50) {
+      cartNote.innerHTML = `<i data-lucide="truck" class="icon-xs"></i> <strong style="color:#27ae60;">FREE Alexandria Delivery</strong> (Bundle unlocked!)`;
+    } else if (bundleResult.shippingDiscount > 0) {
+      cartNote.innerHTML = `<i data-lucide="truck" class="icon-xs"></i> <strong style="color:#27ae60;">${50 - bundleResult.shippingDiscount} EGP</strong> delivery (${bundleResult.shippingDiscount} EGP off via Bundle!)`;
+    } else {
+      cartNote.innerHTML = `<i data-lucide="info" class="icon-xs"></i> 50 EGP flat delivery in Alexandria`;
+    }
   }
 
   renderIcons();
@@ -2135,24 +2736,27 @@ function populateReview() {
     `).join("");
   }
 
+  const bundleResult = evaluateCartBundles(cart);
   const subtotal = cart.reduce((s, i) => s + (Number(i.price) || 0) * (i.qty || 1), 0);
   const baseShipping = 50; // Flat 50 EGP to Alexandria
-  let shippingFee = baseShipping;
-  let discountAmount = 0;
+  
+  let shippingFee = Math.max(0, baseShipping - (bundleResult ? bundleResult.shippingDiscount : 0));
+  let bundleItemDiscount = bundleResult ? bundleResult.itemDiscount : 0;
+  let promoDiscount = 0;
 
   if (appliedPromo) {
+    const subtotalForPromo = Math.max(0, subtotal - bundleItemDiscount);
     if (appliedPromo.type === "percentage") {
-      discountAmount = Math.round((subtotal * appliedPromo.value) / 100);
+      promoDiscount = Math.round((subtotalForPromo * appliedPromo.value) / 100);
     } else if (appliedPromo.type === "fixed") {
-      discountAmount = appliedPromo.value;
+      promoDiscount = appliedPromo.value;
     } else if (appliedPromo.type === "freeship") {
-      discountAmount = 50;
       shippingFee = 0;
     }
-    appliedPromo.discountAmount = discountAmount;
+    appliedPromo.discountAmount = promoDiscount;
   }
 
-  const total = Math.max(0, subtotal + (appliedPromo?.type === "freeship" ? 0 : shippingFee) - (appliedPromo?.type === "freeship" ? 0 : discountAmount));
+  const total = Math.max(0, subtotal - bundleItemDiscount - promoDiscount + shippingFee);
   
   let methodLabel = "Cash on Delivery (COD)";
   if (currentPaymentMethod === "vodafone") methodLabel = "Vodafone Cash";
@@ -2161,6 +2765,16 @@ function populateReview() {
 
   const totalsEl = document.getElementById("review-totals");
   if (totalsEl) {
+    let shippingDisplay = `${shippingFee} EGP`;
+    if (shippingFee === 0) {
+      const freeReason = bundleResult && bundleResult.shippingDiscount >= 50
+        ? `FREE (${bundleResult.appliedBundle.label})`
+        : 'FREE';
+      shippingDisplay = `<strong style="color:#27ae60;">${escapeHtml(freeReason)}</strong>`;
+    } else if (bundleResult && bundleResult.shippingDiscount > 0) {
+      shippingDisplay = `<span>${shippingFee} EGP <small style="color:#27ae60;">(-${bundleResult.shippingDiscount} EGP bundle)</small></span>`;
+    }
+
     totalsEl.innerHTML = `
       <!-- Promo Code Input Box -->
       <div class="promo-box">
@@ -2171,16 +2785,19 @@ function populateReview() {
       </div>
       ${appliedPromo ? `
         <div class="promo-feedback success">
-          <span><i data-lucide="tag" class="icon-xs" style="vertical-align:middle;margin-right:4px;"></i> <strong>${appliedPromo.code}</strong>: -${discountAmount} EGP (${appliedPromo.desc || ''})</span>
+          <span><i data-lucide="tag" class="icon-xs" style="vertical-align:middle;margin-right:4px;"></i> <strong>${appliedPromo.code}</strong>: -${promoDiscount} EGP (${appliedPromo.desc || ''})</span>
           <button type="button" class="promo-remove-btn" onclick="removePromoCode()">remove</button>
         </div>
       ` : ''}
 
       <div class="review-total-row"><span>subtotal</span><span>${subtotal > 0 ? subtotal + " EGP" : "0 EGP"}</span></div>
-      ${discountAmount > 0 ? `
-        <div class="review-total-row discount-row"><span>promo discount (${appliedPromo.code})</span><span>-${discountAmount} EGP</span></div>
+      ${bundleItemDiscount > 0 ? `
+        <div class="review-total-row discount-row"><span>bundle deal (${escapeHtml(bundleResult.appliedBundle.label)})</span><span>-${bundleItemDiscount} EGP</span></div>
       ` : ''}
-      <div class="review-total-row"><span>shipping (alexandria only)</span><span>${appliedPromo?.type === "freeship" ? '<strong style="color:#27ae60;">FREE</strong>' : shippingFee + " EGP"}</span></div>
+      ${promoDiscount > 0 ? `
+        <div class="review-total-row discount-row"><span>promo discount (${appliedPromo.code})</span><span>-${promoDiscount} EGP</span></div>
+      ` : ''}
+      <div class="review-total-row"><span>shipping (alexandria only)</span><span>${shippingDisplay}</span></div>
       <div class="review-total-row"><span>payment method</span><span>${methodLabel}</span></div>
       <div class="review-total-row grand"><span>total</span><span>${total} EGP</span></div>
     `;
@@ -2214,6 +2831,8 @@ async function placeOrder() {
     sku: i.sku || "",
   }));
 
+  const bundleResult = evaluateCartBundles(cart);
+  const bundleInfo = bundleResult.appliedBundle ? ` [Bundle: ${bundleResult.appliedBundle.label}]` : "";
   const promoInfo = appliedPromo ? ` [Promo: ${appliedPromo.code} (-${appliedPromo.discountAmount} EGP)]` : "";
 
   let mappedPaymentMethod = "Cash on Delivery";
@@ -2221,17 +2840,26 @@ async function placeOrder() {
   else if (currentPaymentMethod === "instapay" || currentPaymentMethod === "card") mappedPaymentMethod = "InstaPay";
   else if (currentPaymentMethod === "cod") mappedPaymentMethod = "Cash on Delivery";
 
+  let finalShippingPrice = 50;
+  if (appliedPromo?.type === "freeship" || (bundleResult && bundleResult.shippingDiscount >= 50)) {
+    finalShippingPrice = 0;
+  } else if (bundleResult && bundleResult.shippingDiscount > 0) {
+    finalShippingPrice = Math.max(0, 50 - bundleResult.shippingDiscount);
+  }
+
+  const totalDiscount = (bundleResult ? bundleResult.itemDiscount : 0) + (appliedPromo?.discountAmount || 0);
+
   const payload = {
     customerName: customerData.name,
     phone: customerData.phone,
     email: customerData.email || null,
     address: customerData.address,
     items,
-    shippingPrice: appliedPromo?.type === "freeship" ? 0 : 50,
+    shippingPrice: finalShippingPrice,
     paymentMethod: mappedPaymentMethod,
-    note: (customerData.note ? customerData.note : "") + promoInfo || null,
-    promoCode: appliedPromo?.code || null,
-    discount: appliedPromo?.discountAmount || 0,
+    note: ((customerData.note ? customerData.note : "") + bundleInfo + promoInfo).trim() || null,
+    promoCode: appliedPromo?.code || (bundleResult?.appliedBundle ? bundleResult.appliedBundle.label : null),
+    discount: totalDiscount,
   };
 
   let orderId = null;
