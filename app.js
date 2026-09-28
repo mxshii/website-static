@@ -1541,7 +1541,7 @@ async function loadProducts(forceRefresh = false) {
   const grid = document.getElementById("products-grid");
   if (!grid) return;
 
-  if (!forceRefresh && PRODUCTS.length > 0 && (Date.now() - _stockCacheTime < 60000)) {
+  if (!forceRefresh && PRODUCTS.length > 0 && (Date.now() - _stockCacheTime < 5000)) {
     renderProducts();
     return;
   }
@@ -1619,11 +1619,11 @@ async function loadProducts(forceRefresh = false) {
         const isBadgeSoldOut = (item.badge || "").toLowerCase().trim() === "sold out";
         let stockQty = 1;
 
-        // 1. Use custom item qty configured in Admin if set
-        if (item.qty !== undefined && item.qty !== null && item.qty !== "") {
-          stockQty = Number(item.qty);
-        } else if (linkedStock && linkedStock.quantity !== undefined && linkedStock.quantity !== null) {
+        // 1. Prioritize real-time live quantity from the expense system database
+        if (linkedStock && linkedStock.quantity !== undefined && linkedStock.quantity !== null) {
           stockQty = Number(linkedStock.quantity);
+        } else if (item.qty !== undefined && item.qty !== null && item.qty !== "") {
+          stockQty = Number(item.qty);
         }
 
         // 2. Zero-stock enforcement: If linked expense stock is 0, the item is out of stock
