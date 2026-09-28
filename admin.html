@@ -1804,12 +1804,8 @@
 
       // Sync zero-stock if linked pool has 0 quantity
       const linkedStock = expenseStockItems.find(s => String(s.id) === String(newStockId));
-      if (linkedStock) {
-        if (Number(linkedStock.quantity) === 0) {
-          item.qty = 0;
-          const qtyInput = document.getElementById(`qty-${itemId}`);
-          if (qtyInput) qtyInput.value = 0;
-        }
+      if (linkedStock && Number(linkedStock.quantity) === 0) {
+        item.qty = 0;
       }
       updateAdminStats();
     }
@@ -2353,8 +2349,8 @@
       }
 
       container.innerHTML = items.map(item => {
+
         const linkedStock = expenseStockItems.find(s => String(s.id) === String(item.stockId));
-        const itemQty = (item.qty !== undefined && item.qty !== null && item.qty !== "") ? Number(item.qty) : 1;
         const currentImg = item.img || "images/sticker-cozy.jpg";
         const isSelected = selectedItemIds.has(item.id);
         const origPrice = item.originalPrice !== undefined && item.originalPrice !== null ? item.originalPrice : "";
@@ -2423,11 +2419,6 @@
                 <input type="number" id="orig-price-${item.id}" value="${origPrice}" min="0" step="1" placeholder="e.g. 25 EGP (strikethrough)" />
               </div>
 
-              <!-- Stock Quantity -->
-              <div class="admin-input-group">
-                <label>stock quantity (in stock)</label>
-                <input type="number" id="qty-${item.id}" value="${itemQty}" min="0" step="1" placeholder="Stock Qty" />
-              </div>
 
               <!-- Badge / Offer Tag -->
               <div class="admin-input-group">
@@ -3027,8 +3018,6 @@
       const origVal = document.getElementById(`orig-price-${itemId}`)?.value;
       item.originalPrice = origVal && parseFloat(origVal) > 0 ? parseFloat(origVal) : null;
 
-      const parsedQty = parseInt(document.getElementById(`qty-${itemId}`)?.value, 10);
-      item.qty = (isNaN(parsedQty) || parsedQty < 0) ? 1 : parsedQty;
       item.img = (document.getElementById(`url-${itemId}`)?.value || item.img).trim();
       item.category = document.getElementById(`cat-${itemId}`)?.value || item.category || "single stickers";
 
