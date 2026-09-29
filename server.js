@@ -19,18 +19,25 @@ const MIME = {
 };
 
 let picturesHandler = null;
+let stockHandler = null;
 try {
   picturesHandler = require("./api/pictures.js");
 } catch (e) {
-  console.warn("API handler load warning:", e.message);
+  console.warn("Pictures API handler load warning:", e.message);
+}
+try {
+  stockHandler = require("./api/stock.js");
+} catch (e) {
+  console.warn("Stock API handler load warning:", e.message);
 }
 
 const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
   let pathname = parsedUrl.pathname;
 
-  // Handle /api/pictures
-  if (pathname === "/api/pictures" && picturesHandler) {
+  // Handle /api/pictures and /api/stock
+  const apiHandler = (pathname === "/api/pictures") ? picturesHandler : ((pathname === "/api/stock") ? stockHandler : null);
+  if (apiHandler) {
     let bodyData = "";
     req.on("data", (chunk) => { bodyData += chunk; });
     req.on("end", async () => {
@@ -50,7 +57,7 @@ const server = http.createServer(async (req, res) => {
       };
 
       try {
-        await picturesHandler(req, res);
+        await apiHandler(req, res);
       } catch (err) {
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: err.message }));

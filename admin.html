@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>STATIC — Storefront Product &amp; Stock Manager</title>
   <link rel="icon" type="image/png" href="images/1111-removebg-preview.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,48 +14,78 @@
   <link rel="preconnect" href="https://i.ibb.co" crossorigin />
   <link rel="dns-prefetch" href="https://i.ibb.co" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@latest">
+    // Floating Save Button scroll handler
+    window.addEventListener("scroll", () => {
+      const fab = document.getElementById("floating-save-btn");
+      if (!fab) return;
+      if (window.scrollY > 240) {
+        fab.classList.add("visible");
+      } else {
+        fab.classList.remove("visible");
+      }
+    }, { passive: true });
+  </script>
   <script>window.lucide || document.write('<script src="lucide.min.js"><\/script>')</script>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* Dedicated Admin Styles */
+    <style>
+    /* ══════════════════════════════════════════════
+       STATIC STOREFRONT ADMIN — RESPONSIVE DESIGN SYSTEM
+       Mobile & Desktop (PC) Enhanced Layout
+       ══════════════════════════════════════════════ */
+
     *, *::before, *::after {
       box-sizing: border-box;
     }
+    
     html, body {
       overflow-x: clip;
       max-width: 100vw;
+      width: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+
     .admin-page {
       background: var(--beige-200);
       min-height: 100vh;
-      padding-bottom: 90px;
+      padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+      color: var(--coffee-800);
+      position: relative;
     }
 
-    /* Natural scrolling header - never covers content */
+    /* ── HEADER (STICKY WITH GLASSMORPHISM) ── */
     .admin-header {
-      background: var(--coffee-900);
+      background: rgba(26, 14, 8, 0.95);
       color: var(--beige-100);
-      padding: 16px 28px;
+      padding: 14px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: var(--shadow-md);
-      position: relative;
-      z-index: 10;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.16);
+      position: sticky;
+      top: 0;
+      z-index: 100;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      flex-wrap: wrap;
-      gap: 12px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      gap: 14px;
+      transition: background var(--transition);
     }
     .admin-brand {
       display: flex;
       align-items: center;
       gap: 12px;
+      min-width: 0;
     }
     .admin-brand img {
-      height: 34px;
+      height: 36px;
       width: auto;
       filter: brightness(0) invert(0.95);
+      flex-shrink: 0;
+    }
+    .admin-title-wrap {
+      min-width: 0;
     }
     .admin-title-wrap h1 {
       font-size: 1.15rem;
@@ -64,39 +94,49 @@
       color: var(--beige-100);
       letter-spacing: 0.03em;
       margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .admin-title-wrap p {
       font-size: 0.72rem;
       color: var(--coffee-300);
       margin: 0;
+      white-space: nowrap;
     }
     .admin-header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
+      flex-shrink: 0;
     }
+
+    /* ── MAIN CONTAINER (MAX-WIDTH 1400PX ON PC) ── */
     .admin-container {
-      max-width: 1240px;
-      margin: 20px auto;
-      padding: 0 16px;
+      max-width: 1400px;
+      margin: 24px auto;
+      padding: 0 20px;
       width: 100%;
     }
+
     .admin-card {
       background: var(--beige-100);
       border-radius: var(--radius-xl);
       border: 1.5px solid var(--beige-300);
-      padding: 22px;
+      padding: 24px;
       box-shadow: var(--shadow-sm);
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       width: 100%;
     }
 
-    /* Lock Screen */
+    /* ── LOCK SCREEN (PIN GUARD) ── */
     .lock-screen {
-      max-width: 420px;
+      max-width: 440px;
       margin: 80px auto;
       text-align: center;
+      padding: 36px 28px;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
     }
     .lock-icon {
       width: 64px;
@@ -119,12 +159,13 @@
       margin-bottom: 24px;
     }
 
-    /* Stats Row */
+    /* ── STATS DASHBOARD ── */
     .admin-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      grid-template-columns: repeat(6, 1fr);
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
+      width: 100%;
     }
     .stat-card {
       background: var(--beige-100);
@@ -134,10 +175,16 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--coffee-400);
+      box-shadow: var(--shadow-sm);
     }
     .stat-icon {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: var(--radius-md);
       background: var(--coffee-100);
       color: var(--coffee-800);
@@ -146,28 +193,36 @@
       justify-content: center;
       flex-shrink: 0;
     }
+    .stat-info {
+      min-width: 0;
+      flex: 1;
+    }
     .stat-info .stat-val {
-      font-size: 1.4rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: var(--coffee-800);
       line-height: 1;
+      font-family: var(--font-display);
     }
     .stat-info .stat-label {
       font-size: 0.72rem;
       color: var(--coffee-500);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* Command Center Toolbar */
+    /* ── TOOLBAR V2 ── */
     .admin-toolbar-v2 {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
       margin-bottom: 18px;
-      padding-bottom: 16px;
+      padding-bottom: 18px;
       border-bottom: 1.5px solid var(--beige-300);
     }
     .toolbar-row-top {
@@ -180,8 +235,8 @@
     .admin-search-wrap {
       position: relative;
       flex: 1;
-      min-width: 240px;
-      max-width: 440px;
+      min-width: 250px;
+      max-width: 420px;
     }
     .admin-search-wrap input {
       width: 100%;
@@ -192,10 +247,11 @@
       font-size: 0.88rem;
       color: var(--coffee-800);
       outline: none;
-      transition: border-color var(--transition);
+      transition: border-color var(--transition), box-shadow var(--transition);
     }
     .admin-search-wrap input:focus {
       border-color: var(--coffee-800);
+      box-shadow: 0 0 0 3px rgba(44, 24, 16, 0.08);
     }
     .admin-search-wrap .search-icon {
       position: absolute;
@@ -226,13 +282,15 @@
     .admin-cat-pill {
       font-size: 0.78rem;
       font-weight: 700;
-      padding: 6px 14px;
+      padding: 7px 15px;
       border-radius: var(--radius-full);
       background: var(--beige-200);
       border: 1px solid var(--beige-300);
       color: var(--coffee-700);
       cursor: pointer;
       transition: all var(--transition);
+      white-space: nowrap;
+      user-select: none;
     }
     .admin-cat-pill.active,
     .admin-cat-pill:hover {
@@ -246,7 +304,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .toolbar-left-actions,
@@ -257,24 +315,24 @@
       flex-wrap: wrap;
     }
 
-    /* Bulk Selection Bar (Sticky at Top) */
+    /* ── STICKY BULK SELECTION BAR ── */
     .admin-selection-bar {
       position: sticky;
-      top: 12px;
-      z-index: 80;
-      background: rgba(246, 241, 232, 0.96);
+      top: 68px;
+      z-index: 85;
+      background: rgba(253, 249, 243, 0.96);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1.5px solid var(--coffee-300);
       border-radius: var(--radius-lg);
-      padding: 12px 16px;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 16px;
-      box-shadow: 0 6px 20px rgba(44, 24, 16, 0.12);
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(44, 24, 16, 0.12);
       transition: box-shadow var(--transition), border-color var(--transition);
       animation: fadeIn 0.2s ease;
     }
@@ -289,13 +347,14 @@
       flex-wrap: wrap;
     }
     .selection-count-badge {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       color: var(--coffee-900);
-      background: var(--beige-100);
-      padding: 3px 8px;
+      background: var(--beige-200);
+      padding: 3px 9px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--coffee-300);
+      white-space: nowrap;
     }
     .selection-actions {
       display: flex;
@@ -303,10 +362,13 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+    .batch-badge-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-    /* ══════════════════════════════════════════════
-       PRODUCT ITEM EDITOR CARDS (RESPONSIVE 100% FIT)
-       ══════════════════════════════════════════════ */
+    /* ── PRODUCT ITEM EDITOR CARDS ── */
     .admin-items-grid {
       display: flex;
       flex-direction: column;
@@ -317,12 +379,12 @@
       background: var(--beige-100);
       border: 1.5px solid var(--beige-300);
       border-radius: var(--radius-xl);
-      padding: 18px 20px;
+      padding: 20px 24px;
       display: flex;
       flex-direction: column;
       gap: 14px;
       box-shadow: var(--shadow-sm);
-      transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
+      transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition), transform var(--transition);
       position: relative;
       width: 100%;
       box-sizing: border-box;
@@ -334,10 +396,10 @@
     .admin-item-card.is-selected {
       border-color: var(--coffee-800);
       background: #fdfaf6;
-      box-shadow: 0 0 0 2px rgba(44, 24, 16, 0.15);
+      box-shadow: 0 0 0 2px rgba(44, 24, 16, 0.18);
     }
 
-    /* Card Top Bar: Checkbox, Thumbnail, Title & Actions */
+    /* Card Top Bar */
     .admin-card-top-row {
       display: flex;
       align-items: center;
@@ -345,14 +407,14 @@
       flex-wrap: wrap;
       justify-content: space-between;
       border-bottom: 1px solid var(--beige-300);
-      padding-bottom: 12px;
+      padding-bottom: 14px;
     }
     .card-top-left {
       display: flex;
       align-items: center;
       gap: 12px;
       flex: 1;
-      min-width: 260px;
+      min-width: 280px;
     }
     .admin-img-thumb {
       width: 52px;
@@ -362,6 +424,10 @@
       background: var(--beige-200);
       border: 1px solid var(--beige-300);
       flex-shrink: 0;
+      transition: transform var(--transition);
+    }
+    .admin-img-thumb:hover {
+      transform: scale(1.08);
     }
     .item-select-cb {
       width: 20px;
@@ -375,12 +441,17 @@
       font-size: 1.15rem !important;
       font-weight: 700 !important;
       color: var(--coffee-800) !important;
-      padding: 6px 12px !important;
+      padding: 7px 12px !important;
       background: var(--beige-200) !important;
       border: 1.5px solid var(--beige-300) !important;
       border-radius: var(--radius-md) !important;
       flex: 1;
       min-width: 180px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .item-title-input:focus {
+      border-color: var(--coffee-700) !important;
+      box-shadow: 0 0 0 3px rgba(44, 24, 16, 0.08) !important;
     }
     .admin-card-actions {
       display: flex;
@@ -389,12 +460,14 @@
       flex-shrink: 0;
     }
     .save-item-btn {
-      padding: 7px 14px;
+      padding: 8px 16px;
       font-size: 0.82rem;
+      font-weight: 700;
     }
     .clone-item-btn {
-      padding: 6px 10px;
-      font-size: 0.76rem;
+      padding: 7px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
       background: var(--beige-200);
       border: 1px solid var(--beige-300);
       color: var(--coffee-700);
@@ -402,39 +475,47 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      transition: all var(--transition);
     }
-    .clone-item-btn:hover { background: var(--beige-300); }
+    .clone-item-btn:hover {
+      background: var(--beige-300);
+      color: var(--coffee-900);
+    }
     .delete-item-btn {
-      font-size: 0.76rem;
+      font-size: 0.78rem;
+      font-weight: 600;
       color: #c0392b;
-      background: none;
-      border: 1px solid #f5c6cb;
       background: #fff0f0;
+      border: 1px solid #f5c6cb;
       border-radius: var(--radius-sm);
       cursor: pointer;
-      padding: 5px 8px;
+      padding: 7px 10px;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      transition: all var(--transition);
     }
-    .delete-item-btn:hover { background: #ffe0e0; }
+    .delete-item-btn:hover {
+      background: #ffe0e0;
+      border-color: #e57373;
+    }
 
-    /* Card Form Grid */
+    /* Card Form Grid: 4 clean columns on PC */
     .admin-form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
       width: 100%;
     }
     .admin-input-group {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
       min-width: 0;
     }
     .admin-input-group label {
-      font-size: 0.72rem;
+      font-size: 0.73rem;
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: lowercase;
@@ -442,6 +523,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      min-height: 18px;
     }
     .admin-input-group input,
     .admin-input-group select,
@@ -454,12 +536,13 @@
       color: var(--coffee-800);
       outline: none;
       width: 100%;
-      transition: border-color var(--transition);
+      transition: border-color var(--transition), box-shadow var(--transition);
     }
     .admin-input-group input:focus,
     .admin-input-group select:focus,
     .admin-input-group textarea:focus {
       border-color: var(--coffee-700);
+      box-shadow: 0 0 0 3px rgba(44, 24, 16, 0.06);
     }
     .full-grid-span {
       grid-column: 1 / -1;
@@ -467,29 +550,34 @@
     .preset-pills {
       display: flex;
       align-items: center;
-      gap: 4px;
-      margin-top: 3px;
+      gap: 5px;
+      margin-top: 4px;
       flex-wrap: wrap;
     }
     .preset-btn {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--beige-300);
       background: var(--beige-200);
       color: var(--coffee-700);
       cursor: pointer;
+      transition: all var(--transition);
     }
     .preset-btn:hover {
-      background: var(--beige-300);
+      background: var(--coffee-800);
+      color: var(--beige-100);
+      border-color: var(--coffee-800);
     }
 
-    /* Modals */
+    /* ── MODALS & TABLES ── */
     .modal-tab-btns {
       display: flex;
       border-bottom: 2px solid var(--beige-300);
       margin-bottom: 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
     .modal-tab-btn {
       padding: 10px 20px;
@@ -502,6 +590,8 @@
       border-bottom: 3px solid transparent;
       margin-bottom: -2px;
       transition: all var(--transition);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .modal-tab-btn.active {
       color: var(--coffee-800);
@@ -511,6 +601,7 @@
       display: flex;
       gap: 8px;
       margin-top: 6px;
+      flex-wrap: wrap;
     }
     .quick-qty-btn {
       padding: 6px 14px;
@@ -521,6 +612,7 @@
       font-weight: 700;
       font-size: 0.8rem;
       cursor: pointer;
+      transition: all var(--transition);
     }
     .quick-qty-btn.active, .quick-qty-btn:hover {
       background: var(--coffee-800);
@@ -528,22 +620,26 @@
       border-color: var(--coffee-800);
     }
 
-    /* Offers Manager Table */
-    .offers-table {
+    /* Tables (Offers & Bundles) */
+    .offers-table,
+    .bundles-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 12px;
       font-size: 0.85rem;
     }
-    .offers-table th {
+    .offers-table th,
+    .bundles-table th {
       text-align: left;
       padding: 10px 12px;
       background: var(--beige-200);
       color: var(--coffee-700);
       font-weight: 700;
       border-bottom: 1.5px solid var(--beige-300);
+      white-space: nowrap;
     }
-    .offers-table td {
+    .offers-table td,
+    .bundles-table td {
       padding: 12px;
       border-bottom: 1px solid var(--beige-300);
       color: var(--coffee-800);
@@ -557,6 +653,7 @@
       padding: 3px 8px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--coffee-300);
+      white-space: nowrap;
     }
 
     /* Category & Variety Manager */
@@ -580,6 +677,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: nowrap;
       flex: 1;
       min-width: 0;
     }
@@ -595,6 +693,9 @@
       font-size: 0.88rem;
       color: var(--coffee-900);
       letter-spacing: 0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .category-key-badge {
       font-size: 0.72rem;
@@ -644,65 +745,167 @@
       border-color: #c0392b;
     }
 
-    /* ══════════════════════════════
-       ADMIN RESPONSIVE SYSTEM
-       ══════════════════════════════ */
-    @media (max-width: 768px) {
-      .admin-card-top-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+    /* ── FLOATING SAVE BUTTON (FAB) ── */
+    .admin-floating-save {
+      position: fixed;
+      right: 28px;
+      bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+      z-index: 95;
+      background: var(--coffee-900);
+      color: var(--beige-100);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-full);
+      padding: 13px 24px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 32px rgba(26, 14, 8, 0.38);
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(24px) scale(0.95);
+      pointer-events: none;
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background var(--transition), box-shadow var(--transition);
+    }
+    .admin-floating-save.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+    .admin-floating-save:hover {
+      background: #100804;
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 14px 40px rgba(26, 14, 8, 0.5);
+    }
+    .admin-floating-save:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* ── TOAST NOTIFICATIONS ── */
+    .toast-container {
+      position: fixed;
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      max-width: 90vw;
+    }
+    .toast {
+      background: var(--coffee-900);
+      color: var(--beige-100);
+      padding: 12px 22px;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 30px rgba(26, 14, 8, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      text-align: center;
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .toast.out {
+      animation: toastOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(-8px) scale(0.96); }
+    }
+
+    /* ══════════════════════════════════════════════
+       TABLET & MEDIUM DESKTOP (max-width: 1024px)
+       ══════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .admin-container {
+        padding: 0 16px;
+        margin: 18px auto;
       }
-      .card-top-left {
-        width: 100%;
-      }
-      .admin-card-actions {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1.5fr 1fr 1fr;
-        gap: 6px;
-      }
-      .save-item-btn,
-      .clone-item-btn,
-      .delete-item-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 8px 6px;
+      .admin-stats {
+        grid-template-columns: repeat(3, 1fr);
       }
       .admin-form-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 640px) {
+    /* ══════════════════════════════════════════════
+       MOBILE & SMALL TABLET (max-width: 768px)
+       ══════════════════════════════════════════════ */
+    @media (max-width: 768px) {
       .admin-header {
-        padding: 12px 14px;
+        padding: 10px 14px;
+        top: 0;
       }
       .admin-brand img {
-        height: 28px;
+        height: 30px;
       }
       .admin-title-wrap h1 {
-        font-size: 0.95rem;
+        font-size: 0.98rem;
       }
       .admin-title-wrap p {
         display: none;
       }
+      .admin-header-actions .btn {
+        padding: 7px 10px;
+        font-size: 0.74rem;
+        gap: 4px;
+      }
+
       .admin-container {
         margin: 12px auto;
         padding: 0 10px;
       }
       .admin-card {
-        padding: 14px 12px;
+        padding: 16px 12px;
         border-radius: var(--radius-lg);
         margin-bottom: 14px;
       }
+
+      /* Swipeable metrics carousel on mobile */
       .admin-stats {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
+        overflow-x: auto;
+        gap: 8px;
+        margin-bottom: 14px;
+        padding-bottom: 4px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .admin-stats::-webkit-scrollbar {
+        display: none;
+      }
+      .stat-card {
+        flex: 0 0 148px;
+        min-width: 140px;
+        scroll-snap-align: start;
+        padding: 10px 12px;
         gap: 8px;
       }
+      .stat-icon {
+        width: 32px;
+        height: 32px;
+      }
+      .stat-info .stat-val {
+        font-size: 1.25rem;
+      }
+      .stat-info .stat-label {
+        font-size: 0.68rem;
+      }
+
+      /* Toolbar on mobile */
       .toolbar-row-top {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
       }
       .admin-search-wrap {
         max-width: 100%;
@@ -710,6 +913,43 @@
       }
       .admin-search-wrap input {
         font-size: 16px !important;
+        padding: 10px 36px;
+      }
+
+      /* Horizontal Category Pill Strip */
+      .admin-category-filters {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 6px;
+        padding-bottom: 4px;
+        width: 100%;
+      }
+      .admin-category-filters::-webkit-scrollbar {
+        display: none;
+      }
+      .admin-cat-pill {
+        flex-shrink: 0;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+      }
+
+      .admin-variety-filter-wrap {
+        width: 100%;
+        display: flex !important;
+      }
+      .admin-variety-filter-wrap select {
+        flex: 1;
+        font-size: 16px !important;
+      }
+
+      /* Action Buttons Grid on Mobile */
+      .toolbar-row-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
       }
       .toolbar-left-actions,
       .toolbar-right-actions {
@@ -723,24 +963,139 @@
       .toolbar-right-actions label.btn {
         width: 100%;
         justify-content: center;
-        padding: 8px 6px;
-        font-size: 0.76rem;
+        padding: 9px 6px;
+        font-size: 0.75rem;
       }
       .toolbar-right-actions button[onclick="saveAllItems()"] {
         grid-column: span 2;
-        padding: 10px 12px;
+        padding: 12px;
+        font-size: 0.88rem;
         font-weight: 700;
       }
+
+      /* Selection Bar on Mobile */
       .admin-selection-bar {
-        top: 6px;
+        top: 54px;
         padding: 10px 12px;
         gap: 8px;
+        border-radius: var(--radius-md);
+      }
+      .selection-left {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .selection-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+      .selection-actions .batch-badge-wrapper {
+        grid-column: span 2;
+        width: 100%;
+      }
+      .selection-actions .batch-badge-wrapper select {
+        width: 100%;
+        font-size: 16px !important;
+      }
+      .selection-actions .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 8px 6px;
+        font-size: 0.75rem;
+      }
+      .selection-actions button[onclick="saveAllItems()"] {
+        grid-column: span 2;
+        font-weight: 700;
+        padding: 10px;
+      }
+
+      /* Product Card on Mobile */
+      .admin-item-card {
+        padding: 14px 12px;
+        border-radius: var(--radius-lg);
+        gap: 12px;
+      }
+      .admin-card-top-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding-bottom: 10px;
+      }
+      .card-top-left {
+        width: 100%;
+        min-width: 0;
+        gap: 8px;
+      }
+      .admin-img-thumb {
+        width: 46px;
+        height: 46px;
+        border-radius: 10px;
+      }
+      .item-title-input {
+        min-width: 0;
+        width: 100%;
+        font-size: 16px !important;
+        padding: 7px 10px !important;
+      }
+      .admin-card-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr;
+        gap: 6px;
+      }
+      .save-item-btn,
+      .clone-item-btn,
+      .delete-item-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 8px 4px;
+        font-size: 0.76rem;
+      }
+
+      /* Form Fields on Mobile: 2-column paired layout */
+      .admin-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .admin-form-grid .admin-input-group:first-child {
+        grid-column: span 2;
       }
       .admin-input-group input,
       .admin-input-group select,
-      .admin-input-group textarea,
-      .item-title-input {
+      .admin-input-group textarea {
         font-size: 16px !important;
+        padding: 9px 8px;
+      }
+      .full-grid-span {
+        grid-column: span 2;
+      }
+
+      /* Modals on Mobile */
+      .modal-box {
+        padding: 18px 14px !important;
+        width: 100% !important;
+      }
+      .modal-box table {
+        display: block;
+        overflow-x: auto;
+        width: 100%;
+      }
+      .modal-box input,
+      .modal-box select,
+      .modal-box textarea {
+        font-size: 16px !important;
+      }
+
+      /* Floating Action Button on Mobile */
+      .admin-floating-save {
+        right: 14px;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 18px;
+        font-size: 0.8rem;
+      }
+      .admin-floating-save .fab-text {
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -1774,7 +2129,8 @@
       const cleanSel = String(selectedStockId || "").trim();
       let matched = false;
 
-      let html = `<option value="" ${!cleanSel ? "selected" : ""}>-- None / Unlinked --</option>`;
+      let html = `<option value="__AUTO_CREATE__" ${cleanSel === "__AUTO_CREATE__" ? "selected" : ""}>✨ Auto-create in Expense Stock (STK- / SSH-)</option>`;
+      html += `<option value="" ${(!cleanSel || cleanSel === "") ? "selected" : ""}>-- None / Unlinked --</option>`;
 
       if (Array.isArray(expenseStockItems) && expenseStockItems.length > 0) {
         html += expenseStockItems.map(stk => {
@@ -1790,11 +2146,144 @@
       }
 
       // Preserve previously linked stockId even if not found in active pools
-      if (cleanSel && !matched) {
+      if (cleanSel && !matched && cleanSel !== "__AUTO_CREATE__") {
         html += `<option value="${escapeHtml(cleanSel)}" selected>${escapeHtml(cleanSel)} (Linked Stock Pool)</option>`;
       }
 
       return html;
+    }
+
+    // ── AUTOMATIC EXPENSE STOCK GENERATOR (SSH for Sticker Sheet, STK for Single) ──
+    function generateProductSku(category, name) {
+      const cat = String(category || "").toLowerCase();
+      const n = String(name || "").toLowerCase();
+      let prefix = "STK";
+      if (cat.includes("sheet") || n.includes("sheet") || cat.includes("pack")) {
+        prefix = "SSH";
+      } else if (cat.includes("poster") || n.includes("poster")) {
+        prefix = "PTR";
+      }
+      const rand = Math.floor(100000 + Math.random() * 900000);
+      return `${prefix}-${rand}`;
+    }
+
+    let _expenseAuthToken = null;
+    async function getExpenseAuthToken() {
+      if (_expenseAuthToken) return _expenseAuthToken;
+      try {
+        const res = await fetch("https://expense-sys-ten.vercel.app/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: "founder", password: "20102004" })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          _expenseAuthToken = data.token || null;
+          return _expenseAuthToken;
+        }
+      } catch (_) {}
+      return null;
+    }
+
+    async function createExpenseStockItem({ itemName, category, price, quantity, sku }) {
+      const cleanName = String(itemName || "New Sticker").trim();
+      const generatedSku = (sku && String(sku).trim())
+        ? String(sku).trim().toUpperCase()
+        : generateProductSku(category, cleanName);
+      const numPrice = Math.max(0, Number(price) || 15);
+      const numQty = Math.max(0, parseInt(quantity, 10) || 1);
+
+      // Method 1: Storefront /api/stock (direct Neon PostgreSQL insertion)
+      try {
+        const localRes = await fetch("/api/stock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            itemName: cleanName,
+            category: category,
+            price: numPrice,
+            quantity: numQty,
+            sku: generatedSku
+          })
+        });
+        if (localRes.ok) {
+          const data = await localRes.json();
+          if (data && data.stockItem) {
+            return data.stockItem;
+          }
+        }
+      } catch (err) {
+        console.warn("Storefront /api/stock call failed, trying Expense API fallback...", err);
+      }
+
+      // Method 2: Expense system REST API fallback with founder token
+      try {
+        const token = await getExpenseAuthToken();
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const expRes = await fetch("https://expense-sys-ten.vercel.app/api/stock", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            itemName: cleanName,
+            quantity: numQty,
+            price: numPrice,
+            sku: generatedSku,
+            category: category
+          })
+        });
+        if (expRes.ok) {
+          const created = await expRes.json();
+          return created;
+        }
+      } catch (err) {
+        console.error("Expense API fallback call failed:", err);
+      }
+
+      // Fallback object
+      return {
+        id: "stk_" + Date.now(),
+        itemName: cleanName,
+        quantity: numQty,
+        price: numPrice,
+        sku: generatedSku
+      };
+    }
+
+    async function quickCreateStockForItem(itemId) {
+      const item = storefrontProducts.find(p => p.id === itemId);
+      if (!item) return;
+      collectItemDataFromDOM(itemId);
+
+      const targetName = item.name || "New Sticker";
+      showToast(`Creating Expense Stock for "${targetName}"...`);
+
+      const newStock = await createExpenseStockItem({
+        itemName: targetName,
+        category: item.category,
+        price: item.price,
+        quantity: item.qty || 1
+      });
+
+      if (newStock && newStock.id) {
+        item.stockId = newStock.id;
+        if (!expenseStockItems.some(s => String(s.id) === String(newStock.id))) {
+          expenseStockItems.unshift(newStock);
+        }
+        populateStockDropdowns();
+        const stockSel = document.getElementById(`stockId-${itemId}`);
+        if (stockSel) {
+          stockSel.innerHTML = renderStockOptions(newStock.id);
+          stockSel.value = newStock.id;
+        }
+        await saveStorefrontPictureMap(getStorefrontPayload());
+        updateAdminStats();
+        renderAdminItems();
+        showToast(`✓ Created in Expense Stock: ${newStock.sku} (${newStock.itemName})! ✦`);
+      } else {
+        showToast("Could not create stock item. Please check network.");
+      }
     }
 
     function handleStockIdChange(itemId, newStockId) {
@@ -2383,10 +2872,18 @@
               
               <!-- Linked Expense Stock Pool -->
               <div class="admin-input-group">
-                <label>linked expense stock pool</label>
-                <select id="stockId-${item.id}" onchange="handleStockIdChange('${item.id}', this.value)">
-                  ${renderStockOptions(item.stockId)}
-                </select>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                  <label style="margin:0;">linked expense stock pool</label>
+                  ${linkedStock ? `<span style="font-size:0.7rem;font-weight:700;color:#27ae60;background:#e8f8f0;border:1px solid #a3e4d7;padding:1px 6px;border-radius:10px;display:inline-flex;align-items:center;gap:3px;"><i data-lucide="check" class="icon-xs"></i> ${escapeHtml(linkedStock.sku || "IN STOCK")} (${linkedStock.quantity} qty)</span>` : `<span style="font-size:0.7rem;font-weight:700;color:#d35400;background:#fef9e7;border:1px solid #f9e79f;padding:1px 6px;border-radius:10px;">⚡ Auto-create on save</span>`}
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <select id="stockId-${item.id}" onchange="handleStockIdChange('${item.id}', this.value)" style="flex:1;">
+                    ${renderStockOptions(item.stockId)}
+                  </select>
+                  <button type="button" class="btn btn-secondary" onclick="quickCreateStockForItem('${item.id}')" title="Instantly create a stock item in Expense System for this sticker" style="padding:6px 10px;font-size:0.72rem;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;">
+                    <i data-lucide="plus" class="icon-xs"></i> new stock
+                  </button>
+                </div>
               </div>
 
               <!-- Category -->
@@ -2775,18 +3272,16 @@
 
     // ── ADD SINGLE PRODUCT ──
     function addNewProductPrompt() {
-      const defaultStockId = expenseStockItems[0]?.id || "";
-      const defaultStock = expenseStockItems[0];
       const newId = "sf_" + Date.now();
 
       const newProduct = {
         id: newId,
-        stockId: defaultStockId,
+        stockId: "__AUTO_CREATE__", // Will be auto-created in Expense Stock (STK- or SSH-) when saved
         name: "New Sticker Product",
         img: "images/sticker-cats.jpg",
         category: "single stickers",
         subcategory: "",
-        price: defaultStock ? defaultStock.price : 15,
+        price: 15,
         qty: 1,
         originalPrice: null,
         fit: "contain",
@@ -2804,7 +3299,7 @@
         card.style.borderColor = "var(--coffee-800)";
       }
 
-      showToast("New product card added! Edit the title & photo, then click Save ✦");
+      showToast("New product card added! Edit the title & photo, then click Save to auto-create in Expense Stock ✦");
     }
 
     // ── FIT TOGGLE ──
@@ -2869,9 +3364,27 @@
       const now = Date.now();
 
       for (let i = 1; i <= count; i++) {
+        let itemStockId = stockId;
+        if (stockId === "__AUTO_CREATE__" || !stockId) {
+          try {
+            const newStock = await createExpenseStockItem({
+              itemName: `${baseName} #${i}`,
+              category: category,
+              price: price,
+              quantity: 1
+            });
+            if (newStock && newStock.id) {
+              itemStockId = newStock.id;
+              if (!expenseStockItems.some(s => String(s.id) === String(newStock.id))) {
+                expenseStockItems.unshift(newStock);
+              }
+            }
+          } catch (_) {}
+        }
+
         newItems.push({
           id: `sf_${now}_${i}`,
-          stockId: stockId,
+          stockId: itemStockId,
           name: `${baseName} #${i}`,
           img: img,
           category: category,
@@ -2883,6 +3396,10 @@
           badge: i <= 5 ? "new" : "",
           desc: `Handmade ${category} design from STATIC. Waterproof vinyl, die-cut.`,
         });
+      }
+
+      if (stockId === "__AUTO_CREATE__" || !stockId) {
+        populateStockDropdowns();
       }
 
       storefrontProducts = [...newItems, ...storefrontProducts];
@@ -2911,7 +3428,8 @@
       const newItems = [];
       const now = Date.now();
 
-      lines.forEach((line, idx) => {
+      for (let idx = 0; idx < lines.length; idx++) {
+        const line = lines[idx];
         let name = line;
         let img = "images/sticker-cats.jpg";
 
@@ -2921,9 +3439,27 @@
           img = parts[1] || img;
         }
 
+        let itemStockId = stockId;
+        if (stockId === "__AUTO_CREATE__" || !stockId) {
+          try {
+            const newStock = await createExpenseStockItem({
+              itemName: name,
+              category: category,
+              price: 15,
+              quantity: 1
+            });
+            if (newStock && newStock.id) {
+              itemStockId = newStock.id;
+              if (!expenseStockItems.some(s => String(s.id) === String(newStock.id))) {
+                expenseStockItems.unshift(newStock);
+              }
+            }
+          } catch (_) {}
+        }
+
         newItems.push({
           id: `sf_${now}_${idx + 1}`,
-          stockId: stockId,
+          stockId: itemStockId,
           name: name,
           img: img,
           category: category,
@@ -2935,7 +3471,11 @@
           badge: idx < 3 ? "new" : "",
           desc: `Handmade ${category} from STATIC. Waterproof vinyl, die-cut.`,
         });
-      });
+      }
+
+      if (stockId === "__AUTO_CREATE__" || !stockId) {
+        populateStockDropdowns();
+      }
 
       storefrontProducts = [...newItems, ...storefrontProducts];
       closeBulkAddModal();
@@ -2943,7 +3483,7 @@
       updateAdminStats();
 
       await saveStorefrontPictureMap(getStorefrontPayload());
-      showToast(`${newItems.length} products imported & synced to shop!`, 4000);
+      showToast(`${lines.length} products imported & synced to shop!`, 4000);
     }
 
     // ── CLONE PRODUCT ──
@@ -2955,6 +3495,7 @@
       const cloned = {
         ...original,
         id: newId,
+        stockId: "__AUTO_CREATE__", // New clone gets its own stock pool on save
         name: `${original.name} (Copy)`,
         subcategory: original.subcategory || "",
         badge: "new",
@@ -2966,7 +3507,7 @@
 
       renderAdminItems();
       updateAdminStats();
-      showToast(`Duplicated "${original.name}"! ✦`);
+      showToast(`Duplicated "${original.name}"! Click Save to auto-create its Expense Stock item ✦`);
     }
 
     // ── DELETE SINGLE PRODUCT ──
@@ -2986,22 +3527,60 @@
 
     // ── SAVE SINGLE ITEM ──
     async function saveSingleItem(itemId) {
+      const item = storefrontProducts.find(p => p.id === itemId);
+      if (!item) return;
+
       collectItemDataFromDOM(itemId);
+
+      const btn = document.getElementById(`save-btn-${itemId}`);
+      const origBtnHtml = btn ? btn.innerHTML : "";
+
+      // Check if we need to auto-create this item in Expense Stock
+      if (item.stockId === "__AUTO_CREATE__" || !item.stockId) {
+        if (btn) btn.innerHTML = `<i data-lucide="loader-2" class="icon-xs spin"></i> syncing stock...`;
+        try {
+          const newStock = await createExpenseStockItem({
+            itemName: item.name,
+            category: item.category,
+            price: item.price,
+            quantity: item.qty || 1
+          });
+          if (newStock && newStock.id) {
+            item.stockId = newStock.id;
+            if (!expenseStockItems.some(s => String(s.id) === String(newStock.id))) {
+              expenseStockItems.unshift(newStock);
+              populateStockDropdowns();
+            }
+            const stockSel = document.getElementById(`stockId-${itemId}`);
+            if (stockSel) {
+              stockSel.innerHTML = renderStockOptions(newStock.id);
+              stockSel.value = newStock.id;
+            }
+          }
+        } catch (e) {
+          console.warn("Auto-create stock warning:", e);
+        }
+      }
+
       await saveStorefrontPictureMap(getStorefrontPayload());
       updateAdminStats();
 
-      const btn = document.getElementById(`save-btn-${itemId}`);
       if (btn) {
         btn.innerHTML = `<i data-lucide="check" class="icon-xs"></i> saved!`;
         btn.style.background = "#27ae60";
         setTimeout(() => {
-          btn.innerHTML = `<i data-lucide="check" class="icon-xs"></i> save`;
+          btn.innerHTML = origBtnHtml || `<i data-lucide="check" class="icon-xs"></i> save`;
           btn.style.background = "";
           renderIcons();
         }, 1500);
       }
 
-      showToast("Product saved & synced to all devices ✦");
+      const linked = expenseStockItems.find(s => String(s.id) === String(item.stockId));
+      if (linked && linked.sku) {
+        showToast(`Saved! Linked to Expense Stock: ${linked.sku} (${linked.itemName}) ✦`);
+      } else {
+        showToast("Product saved & synced to all devices ✦");
+      }
     }
 
     function collectItemDataFromDOM(itemId) {
@@ -3036,9 +3615,39 @@
         collectItemDataFromDOM(item.id);
       });
 
+      let newlyCreated = 0;
+      for (const item of storefrontProducts) {
+        if (item.stockId === "__AUTO_CREATE__" || !item.stockId) {
+          try {
+            const newStock = await createExpenseStockItem({
+              itemName: item.name,
+              category: item.category,
+              price: item.price,
+              quantity: item.qty || 1
+            });
+            if (newStock && newStock.id) {
+              item.stockId = newStock.id;
+              if (!expenseStockItems.some(s => String(s.id) === String(newStock.id))) {
+                expenseStockItems.unshift(newStock);
+              }
+              newlyCreated++;
+            }
+          } catch (_) {}
+        }
+      }
+
+      if (newlyCreated > 0) {
+        populateStockDropdowns();
+      }
+
       await saveStorefrontPictureMap(getStorefrontPayload());
       updateAdminStats();
-      showToast("All products synced live to all devices ✦");
+      renderAdminItems();
+
+      showToast(newlyCreated > 0
+        ? `All saved! Created ${newlyCreated} item(s) in Expense Stock ✦`
+        : "All products synced live to all devices ✦"
+      );
     }
 
     // ── SIDEBAR CATEGORIES & VARIETIES MODAL CONTROLS ──
@@ -3914,5 +4523,11 @@
       reader.readAsText(file);
     }
   </script>
+
+  <!-- FLOATING SAVE BUTTON -->
+  <button type="button" class="admin-floating-save" id="floating-save-btn" onclick="saveAllItems()" title="Save all changes to catalog and stock">
+    <i data-lucide="save" class="icon-sm"></i>
+    <span class="fab-text">save all changes</span>
+  </button>
 </body>
 </html>
