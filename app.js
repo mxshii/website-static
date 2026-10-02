@@ -150,28 +150,42 @@ const DEFAULT_STORE_BUNDLES = [
   {
     id: "bundle_2",
     minQty: 2,
+    exactQty: true,
     target: "sticker sheet",
     discountType: "item_fixed",
     discountValue: 10,
-    label: "Buy 2 Sheets: 10 EGP OFF",
+    label: "Buy 2 Sheets Only: 10 EGP OFF",
     active: true
   },
   {
     id: "bundle_3",
     minQty: 3,
+    exactQty: true,
     target: "sticker sheet",
     discountType: "delivery_free",
     discountValue: 50,
-    label: "Buy 3 Sheets: FREE Delivery",
+    label: "Buy 3 Sheets Only: FREE Delivery",
     active: true
   }
 ];
 let STORE_BUNDLES = JSON.parse(JSON.stringify(DEFAULT_STORE_BUNDLES));
 
+const DEFAULT_ORDER_THRESHOLDS = [
+  {
+    id: "thresh_150_freeship",
+    minOrder: 150,
+    rewardType: "delivery_free",
+    rewardValue: 50,
+    title: "Free Alexandria delivery on orders over 150 EGP",
+    active: true
+  }
+];
+let STORE_ORDER_THRESHOLDS = JSON.parse(JSON.stringify(DEFAULT_ORDER_THRESHOLDS));
+
 const DEFAULT_BUNDLE_BOX = {
   enabled: true,
   badge: "BUNDLE & SAVE DEALS",
-  title: "Buy 2 or More & Save Instantly",
+  title: "Buy 2 or 3 Sheets & Save Instantly",
   subtitle: "Mix & match your favorite designs — discount or free delivery unlocks automatically in your cart!",
   footnote: "",
   showOnShop: true,
@@ -195,6 +209,11 @@ try {
       if (Array.isArray(_parsed.bundles)) {
         STORE_BUNDLES = _parsed.bundles;
       }
+      if (Array.isArray(_parsed.orderThresholds)) {
+        STORE_ORDER_THRESHOLDS = _parsed.orderThresholds;
+      } else if (Array.isArray(_parsed.thresholdOffers)) {
+        STORE_ORDER_THRESHOLDS = _parsed.thresholdOffers;
+      }
       if (_parsed.banner && typeof _parsed.banner === "object") {
         STORE_BANNER = _parsed.banner;
       }
@@ -205,6 +224,8 @@ try {
 window.STORE_BUNDLE_BOX = STORE_BUNDLE_BOX;
 window.STORE_BUNDLES = STORE_BUNDLES;
 window.DEFAULT_BUNDLE_BOX = DEFAULT_BUNDLE_BOX;
+window.STORE_ORDER_THRESHOLDS = STORE_ORDER_THRESHOLDS;
+window.DEFAULT_ORDER_THRESHOLDS = DEFAULT_ORDER_THRESHOLDS;
 
 function evaluateCartBundles(cartItems) {
   if (!Array.isArray(cartItems) || !cartItems.length) {
@@ -242,7 +263,10 @@ function evaluateCartBundles(cartItems) {
     const matchingQty = matching.reduce((sum, i) => sum + (Number(i.qty) || 1), 0);
     const matchingSubtotal = matching.reduce((sum, i) => sum + ((Number(i.price) || 0) * (Number(i.qty) || 1)), 0);
 
-    if (matchingQty >= Number(bundle.minQty)) {
+    const isExact = bundle.exactQty !== false;
+    const qualifies = isExact ? (matchingQty === Number(bundle.minQty)) : (matchingQty >= Number(bundle.minQty));
+
+    if (qualifies) {
       let itemDiscount = 0;
       let shippingDiscount = 0;
 
@@ -264,7 +288,7 @@ function evaluateCartBundles(cartItems) {
         shippingDiscount,
         totalSavings: itemDiscount + shippingDiscount,
       });
-    } else {
+    } else if (matchingQty < Number(bundle.minQty)) {
       const diff = Number(bundle.minQty) - matchingQty;
       if (diff > 0 && diff <= 3) {
         potentialNext.push({
@@ -317,6 +341,90 @@ function evaluateCartBundles(cartItems) {
 window.evaluateCartBundles = evaluateCartBundles;
 window.STORE_BUNDLES = STORE_BUNDLES;
 window.DEFAULT_STORE_BUNDLES = DEFAULT_STORE_BUNDLES;
+
+// ── ORDER SPEND THRESHOLDS EVALUATOR (AUTOMATIC DISCOUNTS & FREE DELIVERY) ──
+function evaluateOrderThresholds(cartItems) {
+  if (!Array.isArray(cartItems) || !cartItems.length) {
+    return { appliedThreshold: null, itemDiscount: 0, shippingDiscount: 0, nextTierHint: null };
+  }
+
+  const activeRules = (Array.isArray(STORE_ORDER_THRESHOLDS) ? STORE_ORDER_THRESHOLDS : DEFAULT_ORDER_THRESHOLDS)
+    .filter(r => r.active !== false && Number(r.minOrder) > 0);
+
+  if (!activeRules.length) {
+    return { appliedThreshold: null, itemDiscount: 0, shippingDiscount: 0, nextTierHint: null };
+  }
+
+  const subtotal = cartItems.reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.qty) || 1)), 0);
+  const qualifying = [];
+  const potentialNext = [];
+
+  activeRules.forEach(rule => {
+    const min = Number(rule.minOrder);
+    if (subtotal >= min) {
+      let itemDiscount = 0;
+      let shippingDiscount = 0;
+
+      if (rule.rewardType === "delivery_free") {
+        shippingDiscount = 50; // flat 50 EGP Alexandria delivery fee waived
+      } else if (rule.rewardType === "delivery_fixed") {
+        shippingDiscount = Math.min(50, Number(rule.rewardValue) || 0);
+      } else if (rule.rewardType === "item_percent") {
+        itemDiscount = Math.round((subtotal * (Number(rule.rewardValue) || 0)) / 100);
+      } else if (rule.rewardType === "item_fixed") {
+        itemDiscount = Math.min(subtotal, Number(rule.rewardValue) || 0);
+      }
+
+      qualifying.push({
+        rule,
+        itemDiscount,
+        shippingDiscount,
+        totalSavings: itemDiscount + shippingDiscount
+      });
+    } else {
+      const diff = min - subtotal;
+      potentialNext.push({
+        rule,
+        diff
+      });
+    }
+  });
+
+  let best = null;
+  if (qualifying.length > 0) {
+    qualifying.sort((a, b) => {
+      if (b.totalSavings !== a.totalSavings) return b.totalSavings - a.totalSavings;
+      return Number(b.rule.minOrder) - Number(a.rule.minOrder);
+    });
+    best = qualifying[0];
+  }
+
+  let nextTierHint = null;
+  if (potentialNext.length > 0) {
+    potentialNext.sort((a, b) => a.diff - b.diff);
+    const next = potentialNext[0];
+    let rewardText = "";
+    if (next.rule.rewardType === "delivery_free") {
+      rewardText = "FREE Alexandria delivery!";
+    } else if (next.rule.rewardType === "delivery_fixed") {
+      rewardText = `${next.rule.rewardValue} EGP off delivery!`;
+    } else if (next.rule.rewardType === "item_percent") {
+      rewardText = `${next.rule.rewardValue}% OFF your order!`;
+    } else if (next.rule.rewardType === "item_fixed") {
+      rewardText = `${next.rule.rewardValue} EGP OFF your order!`;
+    }
+
+    nextTierHint = `✦ Add ${next.diff} EGP more for ${rewardText}`;
+  }
+
+  return {
+    appliedThreshold: best ? best.rule : null,
+    itemDiscount: best ? best.itemDiscount : 0,
+    shippingDiscount: best ? best.shippingDiscount : 0,
+    nextTierHint
+  };
+}
+window.evaluateOrderThresholds = evaluateOrderThresholds;
 
 // ── BUNDLE STOREFRONT SHOWCASE & ELIGIBILITY HELPERS ──
 function getProductBundleEligibility(product) {
@@ -409,7 +517,7 @@ function renderBundleDealsBanner() {
     const highlightClass = isFreeDeliv ? " highlight-free-ship" : "";
     return `
       <div class="bundle-hero-card${highlightClass}" onclick="handleBundleHeroClick('${escapeHtml(b.target || 'sticker sheet')}')" role="button" tabindex="0" title="Click to view eligible ${escapeHtml(targetLabel)}">
-        <div class="bundle-hero-qty">BUY ${b.minQty}</div>
+        <div class="bundle-hero-qty">BUY ${b.minQty}${b.exactQty === false ? '+' : ' ONLY'}</div>
         <div class="bundle-hero-card-info">
           <div class="bundle-hero-card-reward">${escapeHtml(reward)}</div>
           <div class="bundle-hero-card-target">on ${escapeHtml(targetLabel)}</div>
@@ -422,7 +530,7 @@ function renderBundleDealsBanner() {
   }).join("");
 
   const badgeText = boxConfig.badge || "BUNDLE & SAVE DEALS";
-  const titleText = boxConfig.title || "Buy 2 or More & Save Instantly";
+  const titleText = boxConfig.title || "Buy 2 or 3 Sheets & Save Instantly";
   const subtitleText = boxConfig.subtitle !== undefined ? boxConfig.subtitle : "Mix & match your favorite designs — discount or free delivery unlocks automatically in your cart!";
   const footnoteText = (boxConfig.footnote || "").trim();
 
@@ -1588,6 +1696,13 @@ async function loadProducts(forceRefresh = false) {
     if (safeMap.offers && Array.isArray(safeMap.offers)) {
       STORE_OFFERS = safeMap.offers;
     }
+    if (safeMap.orderThresholds && Array.isArray(safeMap.orderThresholds)) {
+      STORE_ORDER_THRESHOLDS = safeMap.orderThresholds;
+      window.STORE_ORDER_THRESHOLDS = STORE_ORDER_THRESHOLDS;
+    } else if (safeMap.thresholdOffers && Array.isArray(safeMap.thresholdOffers)) {
+      STORE_ORDER_THRESHOLDS = safeMap.thresholdOffers;
+      window.STORE_ORDER_THRESHOLDS = STORE_ORDER_THRESHOLDS;
+    }
     if (safeMap.bundles && Array.isArray(safeMap.bundles)) {
       STORE_BUNDLES = safeMap.bundles;
       window.STORE_BUNDLES = STORE_BUNDLES;
@@ -2440,11 +2555,12 @@ function updateCartUI() {
   }
 
   const bundleResult = evaluateCartBundles(cart);
+  const spendResult = typeof evaluateOrderThresholds === "function" ? evaluateOrderThresholds(cart) : { appliedThreshold: null, itemDiscount: 0, shippingDiscount: 0, nextTierHint: null };
 
   if (bundleBanner) {
+    let pillsHTML = "";
     if (bundleResult.appliedBundle) {
-      bundleBanner.style.display = "block";
-      bundleBanner.innerHTML = `
+      pillsHTML += `
         <div class="cart-bundle-pill applied">
           <i data-lucide="package-check" class="icon-xs"></i>
           <div class="bundle-pill-text">
@@ -2452,16 +2568,31 @@ function updateCartUI() {
             <span>${escapeHtml(bundleResult.appliedBundle.label)}</span>
           </div>
         </div>
-        ${bundleResult.nextTierHint ? `<div class="cart-bundle-hint"><i data-lucide="sparkles" class="icon-xs"></i> ${escapeHtml(bundleResult.nextTierHint)}</div>` : ''}
       `;
-    } else if (bundleResult.nextTierHint) {
-      bundleBanner.style.display = "block";
-      bundleBanner.innerHTML = `
-        <div class="cart-bundle-pill incentive">
-          <i data-lucide="sparkles" class="icon-xs"></i>
-          <span>${escapeHtml(bundleResult.nextTierHint)}</span>
+    }
+    if (spendResult.appliedThreshold) {
+      const isFreeShip = spendResult.shippingDiscount >= 50;
+      pillsHTML += `
+        <div class="cart-bundle-pill applied" style="background:#1b4332;border-color:#2d6a4f;margin-top:${pillsHTML ? '6px' : '0'};">
+          <i data-lucide="${isFreeShip ? 'truck' : 'sparkles'}" class="icon-xs" style="color:#52b788!important;"></i>
+          <div class="bundle-pill-text">
+            <strong style="color:#b7e4c7;">${isFreeShip ? 'Free Delivery Unlocked!' : 'Spend Reward Applied!'}</strong>
+            <span>${escapeHtml(spendResult.appliedThreshold.title || (isFreeShip ? `Orders over ${spendResult.appliedThreshold.minOrder} EGP` : `${spendResult.itemDiscount} EGP OFF`))}</span>
+          </div>
         </div>
       `;
+    }
+
+    let hintHTML = "";
+    if (spendResult.nextTierHint) {
+      hintHTML += `<div class="cart-bundle-hint"><i data-lucide="sparkles" class="icon-xs"></i> ${escapeHtml(spendResult.nextTierHint)}</div>`;
+    } else if (bundleResult.nextTierHint) {
+      hintHTML += `<div class="cart-bundle-hint"><i data-lucide="sparkles" class="icon-xs"></i> ${escapeHtml(bundleResult.nextTierHint)}</div>`;
+    }
+
+    if (pillsHTML || hintHTML) {
+      bundleBanner.style.display = "block";
+      bundleBanner.innerHTML = pillsHTML + hintHTML;
     } else {
       bundleBanner.style.display = "none";
       bundleBanner.innerHTML = "";
@@ -2507,11 +2638,12 @@ function updateCartUI() {
   }
 
   const rawSubtotal = cart.reduce((s, i) => s + ((Number(i.price) || 0) * (i.qty || 1)), 0);
-  const subtotalAfterBundle = Math.max(0, rawSubtotal - bundleResult.itemDiscount);
+  const totalItemDiscount = (bundleResult ? bundleResult.itemDiscount : 0) + (spendResult ? spendResult.itemDiscount : 0);
+  const subtotalAfterDiscounts = Math.max(0, rawSubtotal - totalItemDiscount);
   const subtotalEl = document.getElementById("cart-subtotal");
   if (subtotalEl) {
-    if (bundleResult.itemDiscount > 0) {
-      subtotalEl.innerHTML = `${subtotalAfterBundle} EGP <span class="cart-raw-subtotal">${rawSubtotal} EGP</span>`;
+    if (totalItemDiscount > 0) {
+      subtotalEl.innerHTML = `${subtotalAfterDiscounts} EGP <span class="cart-raw-subtotal">${rawSubtotal} EGP</span>`;
     } else {
       subtotalEl.textContent = rawSubtotal > 0 ? rawSubtotal + " EGP" : "0 EGP";
     }
@@ -2520,10 +2652,17 @@ function updateCartUI() {
   // Live delivery note in cart footer
   const cartNote = footerEl ? footerEl.querySelector(".cart-note") : null;
   if (cartNote) {
-    if (bundleResult.shippingDiscount >= 50) {
-      cartNote.innerHTML = `<i data-lucide="truck" class="icon-xs"></i> <strong style="color:#27ae60;">FREE Alexandria Delivery</strong> (Bundle unlocked!)`;
-    } else if (bundleResult.shippingDiscount > 0) {
-      cartNote.innerHTML = `<i data-lucide="truck" class="icon-xs"></i> <strong style="color:#27ae60;">${50 - bundleResult.shippingDiscount} EGP</strong> delivery (${bundleResult.shippingDiscount} EGP off via Bundle!)`;
+    const totalShipDiscount = Math.max(
+      bundleResult ? bundleResult.shippingDiscount : 0,
+      spendResult ? spendResult.shippingDiscount : 0
+    );
+    if (totalShipDiscount >= 50) {
+      const reason = (spendResult && spendResult.shippingDiscount >= 50)
+        ? (spendResult.appliedThreshold.title || `Orders over ${spendResult.appliedThreshold.minOrder} EGP!`)
+        : (bundleResult && bundleResult.appliedBundle ? bundleResult.appliedBundle.label : "Deal unlocked!");
+      cartNote.innerHTML = `<i data-lucide="truck" class="icon-xs"></i> <strong style="color:#27ae60;">FREE Alexandria Delivery</strong> (${escapeHtml(reason)})`;
+    } else if (totalShipDiscount > 0) {
+      cartNote.innerHTML = `<i data-lucide="truck" class="icon-xs"></i> <strong style="color:#27ae60;">${50 - totalShipDiscount} EGP</strong> delivery (${totalShipDiscount} EGP off!)`;
     } else {
       cartNote.innerHTML = `<i data-lucide="info" class="icon-xs"></i> 50 EGP flat delivery in Alexandria`;
     }
@@ -2737,15 +2876,18 @@ function populateReview() {
   }
 
   const bundleResult = evaluateCartBundles(cart);
+  const spendResult = typeof evaluateOrderThresholds === "function" ? evaluateOrderThresholds(cart) : { appliedThreshold: null, itemDiscount: 0, shippingDiscount: 0, nextTierHint: null };
   const subtotal = cart.reduce((s, i) => s + (Number(i.price) || 0) * (i.qty || 1), 0);
   const baseShipping = 50; // Flat 50 EGP to Alexandria
   
-  let shippingFee = Math.max(0, baseShipping - (bundleResult ? bundleResult.shippingDiscount : 0));
+  const combinedShippingDiscount = Math.min(50, (bundleResult ? bundleResult.shippingDiscount : 0) + (spendResult ? spendResult.shippingDiscount : 0));
+  let shippingFee = Math.max(0, baseShipping - combinedShippingDiscount);
   let bundleItemDiscount = bundleResult ? bundleResult.itemDiscount : 0;
+  let spendItemDiscount = spendResult ? spendResult.itemDiscount : 0;
   let promoDiscount = 0;
 
   if (appliedPromo) {
-    const subtotalForPromo = Math.max(0, subtotal - bundleItemDiscount);
+    const subtotalForPromo = Math.max(0, subtotal - bundleItemDiscount - spendItemDiscount);
     if (appliedPromo.type === "percentage") {
       promoDiscount = Math.round((subtotalForPromo * appliedPromo.value) / 100);
     } else if (appliedPromo.type === "fixed") {
@@ -2756,7 +2898,7 @@ function populateReview() {
     appliedPromo.discountAmount = promoDiscount;
   }
 
-  const total = Math.max(0, subtotal - bundleItemDiscount - promoDiscount + shippingFee);
+  const total = Math.max(0, subtotal - bundleItemDiscount - spendItemDiscount - promoDiscount + shippingFee);
   
   let methodLabel = "Cash on Delivery (COD)";
   if (currentPaymentMethod === "vodafone") methodLabel = "Vodafone Cash";
@@ -2767,12 +2909,17 @@ function populateReview() {
   if (totalsEl) {
     let shippingDisplay = `${shippingFee} EGP`;
     if (shippingFee === 0) {
-      const freeReason = bundleResult && bundleResult.shippingDiscount >= 50
-        ? `FREE (${bundleResult.appliedBundle.label})`
-        : 'FREE';
+      let freeReason = 'FREE';
+      if (spendResult && spendResult.shippingDiscount >= 50) {
+        freeReason = `FREE (${spendResult.appliedThreshold.title || `Orders over ${spendResult.appliedThreshold.minOrder} EGP`})`;
+      } else if (bundleResult && bundleResult.shippingDiscount >= 50) {
+        freeReason = `FREE (${bundleResult.appliedBundle.label})`;
+      } else if (appliedPromo && appliedPromo.type === "freeship") {
+        freeReason = `FREE (${appliedPromo.code})`;
+      }
       shippingDisplay = `<strong style="color:#27ae60;">${escapeHtml(freeReason)}</strong>`;
-    } else if (bundleResult && bundleResult.shippingDiscount > 0) {
-      shippingDisplay = `<span>${shippingFee} EGP <small style="color:#27ae60;">(-${bundleResult.shippingDiscount} EGP bundle)</small></span>`;
+    } else if (combinedShippingDiscount > 0) {
+      shippingDisplay = `<span>${shippingFee} EGP <small style="color:#27ae60;">(-${combinedShippingDiscount} EGP discount)</small></span>`;
     }
 
     totalsEl.innerHTML = `
@@ -2793,6 +2940,9 @@ function populateReview() {
       <div class="review-total-row"><span>subtotal</span><span>${subtotal > 0 ? subtotal + " EGP" : "0 EGP"}</span></div>
       ${bundleItemDiscount > 0 ? `
         <div class="review-total-row discount-row"><span>bundle deal (${escapeHtml(bundleResult.appliedBundle.label)})</span><span>-${bundleItemDiscount} EGP</span></div>
+      ` : ''}
+      ${spendItemDiscount > 0 ? `
+        <div class="review-total-row discount-row"><span>order reward (${escapeHtml(spendResult.appliedThreshold.title || `Orders over ${spendResult.appliedThreshold.minOrder} EGP`)})</span><span>-${spendItemDiscount} EGP</span></div>
       ` : ''}
       ${promoDiscount > 0 ? `
         <div class="review-total-row discount-row"><span>promo discount (${appliedPromo.code})</span><span>-${promoDiscount} EGP</span></div>
@@ -2833,7 +2983,9 @@ async function placeOrder() {
   }));
 
   const bundleResult = evaluateCartBundles(cart);
-  const bundleInfo = bundleResult.appliedBundle ? ` [Bundle: ${bundleResult.appliedBundle.label}]` : "";
+  const spendResult = typeof evaluateOrderThresholds === "function" ? evaluateOrderThresholds(cart) : { appliedThreshold: null, itemDiscount: 0, shippingDiscount: 0, nextTierHint: null };
+  const bundleInfo = bundleResult && bundleResult.appliedBundle ? ` [Bundle: ${bundleResult.appliedBundle.label}]` : "";
+  const spendInfo = spendResult && spendResult.appliedThreshold ? ` [Spend Offer: ${spendResult.appliedThreshold.title || `Orders over ${spendResult.appliedThreshold.minOrder} EGP`}]` : "";
   const promoInfo = appliedPromo ? ` [Promo: ${appliedPromo.code} (-${appliedPromo.discountAmount} EGP)]` : "";
 
   let mappedPaymentMethod = "Cash on Delivery";
@@ -2842,13 +2994,16 @@ async function placeOrder() {
   else if (currentPaymentMethod === "cod") mappedPaymentMethod = "Cash on Delivery";
 
   let finalShippingPrice = 50;
-  if (appliedPromo?.type === "freeship" || (bundleResult && bundleResult.shippingDiscount >= 50)) {
+  if (appliedPromo?.type === "freeship" || (bundleResult && bundleResult.shippingDiscount >= 50) || (spendResult && spendResult.shippingDiscount >= 50)) {
     finalShippingPrice = 0;
-  } else if (bundleResult && bundleResult.shippingDiscount > 0) {
-    finalShippingPrice = Math.max(0, 50 - bundleResult.shippingDiscount);
+  } else {
+    const combinedShipDiscount = Math.min(50, (bundleResult ? bundleResult.shippingDiscount : 0) + (spendResult ? spendResult.shippingDiscount : 0));
+    if (combinedShipDiscount > 0) {
+      finalShippingPrice = Math.max(0, 50 - combinedShipDiscount);
+    }
   }
 
-  const totalDiscount = (bundleResult ? bundleResult.itemDiscount : 0) + (appliedPromo?.discountAmount || 0);
+  const totalDiscount = (bundleResult ? bundleResult.itemDiscount : 0) + (spendResult ? spendResult.itemDiscount : 0) + (appliedPromo?.discountAmount || 0);
 
   const payload = {
     customerName: customerData.name,
@@ -2858,8 +3013,8 @@ async function placeOrder() {
     items,
     shippingPrice: finalShippingPrice,
     paymentMethod: mappedPaymentMethod,
-    note: ((customerData.note ? customerData.note : "") + bundleInfo + promoInfo).trim() || null,
-    promoCode: appliedPromo?.code || (bundleResult?.appliedBundle ? bundleResult.appliedBundle.label : null),
+    note: ((customerData.note ? customerData.note : "") + bundleInfo + spendInfo + promoInfo).trim() || null,
+    promoCode: appliedPromo?.code || (spendResult?.appliedThreshold ? (spendResult.appliedThreshold.title || `Spend over ${spendResult.appliedThreshold.minOrder} EGP`) : (bundleResult?.appliedBundle ? bundleResult.appliedBundle.label : null)),
     discount: totalDiscount,
   };
 

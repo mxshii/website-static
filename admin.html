@@ -1484,6 +1484,9 @@
         <button type="button" class="modal-tab-btn active" id="tab-btn-coupons" onclick="switchOffersTab('coupons')">
           <i data-lucide="percent" class="icon-xs"></i> Promo Codes &amp; Coupons
         </button>
+        <button type="button" class="modal-tab-btn" id="tab-btn-thresholds" onclick="switchOffersTab('thresholds')">
+          <i data-lucide="award" class="icon-xs"></i> Spend Offers &amp; Free Delivery
+        </button>
         <button type="button" class="modal-tab-btn" id="tab-btn-banner" onclick="switchOffersTab('banner')">
           <i data-lucide="megaphone" class="icon-xs"></i> Top Announcement Banner
         </button>
@@ -1530,7 +1533,46 @@
         <div id="promo-codes-list"></div>
       </div>
 
-      <!-- OFFERS TAB 2: BANNER -->
+      <!-- OFFERS TAB 2: SPEND THRESHOLDS (AUTOMATIC DISCOUNTS & FREE DELIVERY) -->
+      <div id="offers-tab-thresholds" style="display:none;">
+        <div style="background:var(--beige-200);border:1px solid var(--beige-300);border-radius:var(--radius-lg);padding:16px;margin-bottom:20px;">
+          <h4 style="font-size:0.95rem;margin:0 0 4px;color:var(--coffee-800);"><i data-lucide="plus-circle" class="icon-xs"></i> Create Order Spend Rule</h4>
+          <p style="font-size:0.82rem;color:var(--coffee-500);margin:0 0 14px;">Automatically unlock discounts or free delivery when a customer's cart subtotal exceeds this amount.</p>
+          <form id="create-threshold-form" onsubmit="handleCreateThreshold(event)">
+            <div class="admin-form-grid" style="margin-bottom:12px;">
+              <div class="admin-input-group">
+                <label>if order subtotal exceeds (egp)</label>
+                <input type="number" id="new-threshold-min" placeholder="e.g. 200" min="1" step="1" required />
+              </div>
+              <div class="admin-input-group">
+                <label>reward type</label>
+                <select id="new-threshold-type" onchange="handleThresholdTypeChange()">
+                  <option value="delivery_free">Free Delivery (Alexandria)</option>
+                  <option value="item_percent">Percentage Off Order (%)</option>
+                  <option value="item_fixed">Fixed Amount Off Order (EGP)</option>
+                  <option value="delivery_fixed">Discount On Delivery (EGP Off)</option>
+                </select>
+              </div>
+              <div class="admin-input-group" id="threshold-val-group" style="display:none;">
+                <label id="threshold-val-label">discount value</label>
+                <input type="number" id="new-threshold-val" value="50" min="1" step="1" />
+              </div>
+              <div class="admin-input-group">
+                <label>offer title / description</label>
+                <input type="text" id="new-threshold-title" placeholder="e.g. Free Alexandria Delivery on orders over 200 EGP" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i data-lucide="plus" class="icon-xs"></i> add order spend offer
+            </button>
+          </form>
+        </div>
+
+        <h4 style="font-size:0.95rem;margin:0 0 8px;color:var(--coffee-800);">Active Order Spend Offers (Applied Automatically)</h4>
+        <div id="threshold-offers-list"></div>
+      </div>
+
+      <!-- OFFERS TAB 3: BANNER -->
       <div id="offers-tab-banner" style="display:none;">
         <div style="background:var(--beige-200);border:1px solid var(--beige-300);border-radius:var(--radius-lg);padding:16px;">
           <div class="admin-input-group" style="margin-bottom:16px;">
@@ -1723,7 +1765,7 @@
 
           <div class="admin-input-group" style="margin-bottom:14px;">
             <label>main box headline / title *</label>
-            <input type="text" id="bundle-box-title" value="Buy 2 or More &amp; Save Instantly" placeholder="e.g. Buy 2 or More &amp; Save Instantly" oninput="updateBundleBoxPreview()" required />
+            <input type="text" id="bundle-box-title" value="Buy 2 or 3 Sheets &amp; Save Instantly" placeholder="e.g. Buy 2 or 3 Sheets &amp; Save Instantly" oninput="updateBundleBoxPreview()" required />
           </div>
 
           <div class="admin-input-group" style="margin-bottom:14px;">
@@ -1792,13 +1834,13 @@
           <form id="create-bundle-form" onsubmit="handleCreateBundle(event)">
             <div class="admin-form-grid" style="margin-bottom:14px;">
               <div class="admin-input-group">
-                <label>minimum quantity required *</label>
+                <label>exact quantity required *</label>
                 <select id="new-bundle-qty" onchange="autoSuggestBundleLabel()">
-                  <option value="2" selected>Buy 2 or more</option>
-                  <option value="3">Buy 3 or more</option>
-                  <option value="4">Buy 4 or more</option>
-                  <option value="5">Buy 5 or more</option>
-                  <option value="6">Buy 6 or more</option>
+                  <option value="2" selected>Buy 2 Only</option>
+                  <option value="3">Buy 3 Only</option>
+                  <option value="4">Buy 4 Only</option>
+                  <option value="5">Buy 5 Only</option>
+                  <option value="6">Buy 6 Only</option>
                 </select>
               </div>
 
@@ -1830,7 +1872,7 @@
 
             <div class="admin-input-group" style="margin-bottom:16px;">
               <label>bundle title / label shown to customer</label>
-              <input type="text" id="new-bundle-label" value="Buy 2 Sheets: 10 EGP OFF" placeholder="e.g. Buy 2 Sheets: 10 EGP OFF" required />
+              <input type="text" id="new-bundle-label" value="Buy 2 Sheets Only: 10 EGP OFF" placeholder="e.g. Buy 2 Sheets Only: 10 EGP OFF" required />
             </div>
 
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -1955,6 +1997,7 @@
     } catch (_) {}
     let storefrontProducts = [];
     let storefrontOffers = [];
+    let storefrontOrderThresholds = [];
     let storefrontBanner = {
       active: true,
       text: "✦ SPECIAL OFFER: Use code STATIC10 for 10% OFF all stickers! · Free Alexandria delivery on orders over 150 EGP ✦"
@@ -1999,19 +2042,21 @@
           {
             id: "bundle_2",
             minQty: 2,
+            exactQty: true,
             target: "sticker sheet",
             discountType: "item_fixed",
             discountValue: 10,
-            label: "Buy 2 Sheets: 10 EGP OFF",
+            label: "Buy 2 Sheets Only: 10 EGP OFF",
             active: true
           },
           {
             id: "bundle_3",
             minQty: 3,
+            exactQty: true,
             target: "sticker sheet",
             discountType: "delivery_free",
             discountValue: 50,
-            label: "Buy 3 Sheets: FREE Delivery",
+            label: "Buy 3 Sheets Only: FREE Delivery",
             active: true
           }
         ];
@@ -2020,7 +2065,7 @@
     const STORE_DEFAULT_BUNDLE_BOX = {
       enabled: true,
       badge: "BUNDLE & SAVE DEALS",
-      title: "Buy 2 or More & Save Instantly",
+      title: "Buy 2 or 3 Sheets & Save Instantly",
       subtitle: "Mix & match your favorite designs — discount or free delivery unlocks automatically in your cart!",
       footnote: "",
       showOnShop: true,
@@ -2094,6 +2139,8 @@
       return {
         items: storefrontProducts,
         offers: storefrontOffers,
+        orderThresholds: storefrontOrderThresholds,
+        thresholdOffers: storefrontOrderThresholds,
         banner: storefrontBanner,
         categories: storefrontCategories,
         bundles: storefrontBundles,
@@ -2694,6 +2741,24 @@
         ];
       }
 
+      // Load Order Spend Threshold Offers
+      if (safeMap.orderThresholds && Array.isArray(safeMap.orderThresholds)) {
+        storefrontOrderThresholds = safeMap.orderThresholds;
+      } else if (safeMap.thresholdOffers && Array.isArray(safeMap.thresholdOffers)) {
+        storefrontOrderThresholds = safeMap.thresholdOffers;
+      } else {
+        storefrontOrderThresholds = [
+          {
+            id: "thresh_150_freeship",
+            minOrder: 150,
+            rewardType: "delivery_free",
+            rewardValue: 50,
+            title: "Free Alexandria delivery on orders over 150 EGP",
+            active: true
+          }
+        ];
+      }
+
       // Load Banner
       if (safeMap.banner) {
         storefrontBanner = safeMap.banner;
@@ -2723,6 +2788,7 @@
       renderAdminItems();
       updateAdminStats();
       renderPromoCodesList();
+      renderThresholdOffersList();
     }
 
     async function fetchCatalogAndStock() {
@@ -3868,6 +3934,8 @@
     // ── OFFERS & PROMOS MODAL CONTROLS ──
     function openOffersModal() {
       renderPromoCodesList();
+      renderThresholdOffersList();
+      handleThresholdTypeChange();
       const bText = document.getElementById("banner-text-input");
       const bActive = document.getElementById("banner-active-cb");
       const bDeals = document.getElementById("banner-deals-cb");
@@ -3887,8 +3955,10 @@
 
     function switchOffersTab(tab) {
       document.getElementById("offers-tab-coupons").style.display = tab === "coupons" ? "block" : "none";
+      document.getElementById("offers-tab-thresholds").style.display = tab === "thresholds" ? "block" : "none";
       document.getElementById("offers-tab-banner").style.display = tab === "banner" ? "block" : "none";
       document.getElementById("tab-btn-coupons").classList.toggle("active", tab === "coupons");
+      document.getElementById("tab-btn-thresholds").classList.toggle("active", tab === "thresholds");
       document.getElementById("tab-btn-banner").classList.toggle("active", tab === "banner");
       renderIcons();
     }
@@ -3987,6 +4057,157 @@
       }
     }
 
+    // ── ORDER SPEND THRESHOLDS (AUTOMATIC DISCOUNTS & FREE DELIVERY) ──
+    function handleThresholdTypeChange() {
+      const type = document.getElementById("new-threshold-type")?.value || "delivery_free";
+      const valGroup = document.getElementById("threshold-val-group");
+      const valLabel = document.getElementById("threshold-val-label");
+      const valInput = document.getElementById("new-threshold-val");
+      const titleInput = document.getElementById("new-threshold-title");
+      const minInput = document.getElementById("new-threshold-min");
+      const minVal = minInput?.value || "200";
+
+      if (type === "delivery_free") {
+        if (valGroup) valGroup.style.display = "none";
+        if (valInput) valInput.value = "50";
+        if (titleInput && (!titleInput.value || titleInput.value.includes("Delivery") || titleInput.value.includes("OFF"))) {
+          titleInput.placeholder = `Free Alexandria Delivery on orders over ${minVal} EGP`;
+        }
+      } else if (type === "item_percent") {
+        if (valGroup) valGroup.style.display = "block";
+        if (valLabel) valLabel.textContent = "discount percentage (%)";
+        if (valInput) valInput.value = "10";
+        if (titleInput && (!titleInput.value || titleInput.value.includes("Delivery") || titleInput.value.includes("OFF"))) {
+          titleInput.placeholder = `10% OFF all orders over ${minVal} EGP`;
+        }
+      } else if (type === "item_fixed") {
+        if (valGroup) valGroup.style.display = "block";
+        if (valLabel) valLabel.textContent = "discount amount (EGP off order)";
+        if (valInput) valInput.value = "20";
+        if (titleInput && (!titleInput.value || titleInput.value.includes("Delivery") || titleInput.value.includes("OFF"))) {
+          titleInput.placeholder = `20 EGP OFF orders over ${minVal} EGP`;
+        }
+      } else if (type === "delivery_fixed") {
+        if (valGroup) valGroup.style.display = "block";
+        if (valLabel) valLabel.textContent = "delivery discount (EGP off fee)";
+        if (valInput) valInput.value = "25";
+        if (titleInput && (!titleInput.value || titleInput.value.includes("Delivery") || titleInput.value.includes("OFF"))) {
+          titleInput.placeholder = `25 EGP off delivery for orders over ${minVal} EGP`;
+        }
+      }
+    }
+
+    function renderThresholdOffersList() {
+      const container = document.getElementById("threshold-offers-list");
+      if (!container) return;
+
+      if (!storefrontOrderThresholds.length) {
+        container.innerHTML = `<p style="color:var(--coffee-500);font-size:0.85rem;">No order spend rules created yet. Add one above to automatically give free delivery or discounts when orders exceed a certain amount.</p>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <table class="offers-table">
+          <thead>
+            <tr>
+              <th>If Order Exceeds</th>
+              <th>Reward Unlocked</th>
+              <th>Offer Title / Note</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${storefrontOrderThresholds.map((t, idx) => {
+              let rewardLabel = "";
+              if (t.rewardType === "delivery_free") {
+                rewardLabel = `<span style="color:#1b5e20;font-weight:700;"><i data-lucide="truck" class="icon-xs" style="vertical-align:middle;margin-right:3px;"></i> FREE Delivery</span>`;
+              } else if (t.rewardType === "item_percent") {
+                rewardLabel = `<span style="color:#e65100;font-weight:700;"><i data-lucide="percent" class="icon-xs" style="vertical-align:middle;margin-right:3px;"></i> ${t.rewardValue}% OFF Order</span>`;
+              } else if (t.rewardType === "item_fixed") {
+                rewardLabel = `<span style="color:#0d47a1;font-weight:700;"><i data-lucide="badge-dollar-sign" class="icon-xs" style="vertical-align:middle;margin-right:3px;"></i> ${t.rewardValue} EGP OFF Order</span>`;
+              } else if (t.rewardType === "delivery_fixed") {
+                rewardLabel = `<span style="color:#2e7d32;font-weight:700;"><i data-lucide="truck" class="icon-xs" style="vertical-align:middle;margin-right:3px;"></i> ${t.rewardValue} EGP OFF Delivery</span>`;
+              }
+              const active = t.active !== false;
+              return `
+                <tr>
+                  <td><span class="offer-code-pill" style="background:#eef7ee;color:#1e4620;border-color:#c8e6c9;">${t.minOrder} EGP+</span></td>
+                  <td>${rewardLabel}</td>
+                  <td><small style="color:var(--coffee-700);">${escapeHtml(t.title || (t.rewardType === "delivery_free" ? `Free delivery on orders over ${t.minOrder} EGP` : `${t.rewardValue} off over ${t.minOrder} EGP`))}</small></td>
+                  <td>
+                    <button type="button" class="btn btn-outline" style="padding:4px 8px;font-size:0.72rem;background:${active ? '#d4edda' : '#f8d7da'};color:${active ? '#155724' : '#721c24'};border-color:${active ? '#c3e6cb' : '#f5c6cb'};" onclick="toggleThresholdActive(${idx})">
+                      ${active ? 'Active' : 'Disabled'}
+                    </button>
+                  </td>
+                  <td>
+                    <button type="button" class="delete-item-btn" onclick="deleteThresholdOffer(${idx})" title="Delete rule">
+                      <i data-lucide="trash-2" class="icon-xs"></i>
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+      renderIcons();
+    }
+
+    async function handleCreateThreshold(e) {
+      e.preventDefault();
+      const min = parseFloat(document.getElementById("new-threshold-min")?.value) || 0;
+      const type = document.getElementById("new-threshold-type")?.value || "delivery_free";
+      let val = parseFloat(document.getElementById("new-threshold-val")?.value) || (type === "delivery_free" ? 50 : 10);
+      let title = (document.getElementById("new-threshold-title")?.value || "").trim();
+
+      if (min <= 0) {
+        showToast("Please enter an order amount threshold greater than 0");
+        return;
+      }
+
+      if (!title) {
+        if (type === "delivery_free") title = `Free Alexandria Delivery on orders over ${min} EGP`;
+        else if (type === "item_percent") title = `${val}% OFF orders over ${min} EGP`;
+        else if (type === "item_fixed") title = `${val} EGP OFF orders over ${min} EGP`;
+        else if (type === "delivery_fixed") title = `${val} EGP off delivery on orders over ${min} EGP`;
+      }
+
+      const id = "thresh_" + Date.now();
+      storefrontOrderThresholds.unshift({
+        id,
+        minOrder: min,
+        rewardType: type,
+        rewardValue: val,
+        title,
+        active: true
+      });
+
+      renderThresholdOffersList();
+      await saveStorefrontPictureMap(getStorefrontPayload());
+      document.getElementById("create-threshold-form")?.reset();
+      handleThresholdTypeChange();
+      showToast(`Spend rule (over ${min} EGP) added & synced live ✦`);
+    }
+
+    async function toggleThresholdActive(idx) {
+      if (storefrontOrderThresholds[idx]) {
+        storefrontOrderThresholds[idx].active = storefrontOrderThresholds[idx].active === false ? true : false;
+        renderThresholdOffersList();
+        await saveStorefrontPictureMap(getStorefrontPayload());
+      }
+    }
+
+    async function deleteThresholdOffer(idx) {
+      if (storefrontOrderThresholds[idx]) {
+        const item = storefrontOrderThresholds[idx];
+        storefrontOrderThresholds.splice(idx, 1);
+        renderThresholdOffersList();
+        await saveStorefrontPictureMap(getStorefrontPayload());
+        showToast(`Spend offer for ${item.minOrder} EGP removed`);
+      }
+    }
+
     async function saveBannerSettings() {
       const text = (document.getElementById("banner-text-input")?.value || "").trim();
       const active = document.getElementById("banner-active-cb")?.checked || false;
@@ -4044,7 +4265,7 @@
 
       if (elEnabled) elEnabled.checked = box.enabled !== false;
       if (elBadge) elBadge.value = box.badge || "BUNDLE & SAVE DEALS";
-      if (elTitle) elTitle.value = box.title || "Buy 2 or More & Save Instantly";
+      if (elTitle) elTitle.value = box.title || "Buy 2 or 3 Sheets & Save Instantly";
       if (elSubtitle) elSubtitle.value = box.subtitle || "";
       if (elFootnote) elFootnote.value = (box.footnote !== undefined && box.footnote !== null) ? box.footnote : "";
       if (elShop) elShop.checked = box.showOnShop !== false;
@@ -4061,7 +4282,7 @@
 
       const enabled = document.getElementById("bundle-box-enabled")?.checked !== false;
       const badge = document.getElementById("bundle-box-badge")?.value || "BUNDLE & SAVE DEALS";
-      const title = document.getElementById("bundle-box-title")?.value || "Buy 2 or More & Save Instantly";
+      const title = document.getElementById("bundle-box-title")?.value || "Buy 2 or 3 Sheets & Save Instantly";
       const subtitle = document.getElementById("bundle-box-subtitle")?.value || "";
       const footnote = document.getElementById("bundle-box-footnote")?.value || "";
       const showShop = document.getElementById("bundle-box-show-shop")?.checked !== false;
@@ -4114,7 +4335,7 @@
           const isFreeDeliv = b.discountType === "delivery_free";
           return `
             <div class="bundle-hero-card${isFreeDeliv ? ' highlight-free-ship' : ''}" style="cursor:default;">
-              <div class="bundle-hero-qty">BUY ${b.minQty}</div>
+              <div class="bundle-hero-qty">BUY ${b.minQty}${b.exactQty === false ? '+' : ' ONLY'}</div>
               <div class="bundle-hero-card-info">
                 <div class="bundle-hero-card-reward">${escapeHtml(reward)}</div>
                 <div class="bundle-hero-card-target">on ${escapeHtml(targetLabel)}</div>
@@ -4155,7 +4376,7 @@
     async function saveBundleBoxSettings() {
       const enabled = document.getElementById("bundle-box-enabled")?.checked !== false;
       const badge = (document.getElementById("bundle-box-badge")?.value || "BUNDLE & SAVE DEALS").trim();
-      const title = (document.getElementById("bundle-box-title")?.value || "Buy 2 or More & Save Instantly").trim();
+      const title = (document.getElementById("bundle-box-title")?.value || "Buy 2 or 3 Sheets & Save Instantly").trim();
       const subtitle = (document.getElementById("bundle-box-subtitle")?.value || "").trim();
       const footnote = (document.getElementById("bundle-box-footnote")?.value || "").trim();
       const showShop = document.getElementById("bundle-box-show-shop")?.checked !== false;
@@ -4247,7 +4468,7 @@
         rewardText = `${val} EGP OFF`;
       }
 
-      labelInput.value = `Buy ${qty} ${targetText}: ${rewardText}`;
+      labelInput.value = `Buy ${qty} ${targetText} Only: ${rewardText}`;
     }
 
     function renderBundlesList() {
@@ -4294,7 +4515,7 @@
 
               return `
                 <tr>
-                  <td><span class="bundle-tier-pill">Buy ${b.minQty}+</span></td>
+                  <td><span class="bundle-tier-pill">Buy ${b.minQty}${b.exactQty === false ? '+' : ' Only'}</span></td>
                   <td><span class="bundle-target-pill">${escapeHtml(targetLabel)}</span></td>
                   <td>${rewardDisplay}</td>
                   <td><strong>${escapeHtml(b.label || `Buy ${b.minQty} Deal`)}</strong></td>
@@ -4347,7 +4568,7 @@
 
       const titleEl = document.getElementById("bundle-form-title");
       if (titleEl) {
-        titleEl.innerHTML = `<i data-lucide="edit-3" class="icon-xs" style="color:var(--coffee-800);"></i> <span>Edit Bundle Deal (Tier ${deal.minQty}+)</span>`;
+        titleEl.innerHTML = `<i data-lucide="edit-3" class="icon-xs" style="color:var(--coffee-800);"></i> <span>Edit Bundle Deal (Tier ${deal.minQty}${deal.exactQty === false ? '+' : ' Only'})</span>`;
       }
 
       const submitBtn = document.getElementById("bundle-submit-btn");
@@ -4412,6 +4633,7 @@
       if (editingBundleIdx !== null && storefrontBundles[editingBundleIdx]) {
         // UPDATE existing bundle
         storefrontBundles[editingBundleIdx].minQty = minQty;
+        storefrontBundles[editingBundleIdx].exactQty = true;
         storefrontBundles[editingBundleIdx].target = target;
         storefrontBundles[editingBundleIdx].discountType = discountType;
         storefrontBundles[editingBundleIdx].discountValue = discountValue;
@@ -4423,6 +4645,7 @@
         const newBundle = {
           id: "bnd_" + Date.now(),
           minQty,
+          exactQty: true,
           target,
           discountType,
           discountValue,
@@ -4501,6 +4724,8 @@
           if (parsed && Array.isArray(parsed.items)) {
             storefrontProducts = parsed.items;
             if (parsed.offers) storefrontOffers = parsed.offers;
+            if (parsed.orderThresholds) storefrontOrderThresholds = parsed.orderThresholds;
+            else if (parsed.thresholdOffers) storefrontOrderThresholds = parsed.thresholdOffers;
             if (parsed.banner) storefrontBanner = parsed.banner;
             if (parsed.categories) storefrontCategories = parsed.categories;
             if (parsed.bundles) storefrontBundles = parsed.bundles;
@@ -4514,6 +4739,7 @@
           renderAdminItems();
           updateAdminStats();
           renderPromoCodesList();
+          renderThresholdOffersList();
           renderBundlesList();
           showToast("Catalog imported & synced successfully ✦");
         } catch (_) {
