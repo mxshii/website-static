@@ -154,7 +154,7 @@ const DEFAULT_STORE_BUNDLES = [
     target: "sticker sheet",
     discountType: "item_fixed",
     discountValue: 10,
-    label: "Buy 2 Sheets Only: 10 EGP OFF",
+    label: "Buy 2 Sheets: 10 EGP OFF",
     active: true
   },
   {
@@ -164,7 +164,7 @@ const DEFAULT_STORE_BUNDLES = [
     target: "sticker sheet",
     discountType: "delivery_free",
     discountValue: 50,
-    label: "Buy 3 Sheets Only: FREE Delivery",
+    label: "Buy 3 Sheets: FREE Delivery",
     active: true
   }
 ];
@@ -517,7 +517,7 @@ function renderBundleDealsBanner() {
     const highlightClass = isFreeDeliv ? " highlight-free-ship" : "";
     return `
       <div class="bundle-hero-card${highlightClass}" onclick="handleBundleHeroClick('${escapeHtml(b.target || 'sticker sheet')}')" role="button" tabindex="0" title="Click to view eligible ${escapeHtml(targetLabel)}">
-        <div class="bundle-hero-qty">BUY ${b.minQty}${b.exactQty === false ? '+' : ' ONLY'}</div>
+        <div class="bundle-hero-qty">BUY ${b.minQty}${b.exactQty === false ? '+' : ''}</div>
         <div class="bundle-hero-card-info">
           <div class="bundle-hero-card-reward">${escapeHtml(reward)}</div>
           <div class="bundle-hero-card-target">on ${escapeHtml(targetLabel)}</div>

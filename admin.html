@@ -1836,21 +1836,21 @@
               <div class="admin-input-group">
                 <label>exact quantity required *</label>
                 <select id="new-bundle-qty" onchange="autoSuggestBundleLabel()">
-                  <option value="2" selected>Buy 2 Only</option>
-                  <option value="3">Buy 3 Only</option>
-                  <option value="4">Buy 4 Only</option>
-                  <option value="5">Buy 5 Only</option>
-                  <option value="6">Buy 6 Only</option>
+                  <option value="2" selected>Buy 2</option>
+                  <option value="3">Buy 3</option>
+                  <option value="4">Buy 4</option>
+                  <option value="5">Buy 5</option>
+                  <option value="6">Buy 6</option>
                 </select>
               </div>
 
               <div class="admin-input-group">
                 <label>applies to items *</label>
                 <select id="new-bundle-target" onchange="autoSuggestBundleLabel()">
-                  <option value="sticker sheet" selected>Sticker Sheets Only (Recommended)</option>
+                  <option value="sticker sheet" selected>Sticker Sheets (Recommended)</option>
                   <option value="all">All Products (Any Items in Cart)</option>
-                  <option value="single stickers">Single Stickers Only</option>
-                  <option value="posters">Posters Only</option>
+                  <option value="single stickers">Single Stickers</option>
+                  <option value="posters">Posters</option>
                 </select>
               </div>
 
@@ -1872,7 +1872,7 @@
 
             <div class="admin-input-group" style="margin-bottom:16px;">
               <label>bundle title / label shown to customer</label>
-              <input type="text" id="new-bundle-label" value="Buy 2 Sheets Only: 10 EGP OFF" placeholder="e.g. Buy 2 Sheets Only: 10 EGP OFF" required />
+              <input type="text" id="new-bundle-label" value="Buy 2 Sheets: 10 EGP OFF" placeholder="e.g. Buy 2 Sheets: 10 EGP OFF" required />
             </div>
 
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -2046,7 +2046,7 @@
             target: "sticker sheet",
             discountType: "item_fixed",
             discountValue: 10,
-            label: "Buy 2 Sheets Only: 10 EGP OFF",
+            label: "Buy 2 Sheets: 10 EGP OFF",
             active: true
           },
           {
@@ -2056,7 +2056,7 @@
             target: "sticker sheet",
             discountType: "delivery_free",
             discountValue: 50,
-            label: "Buy 3 Sheets Only: FREE Delivery",
+            label: "Buy 3 Sheets: FREE Delivery",
             active: true
           }
         ];
@@ -4335,7 +4335,7 @@
           const isFreeDeliv = b.discountType === "delivery_free";
           return `
             <div class="bundle-hero-card${isFreeDeliv ? ' highlight-free-ship' : ''}" style="cursor:default;">
-              <div class="bundle-hero-qty">BUY ${b.minQty}${b.exactQty === false ? '+' : ' ONLY'}</div>
+              <div class="bundle-hero-qty">BUY ${b.minQty}${b.exactQty === false ? '+' : ''}</div>
               <div class="bundle-hero-card-info">
                 <div class="bundle-hero-card-reward">${escapeHtml(reward)}</div>
                 <div class="bundle-hero-card-target">on ${escapeHtml(targetLabel)}</div>
@@ -4468,7 +4468,7 @@
         rewardText = `${val} EGP OFF`;
       }
 
-      labelInput.value = `Buy ${qty} ${targetText} Only: ${rewardText}`;
+      labelInput.value = `Buy ${qty} ${targetText}: ${rewardText}`;
     }
 
     function renderBundlesList() {
@@ -4515,7 +4515,7 @@
 
               return `
                 <tr>
-                  <td><span class="bundle-tier-pill">Buy ${b.minQty}${b.exactQty === false ? '+' : ' Only'}</span></td>
+                  <td><span class="bundle-tier-pill">Buy ${b.minQty}${b.exactQty === false ? '+' : ''}</span></td>
                   <td><span class="bundle-target-pill">${escapeHtml(targetLabel)}</span></td>
                   <td>${rewardDisplay}</td>
                   <td><strong>${escapeHtml(b.label || `Buy ${b.minQty} Deal`)}</strong></td>
@@ -4568,7 +4568,7 @@
 
       const titleEl = document.getElementById("bundle-form-title");
       if (titleEl) {
-        titleEl.innerHTML = `<i data-lucide="edit-3" class="icon-xs" style="color:var(--coffee-800);"></i> <span>Edit Bundle Deal (Tier ${deal.minQty}${deal.exactQty === false ? '+' : ' Only'})</span>`;
+        titleEl.innerHTML = `<i data-lucide="edit-3" class="icon-xs" style="color:var(--coffee-800);"></i> <span>Edit Bundle Deal (Tier ${deal.minQty}${deal.exactQty === false ? '+' : ''})</span>`;
       }
 
       const submitBtn = document.getElementById("bundle-submit-btn");
