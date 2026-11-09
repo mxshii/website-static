@@ -195,6 +195,18 @@ const DEFAULT_BUNDLE_BOX = {
 };
 let STORE_BUNDLE_BOX = JSON.parse(JSON.stringify(DEFAULT_BUNDLE_BOX));
 
+const DEFAULT_STORE_THEME = {
+  christmasEnabled: false,
+  snowEnabled: false,
+  snowIntensity: "medium", // "light", "medium", "heavy"
+  snowSpeed: "normal",     // "gentle", "normal", "fast"
+  mascotAccent: "none",     // User provides their own custom logo with Santa hat
+  santaHat: false,
+  holidayColors: true,
+  holidayBannerText: "✦ MERRY CHRISTMAS & HAPPY HOLIDAYS FROM STATIC 🎄 · WATERPROOF VINYL STICKERS ✦"
+};
+let STORE_THEME = Object.assign({}, DEFAULT_STORE_THEME);
+
 // Immediate synchronous hydration from localStorage on script evaluation
 try {
   const _savedLocal = typeof localStorage !== "undefined" ? localStorage.getItem(PICTURE_DB_KEY) : null;
@@ -217,10 +229,15 @@ try {
       if (_parsed.banner && typeof _parsed.banner === "object") {
         STORE_BANNER = _parsed.banner;
       }
+      if (_parsed.theme && typeof _parsed.theme === "object") {
+        STORE_THEME = Object.assign({}, DEFAULT_STORE_THEME, _parsed.theme);
+      }
     }
   }
 } catch (_) {}
 
+window.STORE_THEME = STORE_THEME;
+window.DEFAULT_STORE_THEME = DEFAULT_STORE_THEME;
 window.STORE_BUNDLE_BOX = STORE_BUNDLE_BOX;
 window.STORE_BUNDLES = STORE_BUNDLES;
 window.DEFAULT_BUNDLE_BOX = DEFAULT_BUNDLE_BOX;
@@ -676,6 +693,676 @@ function updateModalBundleBox(product, qty = 1) {
 }
 window.updateModalBundleBox = updateModalBundleBox;
 
+// ═══════════════════════════════════════════════════════
+// HOLIDAY & CHRISTMAS THEME + HIGH-PERFORMANCE SNOW ENGINE
+// ═══════════════════════════════════════════════════════
+let _snowAnimationId = null;
+let _snowCanvas = null;
+let _snowFlakes = [];
+let _snowSprites = null;
+
+function createSnowSprites() {
+  const dpr = Math.min((typeof window !== "undefined" && window.devicePixelRatio) || 1, 2);
+
+  function makeCanvas(w, h) {
+    const c = document.createElement("canvas");
+    c.width = w * dpr;
+    c.height = h * dpr;
+    const ctx = c.getContext("2d");
+    ctx.scale(dpr, dpr);
+    return { canvas: c, ctx: ctx, w: w, h: h, dpr: dpr };
+  }
+
+  // Sprite 0: Small 6-arm crystal snowflake (20x20) - 100% visible on cream
+  const s0 = makeCanvas(20, 20);
+  s0.ctx.shadowColor = "rgba(44, 24, 16, 0.45)";
+  s0.ctx.shadowBlur = 3.5;
+  s0.ctx.shadowOffsetY = 1;
+  s0.ctx.translate(10, 10);
+  s0.ctx.strokeStyle = "#0284c7"; // crisp icy blue
+  s0.ctx.lineWidth = 1.6;
+  s0.ctx.lineCap = "round";
+  s0.ctx.beginPath();
+  for (let a = 0; a < 6; a++) {
+    s0.ctx.moveTo(0, 0);
+    s0.ctx.lineTo(0, 6.5);
+    s0.ctx.moveTo(-1.8, 4);
+    s0.ctx.lineTo(0, 5.8);
+    s0.ctx.lineTo(1.8, 4);
+    s0.ctx.rotate(Math.PI / 3);
+  }
+  s0.ctx.stroke();
+  s0.ctx.shadowColor = "transparent";
+  s0.ctx.strokeStyle = "#ffffff";
+  s0.ctx.lineWidth = 0.8;
+  s0.ctx.stroke();
+  s0.ctx.fillStyle = "#ffffff";
+  s0.ctx.beginPath();
+  s0.ctx.arc(0, 0, 1.4, 0, Math.PI * 2);
+  s0.ctx.fill();
+
+  // Sprite 1: Medium intricate branching snowflake ❄️ (30x30)
+  const s1 = makeCanvas(30, 30);
+  s1.ctx.shadowColor = "rgba(44, 24, 16, 0.42)";
+  s1.ctx.shadowBlur = 4;
+  s1.ctx.shadowOffsetY = 1.2;
+  s1.ctx.translate(15, 15);
+  s1.ctx.strokeStyle = "#0284c7";
+  s1.ctx.lineWidth = 2.0;
+  s1.ctx.lineCap = "round";
+  s1.ctx.beginPath();
+  for (let a = 0; a < 6; a++) {
+    s1.ctx.moveTo(0, 0);
+    s1.ctx.lineTo(0, 9.5);
+    s1.ctx.moveTo(-2.8, 5.5);
+    s1.ctx.lineTo(0, 8.2);
+    s1.ctx.lineTo(2.8, 5.5);
+    s1.ctx.rotate(Math.PI / 3);
+  }
+  s1.ctx.stroke();
+  s1.ctx.shadowColor = "transparent";
+  s1.ctx.strokeStyle = "#ffffff";
+  s1.ctx.lineWidth = 1.0;
+  s1.ctx.stroke();
+  s1.ctx.fillStyle = "#ffffff";
+  s1.ctx.beginPath();
+  s1.ctx.arc(0, 0, 2.0, 0, Math.PI * 2);
+  s1.ctx.fill();
+
+  // Sprite 2: Large intricate stellar snowflake ❄️ (40x40)
+  const s2 = makeCanvas(40, 40);
+  s2.ctx.shadowColor = "rgba(44, 24, 16, 0.45)";
+  s2.ctx.shadowBlur = 5;
+  s2.ctx.shadowOffsetY = 1.5;
+  s2.ctx.translate(20, 20);
+  s2.ctx.strokeStyle = "#0369a1"; // deep sapphire ice
+  s2.ctx.lineWidth = 2.2;
+  s2.ctx.lineCap = "round";
+  s2.ctx.beginPath();
+  for (let a = 0; a < 6; a++) {
+    s2.ctx.moveTo(0, 0);
+    s2.ctx.lineTo(0, 13);
+    s2.ctx.moveTo(-2.5, 6);
+    s2.ctx.lineTo(0, 8);
+    s2.ctx.lineTo(2.5, 6);
+    s2.ctx.moveTo(-4, 10);
+    s2.ctx.lineTo(0, 12);
+    s2.ctx.lineTo(4, 10);
+    s2.ctx.rotate(Math.PI / 3);
+  }
+  s2.ctx.stroke();
+  s2.ctx.shadowColor = "transparent";
+  s2.ctx.strokeStyle = "#ffffff";
+  s2.ctx.lineWidth = 1.1;
+  s2.ctx.stroke();
+  s2.ctx.fillStyle = "#ffffff";
+  s2.ctx.beginPath();
+  s2.ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+  s2.ctx.fill();
+  s2.ctx.strokeStyle = "#0284c7";
+  s2.ctx.lineWidth = 1.2;
+  s2.ctx.stroke();
+
+  // Sprite 3: 4-pointed Diamond Twinkle Sparkle ✦ (24x24)
+  const s3 = makeCanvas(24, 24);
+  s3.ctx.shadowColor = "rgba(44, 24, 16, 0.4)";
+  s3.ctx.shadowBlur = 3;
+  s3.ctx.shadowOffsetY = 1;
+  s3.ctx.translate(12, 12);
+  s3.ctx.fillStyle = "#d97706"; // warm holiday gold
+  s3.ctx.beginPath();
+  for (let i = 0; i < 4; i++) {
+    s3.ctx.lineTo(0, 8.5);
+    s3.ctx.lineTo(1.8, 2.2);
+    s3.ctx.rotate(Math.PI / 2);
+  }
+  s3.ctx.closePath();
+  s3.ctx.fill();
+  s3.ctx.shadowColor = "transparent";
+  s3.ctx.fillStyle = "#ffffff";
+  s3.ctx.beginPath();
+  for (let i = 0; i < 4; i++) {
+    s3.ctx.lineTo(0, 6.5);
+    s3.ctx.lineTo(1.2, 1.8);
+    s3.ctx.rotate(Math.PI / 2);
+  }
+  s3.ctx.closePath();
+  s3.ctx.fill();
+
+  // Sprite 4: Soft Powder Flake (20x20)
+  const s4 = makeCanvas(20, 20);
+  s4.ctx.shadowColor = "rgba(44, 24, 16, 0.55)";
+  s4.ctx.shadowBlur = 4;
+  s4.ctx.shadowOffsetY = 1.5;
+  s4.ctx.fillStyle = "#ffffff";
+  s4.ctx.beginPath();
+  s4.ctx.arc(10, 10, 3.8, 0, Math.PI * 2);
+  s4.ctx.fill();
+  s4.ctx.shadowColor = "transparent";
+  s4.ctx.strokeStyle = "rgba(2, 132, 199, 0.4)";
+  s4.ctx.lineWidth = 0.8;
+  s4.ctx.stroke();
+
+  // Sprite 5: Micro Crystal Flake (14x14) - Ambient depth & density
+  const s5 = makeCanvas(14, 14);
+  s5.ctx.shadowColor = "rgba(44, 24, 16, 0.4)";
+  s5.ctx.shadowBlur = 2.5;
+  s5.ctx.shadowOffsetY = 1;
+  s5.ctx.fillStyle = "#ffffff";
+  s5.ctx.beginPath();
+  s5.ctx.arc(7, 7, 2.2, 0, Math.PI * 2);
+  s5.ctx.fill();
+  s5.ctx.shadowColor = "transparent";
+  s5.ctx.strokeStyle = "rgba(2, 132, 199, 0.5)";
+  s5.ctx.lineWidth = 0.7;
+  s5.ctx.stroke();
+
+  return [s0, s1, s2, s3, s4, s5];
+}
+
+// Precomputed Fast Trigonometry Table for Potato Devices (0 runtime trig calculations)
+const _SNOW_SINE_RES = 64;
+const _SNOW_SINE_TABLE = new Float32Array(_SNOW_SINE_RES);
+for (let _si = 0; _si < _SNOW_SINE_RES; _si++) {
+  _SNOW_SINE_TABLE[_si] = Math.sin((_si / _SNOW_SINE_RES) * Math.PI * 2);
+}
+
+let _isSnowUserScrolling = false;
+let _snowScrollDebounce = null;
+if (typeof window !== "undefined") {
+  window.addEventListener(
+    "scroll",
+    () => {
+      _isSnowUserScrolling = true;
+      if (_snowScrollDebounce) clearTimeout(_snowScrollDebounce);
+      _snowScrollDebounce = setTimeout(() => {
+        _isSnowUserScrolling = false;
+      }, 100);
+    },
+    { passive: true }
+  );
+}
+
+let _snowResizeHandler = null;
+let _snowVisibilityHandler = null;
+let _snowCount = 0;
+let _snowX = null;
+let _snowY = null;
+let _snowSpeedX = null;
+let _snowSpeedY = null;
+let _snowStep = null;
+let _snowSpriteIdx = null;
+
+function initSnowCanvas(intensity = "medium", speed = "normal") {
+  if (typeof document === "undefined" || !document.body) return;
+  let canvas = document.getElementById("snow-canvas");
+  if (!canvas) {
+    canvas = document.createElement("canvas");
+    canvas.id = "snow-canvas";
+    document.body.appendChild(canvas);
+  }
+  _snowCanvas = canvas;
+  canvas.style.position = "fixed";
+  canvas.style.top = "0";
+  canvas.style.left = "0";
+  canvas.style.width = "100vw";
+  canvas.style.height = "100vh";
+  canvas.style.pointerEvents = "none";
+  canvas.style.zIndex = "99999";
+  canvas.style.display = "block";
+
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  const isMobile = (window.innerWidth || 1000) <= 768;
+  const isPotato = isMobile && (
+    (typeof navigator !== "undefined" && (
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) ||
+      (navigator.deviceMemory && navigator.deviceMemory <= 2)
+    ))
+  );
+
+  function setSize() {
+    if (!_snowCanvas) return;
+    _snowCanvas.width = window.innerWidth || document.documentElement.clientWidth || 1200;
+    _snowCanvas.height = window.innerHeight || document.documentElement.clientHeight || 800;
+  }
+  setSize();
+  if (_snowResizeHandler) window.removeEventListener("resize", _snowResizeHandler);
+  _snowResizeHandler = setSize;
+  window.addEventListener("resize", _snowResizeHandler, { passive: true });
+
+  if (!_snowSprites) {
+    _snowSprites = createSnowSprites();
+  }
+
+  // Generous, magical snowfall density with smooth 60fps GPU-batching
+  let count = isPotato ? 80 : (isMobile ? 100 : 175); // Medium default: 175 desktop / 100 mobile
+  if (intensity === "light") count = isPotato ? 45 : (isMobile ? 60 : 100);
+  else if (intensity === "heavy") count = isPotato ? 130 : (isMobile ? 160 : 270);
+
+  // Respect system reduced-motion preference
+  if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    count = Math.min(count, 12);
+  }
+
+  let speedMultiplier = 1;
+  if (speed === "gentle") speedMultiplier = 0.65;
+  else if (speed === "fast") speedMultiplier = 1.45;
+
+  _snowCount = count;
+  _snowX = new Float32Array(count);
+  _snowY = new Float32Array(count);
+  _snowSpeedX = new Float32Array(count);
+  _snowSpeedY = new Float32Array(count);
+  _snowStep = new Int32Array(count);
+  _snowSpriteIdx = new Uint8Array(count);
+
+  const cWidth = canvas.width || 1200;
+  const cHeight = canvas.height || 800;
+
+  for (let i = 0; i < count; i++) {
+    _snowX[i] = Math.random() * cWidth;
+    _snowY[i] = Math.random() * cHeight;
+    _snowStep[i] = (Math.random() * _SNOW_SINE_RES) | 0;
+
+    const r = Math.random();
+    let sIdx = 1;
+    let baseSpeedY = 0.9;
+    let baseSpeedX = 0;
+
+    if (r < 0.28) {
+      // 28% Medium branching crystal ❄️ (Sprite 1)
+      sIdx = 1;
+      baseSpeedY = Math.random() * 0.85 + 0.6;
+      baseSpeedX = Math.random() * 0.5 - 0.25;
+    } else if (r < 0.52) {
+      // 24% Small crystal ❄️ (Sprite 0)
+      sIdx = 0;
+      baseSpeedY = Math.random() * 0.7 + 0.5;
+      baseSpeedX = Math.random() * 0.4 - 0.2;
+    } else if (r < 0.70) {
+      // 18% Large stellar snowflake ❄️ (Sprite 2)
+      sIdx = 2;
+      baseSpeedY = Math.random() * 1.05 + 0.75;
+      baseSpeedX = Math.random() * 0.6 - 0.3;
+    } else if (r < 0.85) {
+      // 15% Golden twinkle star ✦ (Sprite 3)
+      sIdx = 3;
+      baseSpeedY = Math.random() * 0.75 + 0.5;
+      baseSpeedX = Math.random() * 0.35 - 0.17;
+    } else {
+      // 15% Soft powder flake (Sprite 4)
+      sIdx = 4;
+      baseSpeedY = Math.random() * 0.7 + 0.55;
+      baseSpeedX = Math.random() * 0.4 - 0.2;
+    }
+
+    _snowSpriteIdx[i] = sIdx;
+    _snowSpeedY[i] = baseSpeedY * speedMultiplier;
+    _snowSpeedX[i] = baseSpeedX * speedMultiplier;
+  }
+
+  // Delta timer: ~30ms (33fps) on potato/mobile, ~22ms (45fps) on desktop
+  // High smoothness while keeping CPU/GPU power below 1%
+  const targetInterval = isPotato ? 30 : 22;
+  let lastTime = 0;
+  let scrollThrottleSkip = 0;
+
+  function draw(now) {
+    if (!document.getElementById("snow-canvas")) return;
+    if (document.hidden) {
+      _snowAnimationId = requestAnimationFrame(draw);
+      return;
+    }
+
+    if (!now) now = performance.now();
+    const elapsed = now - lastTime;
+    if (elapsed < targetInterval) {
+      _snowAnimationId = requestAnimationFrame(draw);
+      return;
+    }
+    lastTime = now - (elapsed % targetInterval);
+
+    // Active touch-scroll governor on low-end devices: skip every second frame during rapid finger scrolls
+    if (isPotato && _isSnowUserScrolling && (++scrollThrottleSkip & 1) !== 0) {
+      _snowAnimationId = requestAnimationFrame(draw);
+      return;
+    }
+
+    const width = canvas.width;
+    const height = canvas.height;
+    ctx.clearRect(0, 0, width, height);
+
+    // Set globalAlpha ONCE outside the loop so Skia can batch all drawImage calls into a single draw call
+    ctx.globalAlpha = 0.94;
+
+    const count = _snowCount;
+    const x = _snowX;
+    const y = _snowY;
+    const vx = _snowSpeedX;
+    const vy = _snowSpeedY;
+    const step = _snowStep;
+    const sIdx = _snowSpriteIdx;
+    const table = _SNOW_SINE_TABLE;
+    const sprites = _snowSprites;
+
+    for (let i = 0; i < count; i++) {
+      const s = (step[i] + 1) & 63;
+      step[i] = s;
+
+      let px = x[i] + table[s] * 0.6 + vx[i];
+      let py = y[i] + vy[i];
+
+      if (py > height + 40) {
+        py = -40;
+        px = Math.random() * width;
+      }
+      if (px > width + 40) {
+        px = -40;
+      } else if (px < -40) {
+        px = width + 40;
+      }
+
+      x[i] = px;
+      y[i] = py;
+
+      const sp = sprites[sIdx[i]];
+      // Fast bitwise integer coordinate rounding
+      ctx.drawImage(
+        sp.canvas,
+        (px + 0.5) | 0,
+        (py + 0.5) | 0,
+        sp.w,
+        sp.h
+      );
+    }
+
+    _snowAnimationId = requestAnimationFrame(draw);
+  }
+
+  if (_snowAnimationId) cancelAnimationFrame(_snowAnimationId);
+  _snowAnimationId = requestAnimationFrame(draw);
+
+  // Tab visibility listener: pause animation when in background
+  if (!_snowVisibilityHandler) {
+    _snowVisibilityHandler = () => {
+      if (document.hidden) {
+        if (_snowAnimationId) {
+          cancelAnimationFrame(_snowAnimationId);
+          _snowAnimationId = null;
+        }
+      } else if (_snowCanvas && !_snowAnimationId) {
+        lastTime = performance.now();
+        _snowAnimationId = requestAnimationFrame(draw);
+      }
+    };
+    document.addEventListener("visibilitychange", _snowVisibilityHandler);
+  }
+}
+
+function stopSnowCanvas() {
+  if (_snowAnimationId) {
+    cancelAnimationFrame(_snowAnimationId);
+    _snowAnimationId = null;
+  }
+  if (_snowResizeHandler && typeof window !== "undefined") {
+    window.removeEventListener("resize", _snowResizeHandler);
+    _snowResizeHandler = null;
+  }
+  if (_snowVisibilityHandler && typeof document !== "undefined") {
+    document.removeEventListener("visibilitychange", _snowVisibilityHandler);
+    _snowVisibilityHandler = null;
+  }
+  const canvas = document.getElementById("snow-canvas");
+  if (canvas && canvas.parentNode) {
+    canvas.parentNode.removeChild(canvas);
+  }
+  _snowCanvas = null;
+  _snowCount = 0;
+  _snowX = null;
+  _snowY = null;
+  _snowSpeedX = null;
+  _snowSpeedY = null;
+  _snowStep = null;
+  _snowSpriteIdx = null;
+}
+
+function getHolidayAccentSvg(accentType = "santa-hat") {
+  if (accentType === "santa-hat") {
+    // Adorable, authentic, crisp vector Santa Hat with tight viewBox 0 0 36 36
+    return `<svg class="lucide-santa-hat-icon" viewBox="0 0 36 36" width="30" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- White Pom-Pom -->
+      <circle cx="28" cy="14" r="4.2" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+      <!-- Red Velvet Cap -->
+      <path d="M 6 22 C 7 12, 13 5, 19 5 C 25 5, 29 8, 29 13 C 28.5 16, 25 16.5, 23 15 C 21 13.5, 21 9, 18 8.5 C 13 8.5, 9 14, 8 22 Z" fill="#B91C1C" stroke="#7F1D1D" stroke-width="1.3" stroke-linejoin="round"/>
+      <!-- Soft Fold Highlight -->
+      <path d="M 10 18 C 12 12, 16 8.5, 19 8" stroke="#DC2626" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- Fluffy White Brim -->
+      <rect x="4" y="20.5" width="22" height="8" rx="4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.3"/>
+      <circle cx="8" cy="24.5" r="3.2" fill="#FFFFFF"/>
+      <circle cx="15" cy="24.5" r="3.2" fill="#FFFFFF"/>
+      <circle cx="22" cy="24.5" r="3.2" fill="#FFFFFF"/>
+    </svg>`;
+  }
+  if (accentType === "candy-cane") {
+    return `<svg class="lucide lucide-candy-cane" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#B91C1C" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m10.8 5 2.111 4.223"/><path d="M17.75 7 15 2.1"/><path d="m4.874 14.647 2.12 4.24"/><path d="M5.7 21a2 2 0 0 1-3.5-2l8.6-14a6 6 0 0 1 10.4 6 2 2 0 1 1-3.464-2 2 2 0 1 0-3.464-2z"/><path d="m7.906 9.712 2.005 4.411"/>
+    </svg>`;
+  }
+  if (accentType === "snowflake") {
+    return `<svg class="lucide lucide-snowflake" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0284C7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m10 20-1.25-2.5L6 18"/><path d="M10 4 8.75 6.5 6 6"/><path d="m14 20 1.25-2.5L18 18"/><path d="m14 4 1.25 2.5L18 6"/><path d="m17 21-3-6h-4"/><path d="m17 3-3 6 1.5 3"/><path d="M2 12h1"/><path d="m20 10-1.5 2 1.5 2"/><path d="m22 12-3-1v2"/><path d="m20 14-1.5-2"/><path d="m4 10 1.5 2L4 14"/><path d="m7 12 3-1.5V9"/><path d="m7 12 3 1.5v1.5"/><path d="M12 2v20"/>
+    </svg>`;
+  }
+  if (accentType === "tree-pine") {
+    return `<svg class="lucide lucide-tree-pine" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#1B4730" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m17 14 3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h-.3a1 1 0 0 1-.7-1.7L9 9h-.2a1 1 0 0 1-.8-1.7L12 3l4 4.3a1 1 0 0 1-.8 1.7H15l3 3.3a1 1 0 0 1-.7 1.7H17z"/><path d="M12 22v-3"/>
+    </svg>`;
+  }
+  if (accentType === "gift") {
+    return `<svg class="lucide lucide-gift" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 7v14"/><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="M7.5 7a1 1 0 0 1 0-5A4.8 4.8 0 0 1 12 7a4.8 4.8 0 0 1 4.5-5 1 1 0 0 1 0 5"/><rect x="3" y="7" width="18" height="4" rx="1"/>
+    </svg>`;
+  }
+  if (accentType === "bell") {
+    return `<svg class="lucide lucide-bell" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+    </svg>`;
+  }
+  return "";
+}
+
+function injectMascotHolidayAccent(accentType = "santa-hat") {
+  if (typeof document === "undefined") return;
+  removeMascotHolidayAccent();
+  if (!accentType || accentType === "none") return;
+
+  const svgMarkup = getHolidayAccentSvg(accentType);
+  if (!svgMarkup) return;
+
+  const targets = document.querySelectorAll(".logo, .footer-logo, .account-cat-icon, .about-logo-wrap");
+  targets.forEach(target => {
+    if (!target.querySelector(".mascot-holiday-badge")) {
+      target.style.position = "relative";
+      const badge = document.createElement("span");
+      badge.className = `mascot-holiday-badge badge-${accentType}`;
+      badge.innerHTML = svgMarkup;
+      target.appendChild(badge);
+    }
+  });
+}
+
+function removeMascotHolidayAccent() {
+  if (typeof document === "undefined") return;
+  document.querySelectorAll(".mascot-holiday-badge, .static-santa-hat-holder, .static-santa-hat").forEach(el => el.remove());
+}
+
+function injectFairyLights() {
+  if (typeof document === "undefined") return;
+  const bar = document.querySelector(".announcement-bar");
+  if (!bar || bar.querySelector(".xmas-fairy-lights")) return;
+
+  const lights = document.createElement("div");
+  lights.className = "xmas-fairy-lights";
+  lights.setAttribute("aria-hidden", "true");
+
+  const colors = ["bulb-red", "bulb-gold", "bulb-green", "bulb-blue"];
+  const isSmallScreen = (window.innerWidth || 1000) <= 600;
+  const bulbCount = isSmallScreen ? 16 : 30; // Adaptive bulb count for potato performance
+
+  let html = "";
+  for (let i = 0; i < bulbCount; i++) {
+    const phaseClass = (i % 2 === 0) ? "bulb-phase-a" : "bulb-phase-b";
+    html += `<div class="xmas-bulb ${colors[i % 4]} ${phaseClass}"></div>`;
+  }
+  lights.innerHTML = html;
+  bar.appendChild(lights);
+}
+
+function removeFairyLights() {
+  if (typeof document === "undefined") return;
+  document.querySelectorAll(".xmas-fairy-lights").forEach(el => el.remove());
+}
+
+function injectContactHolidayStamp() {
+  if (typeof document === "undefined") return;
+  const formCard = document.querySelector(".contact-form-card");
+  if (!formCard || formCard.querySelector(".xmas-contact-stamp")) return;
+
+  const stamp = document.createElement("div");
+  stamp.className = "xmas-contact-stamp";
+  stamp.setAttribute("aria-hidden", "true");
+  stamp.innerHTML = `
+    <div class="stamp-tree">🎄</div>
+    <div class="stamp-text">AIR MAIL</div>
+    <div class="stamp-city">ALX · 2026</div>
+  `;
+  formCard.appendChild(stamp);
+}
+
+function removeContactHolidayStamp() {
+  if (typeof document === "undefined") return;
+  document.querySelectorAll(".xmas-contact-stamp").forEach(el => el.remove());
+}
+
+function injectHolidayHeroDecor() {
+  if (typeof document === "undefined") return;
+  removeHolidayHeroDecor();
+  const heroImage = document.querySelector(".hero-image");
+  if (!heroImage) return;
+
+  const decor = document.createElement("div");
+  decor.className = "xmas-hero-decor-group";
+  decor.innerHTML = `
+    <div class="xmas-hero-washi-tape" aria-hidden="true" title="Christmas Washi Tape"></div>
+    <div class="xmas-hero-caro-bow" aria-hidden="true">
+      <svg viewBox="0 0 80 70" width="70" height="62" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="caro-pat" width="8" height="8" patternUnits="userSpaceOnUse">
+            <rect width="8" height="8" fill="#B91C1C"/>
+            <rect width="4" height="8" fill="#881313"/>
+            <rect width="8" height="4" fill="#750f0f" fill-opacity="0.6"/>
+            <line x1="0" y1="0" x2="8" y2="8" stroke="#FFE4A0" stroke-width="0.6" stroke-opacity="0.5"/>
+          </pattern>
+        </defs>
+        <!-- Left loop -->
+        <path d="M 40 30 C 22 10, 5 18, 12 32 C 18 42, 34 35, 40 30 Z" fill="url(#caro-pat)" stroke="#FFE4A0" stroke-width="1.2" stroke-dasharray="2,1.5"/>
+        <!-- Right loop -->
+        <path d="M 40 30 C 58 10, 75 18, 68 32 C 62 42, 46 35, 40 30 Z" fill="url(#caro-pat)" stroke="#FFE4A0" stroke-width="1.2" stroke-dasharray="2,1.5"/>
+        <!-- Left Ribbon Tail -->
+        <path d="M 37 32 C 30 44, 22 55, 18 64 L 28 60 L 35 66 C 36 55, 38 42, 39 34 Z" fill="url(#caro-pat)" stroke="#FFE4A0" stroke-width="1" stroke-dasharray="2,1.5"/>
+        <!-- Right Ribbon Tail -->
+        <path d="M 43 32 C 50 44, 58 55, 62 64 L 52 60 L 45 66 C 44 55, 42 42, 41 34 Z" fill="url(#caro-pat)" stroke="#FFE4A0" stroke-width="1" stroke-dasharray="2,1.5"/>
+        <!-- Center knot -->
+        <ellipse cx="40" cy="30" rx="6.5" ry="5.5" fill="#991B1B" stroke="#FFE4A0" stroke-width="1.2"/>
+      </svg>
+    </div>
+    <div class="xmas-hero-caro-sash" aria-hidden="true">
+      <span>🎄 HOLIDAY SPECIAL ✦</span>
+    </div>
+  `;
+  heroImage.appendChild(decor);
+}
+
+function removeHolidayHeroDecor() {
+  if (typeof document === "undefined") return;
+  document.querySelectorAll(".xmas-hero-decor-group").forEach(el => el.remove());
+}
+
+function injectHolidayDecorations() {
+  if (typeof document === "undefined") return;
+  injectFairyLights();
+  injectHolidayHeroDecor();
+  injectContactHolidayStamp();
+}
+
+function removeHolidayDecorations() {
+  if (typeof document === "undefined") return;
+  removeFairyLights();
+  removeHolidayHeroDecor();
+  removeContactHolidayStamp();
+  removeMascotHolidayAccent();
+}
+
+function updateHolidayLogo(isHoliday) {
+  if (typeof document === "undefined") return;
+  const normalSrc = "images/1111-removebg-preview.png";
+  const holidaySrc = "images/logonobg.png";
+  const targetSrc = isHoliday ? holidaySrc : normalSrc;
+
+  // Header, navbar, footer, about, newsletter, and account modals
+  document.querySelectorAll(".logo-img, .footer-logo-img, .about-cat-img, .newsletter-cat-img, .account-logo-img, .admin-brand img").forEach(img => {
+    if (!img) return;
+    const currentSrc = img.getAttribute("src") || img.src || "";
+    if (currentSrc.includes("1111-removebg-preview.png") || currentSrc.includes("logonobg.png")) {
+      img.src = targetSrc;
+    }
+  });
+
+  // Favicon
+  const favicon = document.querySelector('link[rel="icon"]');
+  if (favicon) {
+    favicon.href = targetSrc;
+  }
+}
+
+function applyStoreTheme(theme) {
+  if (!theme || typeof theme !== "object") return;
+  if (typeof document === "undefined" || !document.body) return;
+
+  const isChristmas = theme.christmasEnabled === true;
+  const isSnow = theme.snowEnabled === true;
+
+  if (isChristmas) {
+    document.body.classList.add("theme-christmas");
+    removeMascotHolidayAccent(); // Ensure no programmatic hat on cat
+    injectHolidayDecorations();
+    updateHolidayLogo(true);
+  } else {
+    document.body.classList.remove("theme-christmas");
+    removeHolidayDecorations();
+    updateHolidayLogo(false);
+  }
+
+  if (isSnow) {
+    initSnowCanvas(theme.snowIntensity || "medium", theme.snowSpeed || "normal");
+  } else {
+    stopSnowCanvas();
+  }
+}
+
+window.getHolidayAccentSvg = getHolidayAccentSvg;
+window.injectMascotHolidayAccent = injectMascotHolidayAccent;
+window.removeMascotHolidayAccent = removeMascotHolidayAccent;
+window.applyStoreTheme = applyStoreTheme;
+window.injectHolidayDecorations = injectHolidayDecorations;
+window.removeHolidayDecorations = removeHolidayDecorations;
+window.injectHolidayHeroDecor = injectHolidayHeroDecor;
+window.removeHolidayHeroDecor = removeHolidayHeroDecor;
+window.initSnowCanvas = initSnowCanvas;
+window.stopSnowCanvas = stopSnowCanvas;
+
+
 window.filterByStock = function(stockVal) {
   activeStockFilter = stockVal;
   document.querySelectorAll(".stock-pill").forEach(p => {
@@ -744,6 +1431,9 @@ if (typeof window !== "undefined") {
 
 // ── ICON HELPER ───────────────────────────────────────
 function renderIcons() {
+  if (typeof registerSantaHatLucideIcon === "function") {
+    try { registerSantaHatLucideIcon(); } catch (_) {}
+  }
   if (window.lucide && typeof window.lucide.createIcons === "function") {
     try {
       window.lucide.createIcons();
@@ -758,6 +1448,28 @@ if (typeof window !== "undefined") {
 }
 
 // ── INIT ──────────────────────────────────────────────
+async function syncGlobalStorefrontState() {
+  try {
+    const safeMap = await fetchStorefrontPictureMap();
+    if (safeMap && typeof safeMap === "object") {
+      if (safeMap.theme && typeof safeMap.theme === "object") {
+        STORE_THEME = Object.assign({}, DEFAULT_STORE_THEME, safeMap.theme);
+        window.STORE_THEME = STORE_THEME;
+        applyStoreTheme(STORE_THEME);
+      }
+      if (safeMap.banner) {
+        STORE_BANNER = safeMap.banner;
+        updateAnnouncementBanner(STORE_BANNER);
+      }
+      if (safeMap.bundleBox) {
+        STORE_BUNDLE_BOX = Object.assign({}, DEFAULT_BUNDLE_BOX, safeMap.bundleBox);
+        window.STORE_BUNDLE_BOX = STORE_BUNDLE_BOX;
+        renderBundleDealsBanner();
+      }
+    }
+  } catch (_) {}
+}
+
 function initApp() {
   try { createToastContainer(); } catch (e) { console.warn("createToastContainer error:", e); }
   try { initImageProtection(); } catch (e) { console.warn("initImageProtection error:", e); }
@@ -791,7 +1503,14 @@ function initApp() {
     if (cached.banner) {
       STORE_BANNER = cached.banner;
     }
+    if (cached.theme && typeof cached.theme === "object") {
+      STORE_THEME = Object.assign({}, DEFAULT_STORE_THEME, cached.theme);
+      window.STORE_THEME = STORE_THEME;
+    }
   }
+
+  try { applyStoreTheme(STORE_THEME); } catch (_) {}
+  try { syncGlobalStorefrontState(); } catch (_) {}
 
   // Load products immediately if grid is present
   if (document.getElementById("products-grid")) {
@@ -1621,6 +2340,15 @@ function updateAnnouncementBanner(bannerObj) {
     unitItems.push(`<span>die-cut glossy &amp; matte stickers</span>`);
   }
 
+  // Inject Holiday / Christmas announcement if enabled
+  const holidayText = (STORE_THEME && STORE_THEME.christmasEnabled && STORE_THEME.holidayBannerText)
+    ? STORE_THEME.holidayBannerText.trim()
+    : ((STORE_THEME && STORE_THEME.christmasEnabled) ? "✦ MERRY CHRISTMAS & HAPPY HOLIDAYS 🎄" : null);
+
+  if (holidayText) {
+    unitItems.unshift(`<span>${escapeHtml(holidayText)}</span>`);
+  }
+
   const sep = `<span class="sep">·</span>`;
   const oneUnit = unitItems.map(item => `${item}${sep}`).join("");
 
@@ -1717,6 +2445,11 @@ async function loadProducts(forceRefresh = false) {
     renderBundleDealsBanner();
     if (safeMap.banner) {
       STORE_BANNER = safeMap.banner;
+    }
+    if (safeMap.theme && typeof safeMap.theme === "object") {
+      STORE_THEME = Object.assign({}, DEFAULT_STORE_THEME, safeMap.theme);
+      window.STORE_THEME = STORE_THEME;
+      applyStoreTheme(STORE_THEME);
     }
     updateAnnouncementBanner(STORE_BANNER);
     if (safeMap.categories && typeof safeMap.categories === "object" && Object.keys(safeMap.categories).length > 0) {

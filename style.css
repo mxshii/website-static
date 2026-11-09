@@ -3903,3 +3903,630 @@ h3 { font-size: 1.4rem; font-weight: 700; }
     gap: 10px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   CHRISTMAS & WINTER HOLIDAY THEME + SNOW PARTICLES
+   ═══════════════════════════════════════════════════════ */
+#snow-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99999;
+  display: block;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: strict;
+}
+
+body.theme-christmas {
+  --xmas-berry: #9e2a2b;       /* Warm Spiced Cranberry */
+  --xmas-berry-dark: #7a1f20;  /* Deep mulled berry */
+  --xmas-pine: #1b4730;        /* Nordic Evergreen Pine */
+  --xmas-pine-dark: #123322;   /* Deep forest */
+  --xmas-gold: #c68a35;        /* Soft honey champagne gold */
+  --xmas-cream: #fbf7f0;       /* Cashmere holiday cream */
+  --xmas-frost: #e8f2ea;       /* Subtle frosty mint */
+}
+
+/* Festive Announcement Bar - Warm Holiday Ribbon (Optimized for smooth compositing) */
+body.theme-christmas .announcement-bar {
+  background: linear-gradient(90deg, #123322 0%, #1e4d35 30%, #7a1f20 50%, #1e4d35 70%, #123322 100%);
+  border-bottom: 2px dashed rgba(220, 175, 80, 0.45);
+  color: #fcf9f2;
+  letter-spacing: 0.04em;
+}
+
+/* Holiday Primary Buttons - Spiced Cranberry Velvet */
+body.theme-christmas .btn-primary {
+  background: linear-gradient(135deg, #9e2a2b 0%, #7d1f20 100%);
+  box-shadow: 0 4px 16px rgba(158, 42, 43, 0.28), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(220, 175, 80, 0.35);
+  color: #ffffff;
+  font-weight: 700;
+}
+body.theme-christmas .btn-primary:hover {
+  background: linear-gradient(135deg, #872223 0%, #681718 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(158, 42, 43, 0.38);
+  border-color: rgba(220, 175, 80, 0.6);
+}
+
+/* Festive Badges & Status */
+body.theme-christmas .card-badge {
+  background: var(--xmas-berry);
+  color: #ffffff;
+  border: 1px solid rgba(255, 235, 180, 0.4);
+  font-weight: 700;
+}
+body.theme-christmas .cart-count {
+  background: var(--xmas-berry);
+  color: #ffffff;
+}
+body.theme-christmas .filter-pill.active {
+  background: var(--xmas-pine);
+  border-color: var(--xmas-pine);
+  color: #fbf7f0;
+  box-shadow: 0 3px 12px rgba(27, 71, 48, 0.25);
+}
+body.theme-christmas .nav-links a.active {
+  color: var(--xmas-berry);
+}
+
+/* Festive Holiday Mascot Logo (Santa Hat) */
+body.theme-christmas .logo-img {
+  height: 42px;
+  max-width: 74px;
+}
+@media (max-width: 768px) {
+  body.theme-christmas .logo-img {
+    height: 32px;
+    max-width: 58px;
+  }
+}
+@media (max-width: 480px) {
+  body.theme-christmas .logo-img {
+    height: 28px !important;
+    max-width: 50px !important;
+  }
+}
+
+/* Hero Festive Accents */
+body.theme-christmas .hero-eyebrow {
+  background: rgba(158, 42, 43, 0.08);
+  color: var(--xmas-berry);
+  border: 1px solid rgba(158, 42, 43, 0.22);
+}
+body.theme-christmas .hero-title em {
+  color: var(--xmas-berry);
+  text-shadow: 0 0 24px rgba(158, 42, 43, 0.18);
+}
+
+/* Product Card Subtle Winter Warmth */
+body.theme-christmas .product-card {
+  border: 1.5px solid rgba(198, 138, 53, 0.22);
+}
+body.theme-christmas .product-card:hover {
+  border-color: rgba(158, 42, 43, 0.35);
+  box-shadow: 0 14px 40px rgba(158, 42, 43, 0.12), 0 3px 12px rgba(27, 71, 48, 0.08);
+}
+
+/* Festive Bundle Deals Showcase - Rich Nordic Holiday Evergreen & Cranberry Velvet */
+body.theme-christmas .bundle-deals-hero-inner {
+  background: linear-gradient(135deg, #0e291b 0%, #173825 45%, #421619 100%) !important;
+  border: 1.5px solid rgba(220, 175, 80, 0.65) !important;
+  box-shadow: 0 16px 44px rgba(14, 41, 27, 0.4), 0 0 0 1px rgba(220, 175, 80, 0.25) !important;
+  color: #fcf9f2 !important;
+}
+
+body.theme-christmas .bundle-deals-hero-inner::before {
+  background: radial-gradient(circle, rgba(255, 209, 102, 0.25) 0%, transparent 70%);
+}
+
+body.theme-christmas .bundle-hero-badge {
+  background: rgba(220, 175, 80, 0.22) !important;
+  border: 1.5px solid rgba(220, 175, 80, 0.7) !important;
+  color: #ffd580 !important;
+}
+
+body.theme-christmas .bundle-hero-title {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.theme-christmas .bundle-hero-subtitle {
+  color: #ffd580 !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.theme-christmas .bundle-hero-card {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border: 1.5px solid rgba(220, 175, 80, 0.45) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+
+body.theme-christmas .bundle-hero-card:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: #ffd166 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 14px rgba(255, 209, 102, 0.3) !important;
+}
+
+body.theme-christmas .bundle-hero-qty {
+  background: #fdfaf5 !important;
+  color: #102a1c !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.theme-christmas .bundle-hero-card-reward {
+  color: #ffd166 !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45) !important;
+}
+
+body.theme-christmas .bundle-hero-card-target {
+  color: #e2ede5 !important;
+  font-weight: 500 !important;
+}
+
+body.theme-christmas .bundle-hero-card-action {
+  color: #ffd580 !important;
+}
+
+body.theme-christmas .bundle-hero-card.highlight-free-ship {
+  border-color: rgba(74, 222, 128, 0.7) !important;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.22), rgba(255, 255, 255, 0.09)) !important;
+}
+
+body.theme-christmas .bundle-hero-footnote {
+  color: #cce2d3 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHRISTMAS DECORATIONS: CARO RED RIBBON & WASHI TAPE
+   ═══════════════════════════════════════════════════════ */
+
+/* 1. Christmas Candy-Cane Washi Tape (Torn Paper Cut) */
+.xmas-hero-washi-tape {
+  position: absolute;
+  top: -14px;
+  left: -20px;
+  width: 125px;
+  height: 32px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #b91c1c 0px,
+    #b91c1c 10px,
+    #ffffff 10px,
+    #ffffff 15px,
+    #1b4730 15px,
+    #1b4730 25px,
+    #ffffff 25px,
+    #ffffff 30px
+  );
+  opacity: 0.94;
+  transform: rotate(-18deg);
+  box-shadow: 0 3px 8px rgba(44, 24, 16, 0.25);
+  clip-path: polygon(
+    0% 0%, 96% 0%, 100% 12%, 96% 25%, 100% 38%, 96% 50%, 100% 63%, 96% 75%, 100% 88%, 96% 100%,
+    0% 100%, 4% 88%, 0% 75%, 4% 63%, 0% 50%, 4% 38%, 0% 25%, 4% 12%
+  );
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 2. Red Caro (Gingham / Checkered) Ribbon Bow */
+.xmas-hero-caro-bow {
+  position: absolute;
+  top: -20px;
+  right: -16px;
+  z-index: 12;
+  filter: drop-shadow(0 4px 8px rgba(44, 24, 16, 0.35));
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+  animation: xmasBowSway 4s ease-in-out infinite alternate;
+}
+@keyframes xmasBowSway {
+  0% { transform: translateZ(0) rotate(0deg); }
+  100% { transform: translateZ(0) rotate(3deg); }
+}
+
+/* 3. Red Caro Holiday Sash Ribbon with Golden Stitches */
+.xmas-hero-caro-sash {
+  position: absolute;
+  bottom: 26px;
+  left: -14px;
+  background-color: #b91c1c;
+  background-image:
+    linear-gradient(90deg, rgba(80, 8, 8, 0.55) 50%, transparent 50%),
+    linear-gradient(rgba(80, 8, 8, 0.55) 50%, transparent 50%);
+  background-size: 12px 12px;
+  border-top: 1.5px dashed #ffd580;
+  border-bottom: 1.5px dashed #ffd580;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  box-shadow: 0 4px 12px rgba(44, 24, 16, 0.3);
+  transform: rotate(-4deg);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* 4. Product Card Holiday Washi Tape Accent */
+body.theme-christmas .card-img-wrap::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: -12px;
+  width: 52px;
+  height: 15px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #b91c1c 0px,
+    #b91c1c 6px,
+    #ffffff 6px,
+    #ffffff 9px,
+    #1b4730 9px,
+    #1b4730 15px,
+    #ffffff 15px,
+    #ffffff 18px
+  );
+  opacity: 0.88;
+  transform: rotate(34deg);
+  box-shadow: 0 2px 4px rgba(44, 24, 16, 0.22);
+  clip-path: polygon(
+    0% 0%, 94% 0%, 100% 20%, 94% 40%, 100% 60%, 94% 80%, 100% 100%,
+    0% 100%, 6% 80%, 0% 60%, 6% 40%, 0% 20%
+  );
+  pointer-events: none;
+  z-index: 4;
+}
+body.theme-christmas .product-card:nth-child(even) .card-img-wrap::after {
+  background-color: #b91c1c;
+  background-image:
+    linear-gradient(90deg, rgba(80, 8, 8, 0.52) 50%, transparent 50%),
+    linear-gradient(rgba(80, 8, 8, 0.52) 50%, transparent 50%);
+  background-size: 8px 8px;
+  border-top: 1px dashed rgba(255, 235, 170, 0.75);
+  border-bottom: 1px dashed rgba(255, 235, 170, 0.75);
+  transform: rotate(30deg);
+}
+
+/* Mobile Adjustments for Hero Decorations */
+@media (max-width: 768px) {
+  .xmas-hero-washi-tape {
+    width: 90px;
+    height: 24px;
+    top: -10px;
+    left: -12px;
+  }
+  .xmas-hero-caro-bow svg {
+    width: 52px;
+    height: 46px;
+  }
+  .xmas-hero-caro-bow {
+    top: -14px;
+    right: -10px;
+  }
+  .xmas-hero-caro-sash {
+    font-size: 0.68rem;
+    padding: 4px 14px;
+    bottom: 16px;
+    left: -8px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   GLOBAL HOLIDAY DECORATIONS ACROSS EVERY TAB & MODAL
+   ═══════════════════════════════════════════════════════ */
+
+/* 5. Twinkling Christmas Fairy Lights Garland (Header / Nav) */
+.xmas-fairy-lights {
+  position: absolute;
+  bottom: -9px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 14px;
+  background: transparent;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding: 0 8px;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 100;
+}
+.xmas-fairy-lights::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-bottom: 1.5px solid rgba(44, 24, 16, 0.4);
+  border-radius: 50%;
+}
+.xmas-bulb {
+  width: 8px;
+  height: 11px;
+  border-radius: 50% 50% 45% 45%;
+  position: relative;
+  margin-top: 2px;
+  contain: layout paint;
+  will-change: opacity;
+}
+.xmas-bulb::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 2.5px;
+  width: 3px;
+  height: 2px;
+  background: #333;
+  border-radius: 1px;
+}
+.bulb-phase-a {
+  animation: bulbBlinkA 2.5s ease-in-out infinite;
+}
+.bulb-phase-b {
+  animation: bulbBlinkB 2.5s ease-in-out infinite;
+}
+.bulb-red {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.75);
+}
+.bulb-gold {
+  background: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.75);
+}
+.bulb-green {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.75);
+}
+.bulb-blue {
+  background: #38bdf8;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.75);
+}
+@keyframes bulbBlinkA {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@keyframes bulbBlinkB {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* 6. Page Header Christmas Washi Tape (Shop, FAQ, Contact) */
+.page-header {
+  position: relative;
+}
+body.theme-christmas .page-header::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1.5deg);
+  width: 110px;
+  height: 24px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #b91c1c 0px,
+    #b91c1c 8px,
+    #ffffff 8px,
+    #ffffff 12px,
+    #1b4730 12px,
+    #1b4730 20px,
+    #ffffff 20px,
+    #ffffff 24px
+  );
+  opacity: 0.92;
+  box-shadow: 0 2px 6px rgba(44, 24, 16, 0.22);
+  clip-path: polygon(
+    0% 0%, 96% 0%, 100% 15%, 96% 30%, 100% 45%, 96% 60%, 100% 75%, 96% 90%, 100% 100%,
+    0% 100%, 4% 90%, 0% 75%, 4% 60%, 0% 45%, 4% 30%, 0% 15%
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* 7. Contact Tab: Christmas North Pole Air Mail Stamp & Styling */
+.contact-form-card {
+  position: relative;
+}
+body.theme-christmas .contact-form-card {
+  border: 2px solid #ecd8c2;
+  background-color: var(--beige-100);
+  background-image:
+    linear-gradient(135deg, rgba(158, 42, 43, 0.04) 0%, rgba(27, 71, 48, 0.04) 100%);
+  box-shadow: 0 16px 40px rgba(44, 24, 16, 0.12);
+}
+.xmas-contact-stamp {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  width: 78px;
+  height: 90px;
+  background: #fdfaf5;
+  border: 2px dashed #9e2a2b;
+  border-radius: 6px;
+  padding: 6px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transform: rotate(4deg);
+  box-shadow: 0 3px 8px rgba(44, 24, 16, 0.18);
+  pointer-events: none;
+  z-index: 8;
+}
+.xmas-contact-stamp .stamp-tree {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.xmas-contact-stamp .stamp-text {
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #9e2a2b;
+  text-transform: uppercase;
+}
+.xmas-contact-stamp .stamp-city {
+  font-size: 0.5rem;
+  color: #1b4730;
+  font-weight: 700;
+  margin-top: 2px;
+}
+@media (max-width: 600px) {
+  .xmas-contact-stamp {
+    width: 60px;
+    height: 72px;
+    top: 12px;
+    right: 12px;
+  }
+  .xmas-contact-stamp .stamp-tree { font-size: 1.1rem; }
+  .xmas-contact-stamp .stamp-text { font-size: 0.48rem; }
+}
+
+/* 8. FAQ Tab: Value Cards Holiday Washi Tape */
+.value-card {
+  position: relative;
+}
+body.theme-christmas .value-card::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(1deg);
+  width: 58px;
+  height: 16px;
+  background-color: #b91c1c;
+  background-image:
+    linear-gradient(90deg, rgba(80, 8, 8, 0.5) 50%, transparent 50%),
+    linear-gradient(rgba(80, 8, 8, 0.5) 50%, transparent 50%);
+  background-size: 8px 8px;
+  border-top: 1px dashed rgba(255, 235, 170, 0.7);
+  border-bottom: 1px dashed rgba(255, 235, 170, 0.7);
+  box-shadow: 0 2px 4px rgba(44, 24, 16, 0.2);
+  clip-path: polygon(
+    0% 0%, 94% 0%, 100% 25%, 94% 50%, 100% 75%, 94% 100%,
+    0% 100%, 6% 75%, 0% 50%, 6% 25%
+  );
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* 9. Bulk Order Card (Shop Tab): Christmas Gift Sash */
+.bulk-order-card {
+  position: relative;
+  overflow: visible;
+}
+body.theme-christmas .bulk-order-card {
+  background: linear-gradient(135deg, #10291d 0%, #1a3c28 50%, #3d1417 100%) !important;
+  border: 1.5px solid rgba(220, 175, 80, 0.45) !important;
+  box-shadow: 0 14px 36px rgba(16, 41, 29, 0.3) !important;
+  color: #fcf9f2 !important;
+}
+body.theme-christmas .bulk-order-left h3 {
+  color: #ffffff !important;
+}
+body.theme-christmas .bulk-order-left p {
+  color: #ffd580 !important;
+}
+body.theme-christmas .bulk-order-card::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 28px;
+  width: 100px;
+  height: 24px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #b91c1c 0px,
+    #b91c1c 8px,
+    #ffffff 8px,
+    #ffffff 12px,
+    #1b4730 12px,
+    #1b4730 20px,
+    #ffffff 20px,
+    #ffffff 24px
+  );
+  opacity: 0.92;
+  transform: rotate(5deg);
+  box-shadow: 0 2px 6px rgba(44, 24, 16, 0.22);
+  clip-path: polygon(
+    0% 0%, 96% 0%, 100% 20%, 96% 40%, 100% 60%, 96% 80%, 100% 100%,
+    0% 100%, 4% 80%, 0% 60%, 4% 40%, 0% 20%
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* 10. Cart Drawer Holiday Progress Bar & Wrap */
+body.theme-christmas .free-shipping-fill {
+  background: repeating-linear-gradient(
+    45deg,
+    #b91c1c 0px,
+    #b91c1c 8px,
+    #ffffff 8px,
+    #ffffff 12px,
+    #1b4730 12px,
+    #1b4730 20px,
+    #ffffff 20px,
+    #ffffff 24px
+  );
+  box-shadow: 0 0 8px rgba(185, 28, 28, 0.4);
+}
+body.theme-christmas .cart-drawer-header {
+  border-bottom: 2px dashed rgba(198, 138, 53, 0.4);
+  background: linear-gradient(135deg, rgba(27, 71, 48, 0.05) 0%, rgba(158, 42, 43, 0.05) 100%);
+}
+
+/* 11. Footer Holiday Decor (All Pages) */
+body.theme-christmas footer {
+  border-top: 3px solid transparent;
+  border-image: repeating-linear-gradient(
+    90deg,
+    #b91c1c 0px,
+    #b91c1c 16px,
+    #ffd580 16px,
+    #ffd580 22px,
+    #1b4730 22px,
+    #1b4730 38px,
+    #ffd580 38px,
+    #ffd580 44px
+  ) 4;
+}
+
+/* 12. Potato Device & Accessibility Low-Power Rules */
+@media (prefers-reduced-motion: reduce) {
+  .xmas-bulb,
+  .bulb-phase-a,
+  .bulb-phase-b {
+    animation: none !important;
+    opacity: 0.85 !important;
+  }
+  .xmas-hero-caro-bow {
+    animation: none !important;
+  }
+  #snow-canvas {
+    opacity: 0.45;
+  }
+}
+
+
+
