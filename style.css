@@ -3932,9 +3932,9 @@ body.theme-christmas {
   --xmas-frost: #e8f2ea;       /* Subtle frosty mint */
 }
 
-/* Festive Announcement Bar - Warm Holiday Ribbon (Optimized for smooth compositing) */
+/* Festive Announcement Bar - Deep Nordic Evergreen Pine Ribbon */
 body.theme-christmas .announcement-bar {
-  background: linear-gradient(90deg, #123322 0%, #1e4d35 30%, #7a1f20 50%, #1e4d35 70%, #123322 100%);
+  background: #143825;
   border-bottom: 2px dashed rgba(220, 175, 80, 0.45);
   color: #fcf9f2;
   letter-spacing: 0.04em;
@@ -4014,11 +4014,11 @@ body.theme-christmas .product-card:hover {
   box-shadow: 0 14px 40px rgba(158, 42, 43, 0.12), 0 3px 12px rgba(27, 71, 48, 0.08);
 }
 
-/* Festive Bundle Deals Showcase - Rich Nordic Holiday Evergreen & Cranberry Velvet */
+/* Festive Bundle Deals Showcase - Rich Nordic Holiday Evergreen */
 body.theme-christmas .bundle-deals-hero-inner {
-  background: linear-gradient(135deg, #0e291b 0%, #173825 45%, #421619 100%) !important;
-  border: 1.5px solid rgba(220, 175, 80, 0.65) !important;
-  box-shadow: 0 16px 44px rgba(14, 41, 27, 0.4), 0 0 0 1px rgba(220, 175, 80, 0.25) !important;
+  background: linear-gradient(135deg, #113622 0%, #18442c 100%) !important;
+  border: 1.5px solid rgba(220, 175, 80, 0.55) !important;
+  box-shadow: 0 16px 44px rgba(14, 41, 27, 0.35), 0 0 0 1px rgba(220, 175, 80, 0.2) !important;
   color: #fcf9f2 !important;
 }
 
@@ -4202,7 +4202,7 @@ body.theme-christmas .product-card:nth-child(even) .card-img-wrap::after {
   transform: rotate(30deg);
 }
 
-/* Mobile Adjustments for Hero Decorations */
+/* Mobile Adjustments & Potato Phone Performance Optimizations */
 @media (max-width: 768px) {
   .xmas-hero-washi-tape {
     width: 90px;
@@ -4217,12 +4217,29 @@ body.theme-christmas .product-card:nth-child(even) .card-img-wrap::after {
   .xmas-hero-caro-bow {
     top: -14px;
     right: -10px;
+    animation: none !important;
   }
   .xmas-hero-caro-sash {
     font-size: 0.68rem;
     padding: 4px 14px;
     bottom: 16px;
     left: -8px;
+  }
+  /* Potato phone optimizations: static fairy lights with zero keyframe repaint */
+  .xmas-bulb {
+    animation: none !important;
+    opacity: 0.9 !important;
+    width: 6px !important;
+    height: 9px !important;
+    box-shadow: 0 0 3px currentColor !important;
+  }
+  .xmas-fairy-lights {
+    bottom: -6px;
+    height: 10px;
+  }
+  /* Remove diagonal card overlay on mobile so 2-col sticker grid stays crisp & clean */
+  body.theme-christmas .card-img-wrap::after {
+    display: none !important;
   }
 }
 
@@ -4436,7 +4453,7 @@ body.theme-christmas .value-card::before {
   overflow: visible;
 }
 body.theme-christmas .bulk-order-card {
-  background: linear-gradient(135deg, #10291d 0%, #1a3c28 50%, #3d1417 100%) !important;
+  background: linear-gradient(135deg, #10291d 0%, #1a422d 100%) !important;
   border: 1.5px solid rgba(220, 175, 80, 0.45) !important;
   box-shadow: 0 14px 36px rgba(16, 41, 29, 0.3) !important;
   color: #fcf9f2 !important;

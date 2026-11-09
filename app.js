@@ -713,151 +713,75 @@ function createSnowSprites() {
     return { canvas: c, ctx: ctx, w: w, h: h, dpr: dpr };
   }
 
-  // Sprite 0: Small 6-arm crystal snowflake (20x20) - 100% visible on cream
-  const s0 = makeCanvas(20, 20);
-  s0.ctx.shadowColor = "rgba(44, 24, 16, 0.45)";
-  s0.ctx.shadowBlur = 3.5;
+  // Sprite 0: Small crisp 6-arm snowflake (18x18) - Pure fluffy white snow
+  const s0 = makeCanvas(18, 18);
+  s0.ctx.shadowColor = "rgba(40, 25, 18, 0.28)";
+  s0.ctx.shadowBlur = 2.5;
   s0.ctx.shadowOffsetY = 1;
-  s0.ctx.translate(10, 10);
-  s0.ctx.strokeStyle = "#0284c7"; // crisp icy blue
-  s0.ctx.lineWidth = 1.6;
+  s0.ctx.translate(9, 9);
+  s0.ctx.strokeStyle = "#ffffff";
+  s0.ctx.lineWidth = 1.4;
   s0.ctx.lineCap = "round";
   s0.ctx.beginPath();
   for (let a = 0; a < 6; a++) {
     s0.ctx.moveTo(0, 0);
-    s0.ctx.lineTo(0, 6.5);
-    s0.ctx.moveTo(-1.8, 4);
-    s0.ctx.lineTo(0, 5.8);
-    s0.ctx.lineTo(1.8, 4);
+    s0.ctx.lineTo(0, 5.5);
+    s0.ctx.moveTo(-1.4, 3.2);
+    s0.ctx.lineTo(0, 4.8);
+    s0.ctx.lineTo(1.4, 3.2);
     s0.ctx.rotate(Math.PI / 3);
   }
   s0.ctx.stroke();
-  s0.ctx.shadowColor = "transparent";
-  s0.ctx.strokeStyle = "#ffffff";
-  s0.ctx.lineWidth = 0.8;
-  s0.ctx.stroke();
   s0.ctx.fillStyle = "#ffffff";
   s0.ctx.beginPath();
-  s0.ctx.arc(0, 0, 1.4, 0, Math.PI * 2);
+  s0.ctx.arc(0, 0, 1.2, 0, Math.PI * 2);
   s0.ctx.fill();
 
-  // Sprite 1: Medium intricate branching snowflake ❄️ (30x30)
-  const s1 = makeCanvas(30, 30);
-  s1.ctx.shadowColor = "rgba(44, 24, 16, 0.42)";
-  s1.ctx.shadowBlur = 4;
-  s1.ctx.shadowOffsetY = 1.2;
-  s1.ctx.translate(15, 15);
-  s1.ctx.strokeStyle = "#0284c7";
-  s1.ctx.lineWidth = 2.0;
+  // Sprite 1: Medium intricate branching snowflake ❄️ (26x26) - Pure white
+  const s1 = makeCanvas(26, 26);
+  s1.ctx.shadowColor = "rgba(40, 25, 18, 0.3)";
+  s1.ctx.shadowBlur = 3;
+  s1.ctx.shadowOffsetY = 1;
+  s1.ctx.translate(13, 13);
+  s1.ctx.strokeStyle = "#ffffff";
+  s1.ctx.lineWidth = 1.6;
   s1.ctx.lineCap = "round";
   s1.ctx.beginPath();
   for (let a = 0; a < 6; a++) {
     s1.ctx.moveTo(0, 0);
-    s1.ctx.lineTo(0, 9.5);
-    s1.ctx.moveTo(-2.8, 5.5);
-    s1.ctx.lineTo(0, 8.2);
-    s1.ctx.lineTo(2.8, 5.5);
+    s1.ctx.lineTo(0, 8);
+    s1.ctx.moveTo(-2.2, 4.5);
+    s1.ctx.lineTo(0, 7);
+    s1.ctx.lineTo(2.2, 4.5);
     s1.ctx.rotate(Math.PI / 3);
   }
   s1.ctx.stroke();
-  s1.ctx.shadowColor = "transparent";
-  s1.ctx.strokeStyle = "#ffffff";
-  s1.ctx.lineWidth = 1.0;
-  s1.ctx.stroke();
   s1.ctx.fillStyle = "#ffffff";
   s1.ctx.beginPath();
-  s1.ctx.arc(0, 0, 2.0, 0, Math.PI * 2);
+  s1.ctx.arc(0, 0, 1.6, 0, Math.PI * 2);
   s1.ctx.fill();
 
-  // Sprite 2: Large intricate stellar snowflake ❄️ (40x40)
-  const s2 = makeCanvas(40, 40);
-  s2.ctx.shadowColor = "rgba(44, 24, 16, 0.45)";
-  s2.ctx.shadowBlur = 5;
-  s2.ctx.shadowOffsetY = 1.5;
-  s2.ctx.translate(20, 20);
-  s2.ctx.strokeStyle = "#0369a1"; // deep sapphire ice
-  s2.ctx.lineWidth = 2.2;
-  s2.ctx.lineCap = "round";
-  s2.ctx.beginPath();
-  for (let a = 0; a < 6; a++) {
-    s2.ctx.moveTo(0, 0);
-    s2.ctx.lineTo(0, 13);
-    s2.ctx.moveTo(-2.5, 6);
-    s2.ctx.lineTo(0, 8);
-    s2.ctx.lineTo(2.5, 6);
-    s2.ctx.moveTo(-4, 10);
-    s2.ctx.lineTo(0, 12);
-    s2.ctx.lineTo(4, 10);
-    s2.ctx.rotate(Math.PI / 3);
-  }
-  s2.ctx.stroke();
-  s2.ctx.shadowColor = "transparent";
-  s2.ctx.strokeStyle = "#ffffff";
-  s2.ctx.lineWidth = 1.1;
-  s2.ctx.stroke();
+  // Sprite 2: Soft powder flake (14x14) - Fluffy white winter puff
+  const s2 = makeCanvas(14, 14);
+  s2.ctx.shadowColor = "rgba(40, 25, 18, 0.28)";
+  s2.ctx.shadowBlur = 2.5;
+  s2.ctx.shadowOffsetY = 1;
   s2.ctx.fillStyle = "#ffffff";
   s2.ctx.beginPath();
-  s2.ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+  s2.ctx.arc(7, 7, 3, 0, Math.PI * 2);
   s2.ctx.fill();
-  s2.ctx.strokeStyle = "#0284c7";
-  s2.ctx.lineWidth = 1.2;
-  s2.ctx.stroke();
 
-  // Sprite 3: 4-pointed Diamond Twinkle Sparkle ✦ (24x24)
-  const s3 = makeCanvas(24, 24);
-  s3.ctx.shadowColor = "rgba(44, 24, 16, 0.4)";
-  s3.ctx.shadowBlur = 3;
-  s3.ctx.shadowOffsetY = 1;
-  s3.ctx.translate(12, 12);
-  s3.ctx.fillStyle = "#d97706"; // warm holiday gold
-  s3.ctx.beginPath();
-  for (let i = 0; i < 4; i++) {
-    s3.ctx.lineTo(0, 8.5);
-    s3.ctx.lineTo(1.8, 2.2);
-    s3.ctx.rotate(Math.PI / 2);
-  }
-  s3.ctx.closePath();
-  s3.ctx.fill();
-  s3.ctx.shadowColor = "transparent";
+  // Sprite 3: Gentle micro dust flake (10x10) - Subtle white ambient drift
+  const s3 = makeCanvas(10, 10);
+  s3.ctx.shadowColor = "rgba(40, 25, 18, 0.25)";
+  s3.ctx.shadowBlur = 2;
+  s3.ctx.shadowOffsetY = 0.8;
   s3.ctx.fillStyle = "#ffffff";
   s3.ctx.beginPath();
-  for (let i = 0; i < 4; i++) {
-    s3.ctx.lineTo(0, 6.5);
-    s3.ctx.lineTo(1.2, 1.8);
-    s3.ctx.rotate(Math.PI / 2);
-  }
-  s3.ctx.closePath();
+  s3.ctx.arc(5, 5, 1.8, 0, Math.PI * 2);
   s3.ctx.fill();
 
-  // Sprite 4: Soft Powder Flake (20x20)
-  const s4 = makeCanvas(20, 20);
-  s4.ctx.shadowColor = "rgba(44, 24, 16, 0.55)";
-  s4.ctx.shadowBlur = 4;
-  s4.ctx.shadowOffsetY = 1.5;
-  s4.ctx.fillStyle = "#ffffff";
-  s4.ctx.beginPath();
-  s4.ctx.arc(10, 10, 3.8, 0, Math.PI * 2);
-  s4.ctx.fill();
-  s4.ctx.shadowColor = "transparent";
-  s4.ctx.strokeStyle = "rgba(2, 132, 199, 0.4)";
-  s4.ctx.lineWidth = 0.8;
-  s4.ctx.stroke();
-
-  // Sprite 5: Micro Crystal Flake (14x14) - Ambient depth & density
-  const s5 = makeCanvas(14, 14);
-  s5.ctx.shadowColor = "rgba(44, 24, 16, 0.4)";
-  s5.ctx.shadowBlur = 2.5;
-  s5.ctx.shadowOffsetY = 1;
-  s5.ctx.fillStyle = "#ffffff";
-  s5.ctx.beginPath();
-  s5.ctx.arc(7, 7, 2.2, 0, Math.PI * 2);
-  s5.ctx.fill();
-  s5.ctx.shadowColor = "transparent";
-  s5.ctx.strokeStyle = "rgba(2, 132, 199, 0.5)";
-  s5.ctx.lineWidth = 0.7;
-  s5.ctx.stroke();
-
-  return [s0, s1, s2, s3, s4, s5];
+  return [s0, s1, s2, s3];
 }
 
 // Precomputed Fast Trigonometry Table for Potato Devices (0 runtime trig calculations)
@@ -914,12 +838,6 @@ function initSnowCanvas(intensity = "medium", speed = "normal") {
   const ctx = canvas.getContext("2d", { alpha: true });
 
   const isMobile = (window.innerWidth || 1000) <= 768;
-  const isPotato = isMobile && (
-    (typeof navigator !== "undefined" && (
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) ||
-      (navigator.deviceMemory && navigator.deviceMemory <= 2)
-    ))
-  );
 
   function setSize() {
     if (!_snowCanvas) return;
@@ -935,19 +853,19 @@ function initSnowCanvas(intensity = "medium", speed = "normal") {
     _snowSprites = createSnowSprites();
   }
 
-  // Generous, magical snowfall density with smooth 60fps GPU-batching
-  let count = isPotato ? 80 : (isMobile ? 100 : 175); // Medium default: 175 desktop / 100 mobile
-  if (intensity === "light") count = isPotato ? 45 : (isMobile ? 60 : 100);
-  else if (intensity === "heavy") count = isPotato ? 130 : (isMobile ? 160 : 270);
+  // Potato-optimized snowflake counts: ultra-lightweight on mobile phones
+  let count = isMobile ? 18 : 55; // Default medium: 18 on mobile, 55 on desktop
+  if (intensity === "light") count = isMobile ? 10 : 30;
+  else if (intensity === "heavy") count = isMobile ? 28 : 85;
 
   // Respect system reduced-motion preference
   if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    count = Math.min(count, 12);
+    count = Math.min(count, 8);
   }
 
   let speedMultiplier = 1;
   if (speed === "gentle") speedMultiplier = 0.65;
-  else if (speed === "fast") speedMultiplier = 1.45;
+  else if (speed === "fast") speedMultiplier = 1.35;
 
   _snowCount = count;
   _snowX = new Float32Array(count);
@@ -966,35 +884,30 @@ function initSnowCanvas(intensity = "medium", speed = "normal") {
     _snowStep[i] = (Math.random() * _SNOW_SINE_RES) | 0;
 
     const r = Math.random();
-    let sIdx = 1;
-    let baseSpeedY = 0.9;
+    let sIdx = 0;
+    let baseSpeedY = 0.8;
     let baseSpeedX = 0;
 
-    if (r < 0.28) {
-      // 28% Medium branching crystal ❄️ (Sprite 1)
-      sIdx = 1;
-      baseSpeedY = Math.random() * 0.85 + 0.6;
-      baseSpeedX = Math.random() * 0.5 - 0.25;
-    } else if (r < 0.52) {
-      // 24% Small crystal ❄️ (Sprite 0)
+    if (r < 0.35) {
+      // 35% Small crystal (Sprite 0)
       sIdx = 0;
-      baseSpeedY = Math.random() * 0.7 + 0.5;
+      baseSpeedY = Math.random() * 0.65 + 0.45;
       baseSpeedX = Math.random() * 0.4 - 0.2;
-    } else if (r < 0.70) {
-      // 18% Large stellar snowflake ❄️ (Sprite 2)
+    } else if (r < 0.65) {
+      // 30% Medium branching crystal (Sprite 1)
+      sIdx = 1;
+      baseSpeedY = Math.random() * 0.75 + 0.55;
+      baseSpeedX = Math.random() * 0.45 - 0.22;
+    } else if (r < 0.88) {
+      // 23% Soft powder dot (Sprite 2)
       sIdx = 2;
-      baseSpeedY = Math.random() * 1.05 + 0.75;
-      baseSpeedX = Math.random() * 0.6 - 0.3;
-    } else if (r < 0.85) {
-      // 15% Golden twinkle star ✦ (Sprite 3)
-      sIdx = 3;
-      baseSpeedY = Math.random() * 0.75 + 0.5;
-      baseSpeedX = Math.random() * 0.35 - 0.17;
+      baseSpeedY = Math.random() * 0.6 + 0.4;
+      baseSpeedX = Math.random() * 0.3 - 0.15;
     } else {
-      // 15% Soft powder flake (Sprite 4)
-      sIdx = 4;
-      baseSpeedY = Math.random() * 0.7 + 0.55;
-      baseSpeedX = Math.random() * 0.4 - 0.2;
+      // 12% Gentle micro dust (Sprite 3)
+      sIdx = 3;
+      baseSpeedY = Math.random() * 0.45 + 0.3;
+      baseSpeedX = Math.random() * 0.2 - 0.1;
     }
 
     _snowSpriteIdx[i] = sIdx;
@@ -1002,15 +915,20 @@ function initSnowCanvas(intensity = "medium", speed = "normal") {
     _snowSpeedX[i] = baseSpeedX * speedMultiplier;
   }
 
-  // Delta timer: ~30ms (33fps) on potato/mobile, ~22ms (45fps) on desktop
-  // High smoothness while keeping CPU/GPU power below 1%
-  const targetInterval = isPotato ? 30 : 22;
+  // Target FPS governor: ~26 FPS on mobile (cuts 75% GPU power), ~38 FPS on desktop
+  const targetInterval = isMobile ? 38 : 26;
   let lastTime = 0;
-  let scrollThrottleSkip = 0;
 
   function draw(now) {
     if (!document.getElementById("snow-canvas")) return;
     if (document.hidden) {
+      _snowAnimationId = requestAnimationFrame(draw);
+      return;
+    }
+
+    // ON MOBILE: completely suspend canvas draw loop during finger scrolling
+    // Reserves 100% CPU and GPU for butter-smooth native 60fps scrolling
+    if (isMobile && _isSnowUserScrolling) {
       _snowAnimationId = requestAnimationFrame(draw);
       return;
     }
@@ -1023,18 +941,11 @@ function initSnowCanvas(intensity = "medium", speed = "normal") {
     }
     lastTime = now - (elapsed % targetInterval);
 
-    // Active touch-scroll governor on low-end devices: skip every second frame during rapid finger scrolls
-    if (isPotato && _isSnowUserScrolling && (++scrollThrottleSkip & 1) !== 0) {
-      _snowAnimationId = requestAnimationFrame(draw);
-      return;
-    }
-
     const width = canvas.width;
     const height = canvas.height;
     ctx.clearRect(0, 0, width, height);
 
-    // Set globalAlpha ONCE outside the loop so Skia can batch all drawImage calls into a single draw call
-    ctx.globalAlpha = 0.94;
+    ctx.globalAlpha = 0.95;
 
     const count = _snowCount;
     const x = _snowX;
@@ -1050,17 +961,17 @@ function initSnowCanvas(intensity = "medium", speed = "normal") {
       const s = (step[i] + 1) & 63;
       step[i] = s;
 
-      let px = x[i] + table[s] * 0.6 + vx[i];
+      let px = x[i] + table[s] * 0.55 + vx[i];
       let py = y[i] + vy[i];
 
-      if (py > height + 40) {
-        py = -40;
+      if (py > height + 30) {
+        py = -30;
         px = Math.random() * width;
       }
-      if (px > width + 40) {
-        px = -40;
-      } else if (px < -40) {
-        px = width + 40;
+      if (px > width + 30) {
+        px = -30;
+      } else if (px < -30) {
+        px = width + 30;
       }
 
       x[i] = px;
