@@ -713,75 +713,140 @@ function createSnowSprites() {
     return { canvas: c, ctx: ctx, w: w, h: h, dpr: dpr };
   }
 
-  // Sprite 0: Small crisp 6-arm snowflake (18x18) - Pure fluffy white snow
-  const s0 = makeCanvas(18, 18);
-  s0.ctx.shadowColor = "rgba(40, 25, 18, 0.28)";
-  s0.ctx.shadowBlur = 2.5;
+  // Sprite 0: Vibrant Frosty Ice Crystal Snowflake ❄️ (20x20) - Vivid Sky Blue
+  const s0 = makeCanvas(20, 20);
+  s0.ctx.shadowColor = "rgba(40, 25, 18, 0.35)";
+  s0.ctx.shadowBlur = 3;
   s0.ctx.shadowOffsetY = 1;
-  s0.ctx.translate(9, 9);
-  s0.ctx.strokeStyle = "#ffffff";
-  s0.ctx.lineWidth = 1.4;
+  s0.ctx.translate(10, 10);
+  s0.ctx.strokeStyle = "#0284c7"; // crisp winter sky blue
+  s0.ctx.lineWidth = 1.6;
   s0.ctx.lineCap = "round";
   s0.ctx.beginPath();
   for (let a = 0; a < 6; a++) {
     s0.ctx.moveTo(0, 0);
-    s0.ctx.lineTo(0, 5.5);
-    s0.ctx.moveTo(-1.4, 3.2);
-    s0.ctx.lineTo(0, 4.8);
-    s0.ctx.lineTo(1.4, 3.2);
+    s0.ctx.lineTo(0, 6.2);
+    s0.ctx.moveTo(-1.6, 3.8);
+    s0.ctx.lineTo(0, 5.4);
+    s0.ctx.lineTo(1.6, 3.8);
     s0.ctx.rotate(Math.PI / 3);
   }
   s0.ctx.stroke();
-  s0.ctx.fillStyle = "#ffffff";
+  s0.ctx.shadowColor = "transparent";
+  s0.ctx.strokeStyle = "#e0f2fe"; // ice white inner core highlight
+  s0.ctx.lineWidth = 0.7;
+  s0.ctx.stroke();
+  s0.ctx.fillStyle = "#0284c7";
   s0.ctx.beginPath();
-  s0.ctx.arc(0, 0, 1.2, 0, Math.PI * 2);
+  s0.ctx.arc(0, 0, 1.4, 0, Math.PI * 2);
   s0.ctx.fill();
 
-  // Sprite 1: Medium intricate branching snowflake ❄️ (26x26) - Pure white
-  const s1 = makeCanvas(26, 26);
-  s1.ctx.shadowColor = "rgba(40, 25, 18, 0.3)";
-  s1.ctx.shadowBlur = 3;
+  // Sprite 1: Warm Golden Holiday Star Flake ✦ (24x24) - Glistening Amber Champagne
+  const s1 = makeCanvas(24, 24);
+  s1.ctx.shadowColor = "rgba(40, 25, 18, 0.35)";
+  s1.ctx.shadowBlur = 3.5;
   s1.ctx.shadowOffsetY = 1;
-  s1.ctx.translate(13, 13);
-  s1.ctx.strokeStyle = "#ffffff";
-  s1.ctx.lineWidth = 1.6;
-  s1.ctx.lineCap = "round";
+  s1.ctx.translate(12, 12);
+  s1.ctx.fillStyle = "#d97706"; // warm holiday gold
   s1.ctx.beginPath();
-  for (let a = 0; a < 6; a++) {
-    s1.ctx.moveTo(0, 0);
-    s1.ctx.lineTo(0, 8);
-    s1.ctx.moveTo(-2.2, 4.5);
-    s1.ctx.lineTo(0, 7);
-    s1.ctx.lineTo(2.2, 4.5);
-    s1.ctx.rotate(Math.PI / 3);
+  for (let i = 0; i < 4; i++) {
+    s1.ctx.lineTo(0, 8.5);
+    s1.ctx.lineTo(1.8, 2.2);
+    s1.ctx.rotate(Math.PI / 2);
   }
-  s1.ctx.stroke();
-  s1.ctx.fillStyle = "#ffffff";
+  s1.ctx.closePath();
+  s1.ctx.fill();
+  s1.ctx.shadowColor = "transparent";
+  s1.ctx.fillStyle = "#fef3c7"; // warm champagne center
   s1.ctx.beginPath();
-  s1.ctx.arc(0, 0, 1.6, 0, Math.PI * 2);
+  s1.ctx.arc(0, 0, 1.8, 0, Math.PI * 2);
   s1.ctx.fill();
 
-  // Sprite 2: Soft powder flake (14x14) - Fluffy white winter puff
-  const s2 = makeCanvas(14, 14);
-  s2.ctx.shadowColor = "rgba(40, 25, 18, 0.28)";
-  s2.ctx.shadowBlur = 2.5;
-  s2.ctx.shadowOffsetY = 1;
-  s2.ctx.fillStyle = "#ffffff";
+  // Sprite 2: Medium Intricate Branching Snowflake ❄️ (28x28) - Deep Sapphire Frost
+  const s2 = makeCanvas(28, 28);
+  s2.ctx.shadowColor = "rgba(40, 25, 18, 0.35)";
+  s2.ctx.shadowBlur = 4;
+  s2.ctx.shadowOffsetY = 1.2;
+  s2.ctx.translate(14, 14);
+  s2.ctx.strokeStyle = "#0369a1"; // deep winter sapphire
+  s2.ctx.lineWidth = 1.8;
+  s2.ctx.lineCap = "round";
   s2.ctx.beginPath();
-  s2.ctx.arc(7, 7, 3, 0, Math.PI * 2);
+  for (let a = 0; a < 6; a++) {
+    s2.ctx.moveTo(0, 0);
+    s2.ctx.lineTo(0, 8.5);
+    s2.ctx.moveTo(-2.4, 4.8);
+    s2.ctx.lineTo(0, 7.2);
+    s2.ctx.lineTo(2.4, 4.8);
+    s2.ctx.rotate(Math.PI / 3);
+  }
+  s2.ctx.stroke();
+  s2.ctx.shadowColor = "transparent";
+  s2.ctx.strokeStyle = "#bae6fd";
+  s2.ctx.lineWidth = 0.8;
+  s2.ctx.stroke();
+  s2.ctx.fillStyle = "#0369a1";
+  s2.ctx.beginPath();
+  s2.ctx.arc(0, 0, 1.8, 0, Math.PI * 2);
   s2.ctx.fill();
 
-  // Sprite 3: Gentle micro dust flake (10x10) - Subtle white ambient drift
-  const s3 = makeCanvas(10, 10);
-  s3.ctx.shadowColor = "rgba(40, 25, 18, 0.25)";
-  s3.ctx.shadowBlur = 2;
-  s3.ctx.shadowOffsetY = 0.8;
-  s3.ctx.fillStyle = "#ffffff";
+  // Sprite 3: Festive Cranberry Holiday Snowflake ❄️ (20x20) - Spiced Red Velvet
+  const s3 = makeCanvas(20, 20);
+  s3.ctx.shadowColor = "rgba(40, 25, 18, 0.35)";
+  s3.ctx.shadowBlur = 3;
+  s3.ctx.shadowOffsetY = 1;
+  s3.ctx.translate(10, 10);
+  s3.ctx.strokeStyle = "#b91c1c"; // festive holiday cranberry red
+  s3.ctx.lineWidth = 1.6;
+  s3.ctx.lineCap = "round";
   s3.ctx.beginPath();
-  s3.ctx.arc(5, 5, 1.8, 0, Math.PI * 2);
+  for (let a = 0; a < 6; a++) {
+    s3.ctx.moveTo(0, 0);
+    s3.ctx.lineTo(0, 6);
+    s3.ctx.moveTo(-1.5, 3.5);
+    s3.ctx.lineTo(0, 5.2);
+    s3.ctx.lineTo(1.5, 3.5);
+    s3.ctx.rotate(Math.PI / 3);
+  }
+  s3.ctx.stroke();
+  s3.ctx.shadowColor = "transparent";
+  s3.ctx.strokeStyle = "#fecdd3";
+  s3.ctx.lineWidth = 0.7;
+  s3.ctx.stroke();
+  s3.ctx.fillStyle = "#b91c1c";
+  s3.ctx.beginPath();
+  s3.ctx.arc(0, 0, 1.3, 0, Math.PI * 2);
   s3.ctx.fill();
 
-  return [s0, s1, s2, s3];
+  // Sprite 4: Soft Glowing Icy Powder Puff (16x16) - Vivid Sky Tint
+  const s4 = makeCanvas(16, 16);
+  s4.ctx.shadowColor = "rgba(40, 25, 18, 0.35)";
+  s4.ctx.shadowBlur = 3;
+  s4.ctx.shadowOffsetY = 1;
+  s4.ctx.fillStyle = "#7dd3fc"; // soft glowing cyan sky puff
+  s4.ctx.beginPath();
+  s4.ctx.arc(8, 8, 3.5, 0, Math.PI * 2);
+  s4.ctx.fill();
+  s4.ctx.shadowColor = "transparent";
+  s4.ctx.strokeStyle = "#0284c7";
+  s4.ctx.lineWidth = 0.9;
+  s4.ctx.stroke();
+
+  // Sprite 5: Warm Gold Sparkle Dust (12x12) - Amber Shimmer
+  const s5 = makeCanvas(12, 12);
+  s5.ctx.shadowColor = "rgba(40, 25, 18, 0.3)";
+  s5.ctx.shadowBlur = 2.5;
+  s5.ctx.shadowOffsetY = 0.8;
+  s5.ctx.fillStyle = "#fbbf24"; // amber gold sparkle
+  s5.ctx.beginPath();
+  s5.ctx.arc(6, 6, 2.5, 0, Math.PI * 2);
+  s5.ctx.fill();
+  s5.ctx.shadowColor = "transparent";
+  s5.ctx.strokeStyle = "#d97706";
+  s5.ctx.lineWidth = 0.8;
+  s5.ctx.stroke();
+
+  return [s0, s1, s2, s3, s4, s5];
 }
 
 // Precomputed Fast Trigonometry Table for Potato Devices (0 runtime trig calculations)
@@ -853,10 +918,10 @@ function initSnowCanvas(intensity = "medium", speed = "normal") {
     _snowSprites = createSnowSprites();
   }
 
-  // Potato-optimized snowflake counts: ultra-lightweight on mobile phones
-  let count = isMobile ? 18 : 55; // Default medium: 18 on mobile, 55 on desktop
-  if (intensity === "light") count = isMobile ? 10 : 30;
-  else if (intensity === "heavy") count = isMobile ? 28 : 85;
+  // Potato-optimized snowflake counts: ultra-lightweight on mobile phones, visibly festive
+  let count = isMobile ? 24 : 65; // Default medium: 24 on mobile, 65 on desktop
+  if (intensity === "light") count = isMobile ? 14 : 35;
+  else if (intensity === "heavy") count = isMobile ? 35 : 95;
 
   // Respect system reduced-motion preference
   if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -888,26 +953,36 @@ function initSnowCanvas(intensity = "medium", speed = "normal") {
     let baseSpeedY = 0.8;
     let baseSpeedX = 0;
 
-    if (r < 0.35) {
-      // 35% Small crystal (Sprite 0)
+    if (r < 0.24) {
+      // 24% Sky Blue Crystal (Sprite 0)
       sIdx = 0;
-      baseSpeedY = Math.random() * 0.65 + 0.45;
+      baseSpeedY = Math.random() * 0.7 + 0.5;
       baseSpeedX = Math.random() * 0.4 - 0.2;
-    } else if (r < 0.65) {
-      // 30% Medium branching crystal (Sprite 1)
+    } else if (r < 0.44) {
+      // 20% Golden Holiday Star Flake (Sprite 1)
       sIdx = 1;
       baseSpeedY = Math.random() * 0.75 + 0.55;
-      baseSpeedX = Math.random() * 0.45 - 0.22;
-    } else if (r < 0.88) {
-      // 23% Soft powder dot (Sprite 2)
+      baseSpeedX = Math.random() * 0.35 - 0.17;
+    } else if (r < 0.62) {
+      // 18% Sapphire Branching Crystal (Sprite 2)
       sIdx = 2;
+      baseSpeedY = Math.random() * 0.85 + 0.6;
+      baseSpeedX = Math.random() * 0.45 - 0.22;
+    } else if (r < 0.78) {
+      // 16% Spiced Cranberry Christmas Snowflake (Sprite 3)
+      sIdx = 3;
+      baseSpeedY = Math.random() * 0.7 + 0.5;
+      baseSpeedX = Math.random() * 0.4 - 0.2;
+    } else if (r < 0.90) {
+      // 12% Glowing Cyan Powder Puff (Sprite 4)
+      sIdx = 4;
       baseSpeedY = Math.random() * 0.6 + 0.4;
       baseSpeedX = Math.random() * 0.3 - 0.15;
     } else {
-      // 12% Gentle micro dust (Sprite 3)
-      sIdx = 3;
-      baseSpeedY = Math.random() * 0.45 + 0.3;
-      baseSpeedX = Math.random() * 0.2 - 0.1;
+      // 10% Warm Gold Sparkle Dust (Sprite 5)
+      sIdx = 5;
+      baseSpeedY = Math.random() * 0.5 + 0.35;
+      baseSpeedX = Math.random() * 0.25 - 0.12;
     }
 
     _snowSpriteIdx[i] = sIdx;
